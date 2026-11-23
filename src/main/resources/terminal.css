@@ -1,0 +1,151 @@
+.root {
+    -fx-font-family: "Consolas", "Lucida Console", "Courier New", monospace;
+    -fx-font-size: 13px;
+    -fx-background-color: #07140c;
+    -fx-text-fill: #a9efbb;
+}
+
+.app-root {
+    -fx-background-color: linear-gradient(to bottom, #07140c, #0a1a10);
+}
+
+.label {
+    -fx-text-fill: #a9efbb;
+}
+
+.header {
+    -fx-background-color: #0b2414;
+    -fx-border-color: #285638;
+    -fx-border-width: 0 0 1 0;
+}
+
+.header-title {
+    -fx-text-fill: #d2ffe0;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.offline-label {
+    -fx-text-fill: #80c99b;
+    -fx-font-size: 12px;
+}
+
+.screen-title {
+    -fx-font-size: 31px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #d2ffe0;
+}
+
+.screen-subtitle {
+    -fx-text-fill: #88c79d;
+    -fx-font-size: 13px;
+    -fx-text-alignment: center;
+}
+
+.menu-button, .action-button, .small-button {
+    -fx-background-color: #112c1a;
+    -fx-text-fill: #a9efbb;
+    -fx-border-color: #397651;
+    -fx-border-width: 1px;
+    -fx-background-radius: 3px;
+    -fx-border-radius: 3px;
+    -fx-cursor: hand;
+}
+
+.menu-button {
+    -fx-alignment: center-left;
+    -fx-font-size: 15px;
+    -fx-padding: 13px 16px;
+}
+
+.action-button {
+    -fx-padding: 11px 18px;
+}
+
+.small-button {
+    -fx-padding: 8px 12px;
+}
+
+.menu-button:hover, .action-button:hover, .small-button:hover,
+.menu-button:focused, .action-button:focused, .small-button:focused {
+    -fx-background-color: #1c472a;
+    -fx-border-color: #a9efbb;
+    -fx-text-fill: #e4ffe9;
+}
+
+.board-square {
+    -fx-background-color: #0d2717;
+    -fx-border-color: #4f9265;
+    -fx-border-width: 2px;
+    -fx-background-radius: 2px;
+    -fx-border-radius: 2px;
+    -fx-text-fill: #c1ffd2;
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 61px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.board-square:hover, .board-square:focused {
+    -fx-background-color: #1b4728;
+    -fx-border-color: #b7facc;
+}
+
+.board-square:disabled {
+    -fx-opacity: 1;
+    -fx-cursor: default;
+}
+
+.game-message {
+    -fx-text-fill: #d3ffe0;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+
+.report, .help-text {
+    -fx-background-color: #102a19;
+    -fx-border-color: #285638;
+    -fx-padding: 23px;
+    -fx-text-fill: #b9efd0;
+    -fx-line-spacing: 6px;
+}
+
+.report {
+    -fx-font-size: 17px;
+}
+
+.help-text {
+    -fx-font-size: 14px;
+}
+
+.console {
+    -fx-background-color: #07110a;
+    -fx-border-color: #285638;
+    -fx-border-width: 1 0 0 0;
+}
+
+.hint {
+    -fx-text-fill: #79b48a;
+    -fx-font-size: 11px;
+}
+
+.prompt {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.command-input {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-text-fill: #e2ffe9;
+    -fx-prompt-text-fill: #688f73;
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 15px;
+    -fx-padding: 4px;
+}
+
+.console-message {
+    -fx-text-fill: #7fac8b;
+    -fx-font-size: 12px;
+}
