@@ -19,6 +19,18 @@ It is an independent project, **not affiliated with or endorsed by the creators 
 - Completely offline while playing; no account or API key required.
 - JUnit tests for game rules, AI moves and reproducible experiments.
 
+## Development roadmap and research ideas
+
+STRATUM-83 follows a **public, release-based roadmap** rather than fixed calendar deadlines.
+
+- **[Development Roadmap](docs/DEVELOPMENT-ROADMAP.md)** — approved milestones, current work, future planned releases and acceptance criteria.
+- **[Research Backlog](docs/RESEARCH-BACKLOG.md)** — candidate games and algorithms; ideas are not release commitments.
+- **[GitHub Milestones](https://github.com/elisseosmav/stratum-83/milestones)** — track work toward v0.2, v0.3 and v0.4.
+- **[Educational Wiki](https://github.com/elisseosmav/stratum-83/wiki)** — explanations of the games and their algorithms.
+- **[Discussions](https://github.com/elisseosmav/stratum-83/discussions)** — share suggestions and ask questions.
+
+Proposed future games include Checkers, Blackjack and Chess. These are **research ideas only** until reviewed and formally planned.
+
 ## Windows setup (Java 21 and Maven)
 
 STRATUM-83 v0.1 is a **source project**. Building and playing it locally requires **JDK 21** and **Apache Maven 3.9+**. JavaFX is downloaded by Maven, so you do not need to install JavaFX yourself.
