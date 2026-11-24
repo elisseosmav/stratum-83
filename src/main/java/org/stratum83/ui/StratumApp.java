@@ -29,6 +29,7 @@ import org.stratum83.game.Move;
 import org.stratum83.labyrinth.Maze;
 import org.stratum83.labyrinth.MazeChallenge;
 import org.stratum83.labyrinth.MazeGenerator;
+import org.stratum83.labyrinth.MazeSolver;
 import org.stratum83.labyrinth.Position;
 import java.util.Locale;
 import java.util.HashSet;
@@ -59,6 +60,8 @@ public class StratumApp extends Application {
 
     private Maze maze;
     private MazeChallenge mazeChallenge;
+    private ScrollPane mazeGameScreen;
+    private MazeSolver.Algorithm mazeTraceAlgorithm = MazeSolver.Algorithm.BFS;
     private Label[][] mazeCells;
     private Label mazeMessage;
     private Text mazeResults;
@@ -90,7 +93,9 @@ public class StratumApp extends Application {
                 showHelp();
             } else if (event.getCode() == KeyCode.F2) {
                 toggleSound();
-            } else if (maze != null && !(scene.getFocusOwner() instanceof TextField)) {
+            } else if (maze != null && mazeGameScreen != null
+                    && screen.getChildren().contains(mazeGameScreen)
+                    && !(scene.getFocusOwner() instanceof TextField)) {
                 int rowStep = 0;
                 int colStep = 0;
                 switch (event.getCode()) {
@@ -174,7 +179,7 @@ public class StratumApp extends Application {
                 "LOCAL GAMES / ALGORITHM EXPERIMENTS / NO NETWORK REQUIRED");
         VBox menu = new VBox(11,
                 menuButton("01  GRID ZERO       HUMAN VS COMPUTER", () -> startGame(true)),
-                menuButton("02  LABYRINTH       HUMAN VS ALGORITHM", this::showMaze),
+                menuButton("02  LABYRINTH       GRAPH SEARCH LAB", this::showMaze),
                 menuButton("03  RESEARCH LAB    ALGORITHMS AND RESULTS", this::showResearchMenu));
         menu.setMaxWidth(570);
 
@@ -431,6 +436,10 @@ public class StratumApp extends Application {
                 + "EXPLAIN      Learn Minimax and alpha-beta pruning.\n"
                 + "APPLY        Try an engineering worst-case exercise.\n"
                 + "MAZE         Play Labyrinth using arrow keys or mouse.\n"
+                + "MTRACE       Step through BFS/Dijkstra/A* maze search.\n"
+                + "MEXPLAIN     Explain graph traversal and pathfinding.\n"
+                + "MAPPLY       Practice weighted software service routing.\n"
+                + "BFS/DIJKSTRA/ASTAR   Switch the maze trace algorithm.\n"
                 + "RESEARCH     Open the Research Lab menu.\n"
                 + "EXPERIMENT   Configure Minimax versus random results.\n"
                 + "BENCHMARK    Compare maze solvers without playing.\n"
@@ -466,9 +475,24 @@ public class StratumApp extends Application {
         switch (command) {
             case "PLAY", "1", "SOLO" -> startGame(true);
             case "DUEL" -> startGame(false);
-            case "TRACE" -> showGridTrace();
-            case "EXPLAIN" -> showGridExplanation();
-            case "APPLY" -> showEngineeringApplication();
+            case "TRACE" -> {
+                if (maze != null) showMazeTrace();
+                else showGridTrace();
+            }
+            case "EXPLAIN" -> {
+                if (maze != null) showMazeExplanation();
+                else showGridExplanation();
+            }
+            case "APPLY" -> {
+                if (maze != null) showMazeApplication();
+                else showEngineeringApplication();
+            }
+            case "MTRACE" -> showMazeTrace();
+            case "MEXPLAIN" -> showMazeExplanation();
+            case "MAPPLY" -> showMazeApplication();
+            case "BFS" -> selectMazeAlgorithm(MazeSolver.Algorithm.BFS);
+            case "DIJKSTRA" -> selectMazeAlgorithm(MazeSolver.Algorithm.DIJKSTRA);
+            case "ASTAR", "A*" -> selectMazeAlgorithm(MazeSolver.Algorithm.A_STAR);
             case "MAZE", "LABYRINTH", "2" -> showMaze();
             case "RESEARCH", "LAB", "3" -> showResearchMenu();
             case "EXPERIMENT" -> showExperiment();
@@ -492,9 +516,9 @@ public class StratumApp extends Application {
         showOptimalRoute = false;
         mazeCells = new Label[maze.rows()][maze.columns()];
 
-        Label title = makeTitle("LABYRINTH CHALLENGE");
+        Label title = makeTitle("LABYRINTH / GRAPH SEARCH");
         Label instructions = makeDescription(
-                "REACH G WITH AS FEW MOVES AS POSSIBLE / ARROWS OR CLICK ADJACENT CELLS");
+                "PLAY THE MAZE / TRACE THE SEARCH / EXPLAIN THE ALGORITHMS / APPLY TO SOFTWARE");
         mazeMessage = new Label();
         mazeMessage.getStyleClass().add("game-message");
 
@@ -518,11 +542,15 @@ public class StratumApp extends Application {
             }
         }
 
-        HBox buttons = new HBox(12,
+        FlowPane buttons = new FlowPane(10, 8);
+        buttons.setAlignment(Pos.CENTER);
+        buttons.getChildren().addAll(
                 actionButton("RETRY SAME MAZE", this::showMaze),
                 actionButton("NEW MAZE", () -> { mazeSeed++; showMaze(); }),
+                actionButton("TRACE", this::showMazeTrace),
+                actionButton("EXPLAIN", this::showMazeExplanation),
+                actionButton("APPLY", this::showMazeApplication),
                 actionButton("MAIN MENU", this::showMenu));
-        buttons.setAlignment(Pos.CENTER);
 
         mazePathButtons = new HBox(10,
                 actionButton("SHOW MY VISITED CELLS", () -> {
@@ -558,6 +586,7 @@ public class StratumApp extends Application {
         ScrollPane scrolling = new ScrollPane(content);
         scrolling.setFitToWidth(true);
         scrolling.getStyleClass().add("maze-scroll");
+        mazeGameScreen = scrolling;
         screen.getChildren().setAll(scrolling);
         refreshMaze();
         consoleMessage.setText("LABYRINTH CHALLENGE STARTED. REACH G WITH AS FEW MOVES AS POSSIBLE.");
@@ -639,6 +668,45 @@ public class StratumApp extends Application {
         } else {
             mazeMessage.setText("MOVES: " + mazeChallenge.moves() + " / GOAL: G / PLAYER: P");
         }
+    }
+
+    /** Return to the same maze and the same player progress without regenerating it. */
+    private void backToMaze() {
+        if (maze != null && mazeGameScreen != null) {
+            screen.getChildren().setAll(mazeGameScreen);
+            consoleMessage.setText("LABYRINTH READY. PLAY, TRACE, EXPLAIN OR APPLY.");
+        } else {
+            showMenu();
+        }
+    }
+
+    private void selectMazeAlgorithm(MazeSolver.Algorithm algorithm) {
+        mazeTraceAlgorithm = algorithm;
+        showMazeTrace();
+    }
+
+    private void showMazeTrace() {
+        if (maze == null) {
+            consoleMessage.setText("OPEN LABYRINTH WITH MAZE FIRST, THEN TYPE TRACE.");
+            return;
+        }
+        showLearningScreen(MazeLearningScreens.trace(maze, mazeTraceAlgorithm,
+                this::selectMazeAlgorithm, this::showMazeExplanation,
+                this::showMazeApplication, this::backToMaze));
+        consoleMessage.setText("TRACE " + mazeTraceAlgorithm
+                + ": PREVIOUS / NEXT STEP / FINAL RESULT. ORIGINAL MAZE PRESERVED.");
+    }
+
+    private void showMazeExplanation() {
+        showLearningScreen(MazeLearningScreens.explain(this::showMazeTrace,
+                this::showMazeApplication, this::backToMaze));
+        consoleMessage.setText("BFS, DIJKSTRA AND A*: GRAPH SEARCH EXPLAINED.");
+    }
+
+    private void showMazeApplication() {
+        showLearningScreen(MazeLearningScreens.apply(this::showMazeTrace,
+                this::showMazeExplanation, this::backToMaze));
+        consoleMessage.setText("SOFTWARE EXERCISE: FEWEST HOPS VERSUS LOWEST COST.");
     }
 
     private void showMazeBenchmark() {
