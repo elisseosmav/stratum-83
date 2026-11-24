@@ -1,6 +1,6 @@
 # STRATUM-83 v0.3.0 Beta 2 — Release Candidate
 
-> **Not yet published.** These notes describe the proposed `v0.3.0-beta.2` release, sourced from [feature/grid-zero-learning-lab](https://github.com/elisseosmav/stratum-83/tree/feature/terminal-research-redesign).  
+> **Not yet published.** These notes describe the proposed `v0.3.0-beta.2` release, sourced from [feature/labyrinth-learning-lab](https://github.com/elisseosmav/stratum-83/tree/feature/labyrinth-learning-lab).  
 > Do not rewrite or move the published `v0.3.0-beta.1` tag.
 
 STRATUM-83 is an offline, non-commercial Java research terminal with original retro styling, playable games and educational classical-AI experiments.
@@ -12,6 +12,12 @@ STRATUM-83 is an offline, non-commercial Java research terminal with original re
 Grid Zero now demonstrates its actual Minimax decision-making with interactive recorded search steps, candidate move scores, a readable explanation of alpha-beta pruning, and a self-contained hypothetical engineering worst-case policy exercise. The search trace and gameplay use **one shared Minimax algorithm**, with real counts and bounded event capture; no simulated fake search data.
 
 Java 21 Maven/JUnit tests have [passed on Linux and Windows GitHub Actions](https://github.com/elisseosmav/stratum-83/actions/runs/45471437228). This does not replace a Windows **GUI** test.
+
+### Labyrinth now teaches the algorithms
+
+The Labyrinth Play screen now adds **TRACE / EXPLAIN / APPLY** beside navigation controls. TRACE visualizes real BFS, Dijkstra and A* node expansions, current/frontier/explored states, path costs and final shortest route. EXPLAIN details the algorithms and the fact that the current generated maze is unit-cost and loop-free. APPLY presents a fictional weighted software routing puzzle where a two-hop route can cost less than a direct edge. `MTRACE`, `MEXPLAIN`, `MAPPLY`, `BFS`, `DIJKSTRA` and `ASTAR` are available by terminal command.
+
+Shared search routines, immutable snapshots and JUnit tests keep the explanation faithful to the real solver. The example uses hypothetical units; it makes no network performance claims. [Java 21 Maven/JUnit CI passed on Ubuntu and Windows](https://github.com/elisseosmav/stratum-83/actions/runs/45473229283); visual Windows JavaFX acceptance remains pending.
 
 ## What's new since Beta 1
 
