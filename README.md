@@ -28,6 +28,8 @@ Playing Labyrinth increments the maze seed when you choose `NEW MAZE`. Changing 
 - [Labyrinth algorithm guide](docs/LABYRINTH.md)
 - [Research Lab guide (Wiki-ready)](docs/wiki/Research-Lab.md)
 - [Release candidate notes](docs/RELEASE-NOTES-v0.3.0-beta.2.md)
+- [Maintainer publishing checklist for GitHub Releases and Wiki](docs/PUBLISHING.md)
+- [All updated Wiki-ready pages](docs/wiki/README.md)
 
 The code uses original games and assets; it is not affiliated with or endorsed by any film producer or rights holder.
 
