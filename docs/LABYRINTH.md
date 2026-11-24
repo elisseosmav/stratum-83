@@ -1,60 +1,76 @@
-# Labyrinth — Playing and Research
+# Labyrinth — Human vs Algorithm Challenge
 
 **STRATUM-83 / Educational chapter 02 / v0.3 development candidate**
 
-Labyrinth combines a **playable maze** with a **separate, non-interactive experiment**. Both use the same Java generator and search engine.
+Labyrinth now provides a human navigation challenge, scored against the **optimal shortest path** computed by classical AI (Breadth-First Search). It remains completely offline.
 
-## Play mode
+## How to play
 
-Select **02 LABYRINTH** from the main menu, or type `MAZE`.
+From the main menu select **02 LABYRINTH**, or type `MAZE`. Reach the goal (`G`) by moving the player (`P`) with arrow keys or mouse clicks on adjacent open cells. Walls and nonadjacent cells cannot be entered.
 
-- `P` is the player and `G` is the goal.
-- Use arrow keys, or click an **adjacent open cell**; walls block movement.
-- `NEW MAZE` uses the next seed, producing a reproducible 11×15 maze.
-- Reach `G` to finish. Player moves are **not** the same metric as solver steps.
-- No algorithm result buttons appear in Play mode.
+- **Every successful step counts**, including steps that backtrack through previously visited cells.
+- Illegal moves do not increase the count.
+- The program **does not show the optimal route while you are playing**.
+- `RETRY SAME MAZE` restarts the identical layout (same seed), resetting your score.
+- `NEW MAZE` increments the seed and produces a different deterministic layout.
+- The challenge is over when the player reaches `G`, and further moves are blocked.
 
-## Research Lab
+The display uses brighter contrast between walls, corridors, the player, the goal and revealed paths.
 
-Select **03 RESEARCH LAB → 02 PATHFINDING** or type `BENCHMARK`. The research screen displays **settings and results only, not the maze**.
+## Results after reaching the goal
 
-Configuration:
+Once you reach `G`, the result panel shows:
 
-- **First maze seed:** a signed 64-bit integer; default `1983`.
-- **Maze samples:** 1–100; default `1`.
-- The runner generates mazes using `seed`, `seed + 1`, and so forth.
-- All three algorithms process the **same generated maze for each seed**.
-- The report shows **average shortest-path length** and **average explored cells**.
+| Metric | Meaning |
+| --- | --- |
+| **Your moves** | Number of successful steps you made, including backtracking |
+| **BFS optimal** | Fewest possible steps from the start to `G` |
+| **Extra moves** | Your moves minus BFS optimal |
+| **Efficiency** | `100 × BFS optimal / your moves` percent, maximum 100% |
 
-With one sample, averages equal that single maze's figures. With multiple samples, values are arithmetic means across mazes. Results are reproducible with the same first seed and count.
+**Example (illustrative):** If you take 38 moves and BFS finds a 24-move solution, your extra moves are 14 and efficiency is `24 / 38 × 100 ≈ 63.2%`.
 
-## Three algorithms
+A score of **100% means your route was optimal**. It does not mean you are faster than a computer—the metric counts steps, not elapsed time.
 
-| Algorithm | Method | Guarantee under current rules |
-| --- | --- | --- |
-| BFS | Queue, exploring cell distance in layers | Shortest path in an unweighted graph |
-| Dijkstra | Priority queue ordered by cumulative cost | Shortest path with nonnegative edge weights |
-| A* | Cost so far plus Manhattan-distance heuristic | Shortest path because this heuristic does not overestimate |
+After completion, you can choose:
 
-All moves are four-directional and cost 1. No diagonal moves or weighted terrain. Each result counts **explored cells** when popped and processed from a frontier, including the goal, rather than just discovered cells. The algorithms may explore different numbers of cells but must agree on optimal path length.
+- **SHOW MY VISITED CELLS:** highlight all cells you entered (blue-tinted). The screen shows the **set of visited cells**, not each revisit in chronological order. Revisited cells still count toward total moves.
+- **SHOW OPTIMAL PATH:** highlight BFS's shortest route (light green).
+- **HIDE PATH:** remove the overlay.
+- **RETRY SAME MAZE:** attempt the same seed again with zero moves.
 
-## Example experiment
+The goal and player remain visible on the board. Both route overlays are available **only after finishing**, so they cannot spoil the challenge.
 
-Use seed `1983` and `1` maze sample. Select **RUN BENCHMARK** and compare the rows. Now try `100` samples with the same starting seed: the output reflects averages across 100 different generated mazes.
+## How the computer finds the shortest route
 
-Try another first seed, then rerun with the original. Why can A* sometimes explore fewer cells than BFS even when both return the same shortest path?
+The `MazeChallenge` class uses the existing `MazeSolver` to compute a BFS shortest route when the maze starts; that route is stored but hidden until completion. BFS explores open cells in layers using a queue, guaranteeing an optimal path on this **four-directional, unweighted grid**.
 
-## Source code
+The maze itself is generated by `MazeGenerator` using seeded randomized depth-first passage carving. It is 11 rows × 15 columns, beginning with seed `1983`. Reusing a seed and the same code produces the same layout.
 
-- [Maze.java](../src/main/java/org/stratum83/labyrinth/Maze.java): maze state and valid neighbors
-- [MazeGenerator.java](../src/main/java/org/stratum83/labyrinth/MazeGenerator.java): seeded randomized depth-first carving
-- [MazeSolver.java](../src/main/java/org/stratum83/labyrinth/MazeSolver.java): BFS, Dijkstra and A*
-- [MazeBenchmarkRunner.java](../src/main/java/org/stratum83/research/MazeBenchmarkRunner.java): repeated comparisons and input checks
-- [MazeBenchmarkRunnerTest.java](../src/test/java/org/stratum83/research/MazeBenchmarkRunnerTest.java): reproducibility and output tests
-- [StratumApp.java](../src/main/java/org/stratum83/ui/StratumApp.java): JavaFX screens and user actions
+## Research Lab remains separate
 
-## Scope and limitations
+The **03 RESEARCH LAB → 02 PATHFINDING BENCHMARK** screen does **not** show a playable maze. Instead, configure a first seed and sample count (1–100). It runs BFS, Dijkstra and A* on the same generated inputs and displays average shortest-path length and explored cells.
 
-This is an educational simulation, not a runtime benchmark. The displayed statistics are **path lengths and visited-node counts**, not statistically sound timing measurements. Mazes are generated from reproducible pseudorandom seeds, but that does not make the measured averages generalizable to all possible maze structures. There is no cloud processing or LLM involved.
+The two experiences serve different questions:
 
-**Status:** development branch implementation; Windows GUI validation is still required before a new release.
+- **Challenge:** How close can a human's chosen route get to optimal?
+- **Research:** How much searching do different algorithms do to find optimal routes?
+
+## Try it yourself
+
+1. Finish one maze, record your move count and efficiency.
+2. Replay the same seed; see whether you can improve.
+3. Reveal your visited cells, then the BFS shortest route. Where did you explore unnecessarily?
+4. Run the same seed in Research Lab with one sample and compare BFS's shortest distance.
+5. Explain why explored nodes and human moves are different measures.
+
+## Java source
+
+- [MazeChallenge.java](../src/main/java/org/stratum83/labyrinth/MazeChallenge.java) — validates human steps and scores the attempt.
+- [MazeChallengeTest.java](../src/test/java/org/stratum83/labyrinth/MazeChallengeTest.java) — scoring, retries and edge cases.
+- [MazeGenerator.java](../src/main/java/org/stratum83/labyrinth/MazeGenerator.java) — seed-based layouts.
+- [MazeSolver.java](../src/main/java/org/stratum83/labyrinth/MazeSolver.java) — BFS, Dijkstra and A*.
+- [MazeBenchmarkRunner.java](../src/main/java/org/stratum83/research/MazeBenchmarkRunner.java) — research results across multiple mazes.
+- [StratumApp.java](../src/main/java/org/stratum83/ui/StratumApp.java) — displays routes and completion results.
+
+**Status:** Candidate implementation on `feature/labyrinth-human-vs-algorithm`, still requiring Windows GUI and Maven/JUnit acceptance tests. No new GitHub release has been published for this change.
