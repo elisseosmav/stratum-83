@@ -1,55 +1,54 @@
-# STRATUM-83 v0.1 Design
+# STRATUM-83 — Architecture and UI Design
+
+**Current design candidate: v0.3.0-beta.2** (not yet an official release)
 
 ## Purpose
 
-A small offline desktop game application that demonstrates classical AI techniques using original code and a retro terminal-style user interface. The research value is in repeatable, verifiable behaviour rather than generative AI.
+A small, offline Java 21/JavaFX educational application demonstrating classical search and reproducible experimentation. Core algorithms remain independent of JavaFX.
+
+## Two experiences
+
+1. **Play:** Grid Zero (against Minimax) and Labyrinth (navigate the maze).
+2. **Research Lab:** Minimax vs Random and Pathfinding Benchmark, both displaying configurable inputs and results rather than duplicated game screens.
+
+The main menu has just three buttons: Grid Zero, Labyrinth, Research Lab. Two-player Grid Zero is available through `DUEL`. `HELP` and `EXIT` are terminal commands / keyboard shortcuts, not menu buttons.
 
 ## Runtime architecture
 
 ```text
-JavaFX view + command input
-          |
-          v
-    StratumApp controller
-          |
-      +---+----------------+
-      |                    |
-      v                    v
- GridZeroGame         ExperimentRunner
-      |                    |
-      +---- MinimaxPlayer -+
+StratumApp (JavaFX views, keyboard and terminal commands)
+  |
+  +-- Play: GridZeroGame -- MinimaxPlayer
+  |
+  +-- Play: Maze / MazeGenerator
+  |
+  +-- Research Lab: ExperimentRunner -- GridZeroGame / MinimaxPlayer
+  |
+  +-- Research Lab: MazeBenchmarkRunner
+                          |
+                          +-- MazeGenerator / MazeSolver (BFS, Dijkstra, A*)
 ```
 
-The game state is owned by `GridZeroGame`. The UI cannot edit board cells directly; it only calls `play(Move)`. The game engine controls legal moves, turn order, win conditions and draws. `MinimaxPlayer` searches copies of the current state and returns an optimal legal move, without mutating the caller's board.
+The JavaFX screen handles input and draws output. It never computes paths or AI decisions itself. Game state is updated through the game-engine API. The latest Grid Zero layout uses **independent text labels above its buttons** so occupied marks remain visible after moves.
 
-## Minimax
+## Experiment semantics
 
-- All legal moves are examined, with alpha-beta pruning.
-- Terminal wins score `10 - depth`, losses score `depth - 10`, and draws score zero.
-- Earlier wins are preferable; later losses are preferable when a loss is unavoidable.
-- Row-major move enumeration provides deterministic tie-breaking.
-- For a 3x3 board, the full search is cheap enough that caching or concurrency is unnecessary.
+**Minimax vs Random:** `ExperimentRunner` uses `java.util.Random(seed)` to select uniformly among legal random-player moves. Minimax alternates between X and O across games. Scores are always wins, draws and losses for Minimax, and results should be repeatable for the same seed and game count.
 
-## Experiment
+**Pathfinding:** `MazeBenchmarkRunner` generates one 11×15 maze per seed, running BFS, Dijkstra and A* against that **same maze**. Sample count may be 1–100. It checks that all three methods return equal optimal lengths and reports the arithmetic mean of steps and explored nodes. It deliberately does not claim timing or real-world performance conclusions.
 
-`ExperimentRunner` uses one seeded `java.util.Random` for repeatable random-player choices. Minimax plays X in even-numbered games and O in odd-numbered games. Every game reaches a win or draw; results sum to the configured number of games. A running experiment executes in a background JavaFX `Task` so it does not freeze the GUI.
+## Windows user experience
 
-## UI and privacy
+- JDK 21, JavaFX 21, Maven to build from source; packaged Windows installer not yet provided.
+- Full keyboard/terminal commands remain available: `PLAY`, `DUEL`, `MAZE`, `RESEARCH`, `EXPERIMENT`, `BENCHMARK`, `HELP`, `MENU`, `EXIT`.
+- Research input fields validate integer seeds and bounded sample counts.
+- JavaFX `Text` renders multiline experiment reports without `Label` ellipsis truncation.
+- Sound starts OFF, can be toggled through the header or F2.
 
-- JavaFX controls and a bundled CSS stylesheet create an original green-on-black presentation.
-- The application makes **no network requests**.
-- The click tone is synthesized locally using the Java Sound API, never downloaded from an asset service.
-- Sound starts disabled. An unavailable audio device does not stop gameplay.
-- No user profiles, cloud storage, analytics, or telemetry.
+## Style and scope
 
-## Future research, not in v0.1
+Prefer plain Java methods and simple classes over speculative abstractions. This project is original, non-commercial research. There are no cloud requests, user accounts, external AI models or telemetry. No third-party film art, dialogue or audio assets are used.
 
-- Labyrinth: BFS, Dijkstra and A* comparisons.
-- Strategy games with fully specified, fictional and non-operational decision rules.
-- JSON/CSV experiment exports and user-configured experiment seeds.
-- Windows `jpackage` distribution with an included Java runtime.
-- Accessibility improvements and automated UI acceptance tests.
+## Unverified items
 
-## Licensing and attribution
-
-All code, styling and sound synthesis are originally written for this sample. No film-owned assets or text are included. Apache-2.0 permits commercial reuse of code by others even though the authors' purpose is non-commercial R&D.
+A full `mvn clean test` with the real JUnit runner and Windows JavaFX screenshots are still required for this candidate. The research core has been compiled separately with OpenJDK 21 and checked on reproducible seeded mazes, but that is not GUI acceptance testing.
