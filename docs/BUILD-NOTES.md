@@ -32,3 +32,9 @@ For the **v0.3.0-beta.2 development candidate**, separate Java 21 core checks we
 The new JavaFX menu and result-only research screens were reviewed at source level. Their actual Windows compilation and rendering still need the procedures in [TESTING.md](TESTING.md). The earlier Windows X/O display bug was confirmed fixed by the maintainer, but this new candidate requires a regression check.
 
 The current `v0.3.0-beta.1` release is not changed by these development commits.
+
+## Human versus BFS Labyrinth challenge — 24 November 2026
+
+The new `MazeChallenge` pure-Java model was compiled using `javac --release 21` with the existing maze engine. The compiled source's Git blob hash matched the GitHub file. A Java harness navigated the BFS-optimal path through **200 seeded mazes**, checking completion, exact optimal step count, 0 extra moves, 100% efficiency and rejected post-finish moves. It additionally checked backtracking (6 moves / optimum 4 / 66.7%), illegal moves and start-equals-goal.
+
+**Not yet run:** JavaFX desktop compilation, actual JUnit 5 execution and Windows graphical verification. The route-overlay controls and completion panel were inspected in source only. See [TESTING.md](TESTING.md).
