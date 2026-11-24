@@ -204,3 +204,17 @@
 .research-input:focused {
     -fx-border-color: #a9efbb;
 }
+
+/* Educational mode: readable text board and search explanations. */
+.learning-mono {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 15px;
+    -fx-fill: #c7ffdb;
+    -fx-text-alignment: center;
+}
+.learning-note {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 13px;
+    -fx-text-fill: #9cddb4;
+    -fx-text-alignment: center;
+}
