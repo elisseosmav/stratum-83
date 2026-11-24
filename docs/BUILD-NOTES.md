@@ -24,3 +24,11 @@ mvn javafx:run
 ```
 
 Then follow the manual test checklist in [TESTING.md](TESTING.md). Do not treat this package as an acceptance-tested Windows binary.
+
+## Terminal / Research Lab preview — 24 November 2026
+
+For the **v0.3.0-beta.2 development candidate**, separate Java 21 core checks were run in the authoring environment against the same maze source and new benchmark logic: the benchmark compiled, produced equal shortest-path lengths for BFS/Dijkstra/A* across **200** seeded mazes (**600** algorithm results), repeated a 100-maze aggregate exactly, and rejected invalid sample counts. **These are not Maven/JUnit executions.**
+
+The new JavaFX menu and result-only research screens were reviewed at source level. Their actual Windows compilation and rendering still need the procedures in [TESTING.md](TESTING.md). The earlier Windows X/O display bug was confirmed fixed by the maintainer, but this new candidate requires a regression check.
+
+The current `v0.3.0-beta.1` release is not changed by these development commits.
