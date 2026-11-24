@@ -32,8 +32,9 @@ The engineering costs are **illustrative units**, not real network measurements.
 - [Grid Zero full educational chapter](docs/GRID-ZERO-LEARNING.md)
 - [Labyrinth full educational chapter](docs/LABYRINTH.md)
 - [Java 21 CI workflow](.github/workflows/java-ci.yml)
-- [Verified Java 21 Windows/Linux Maven tests](https://github.com/elisseosmav/stratum-83/actions/runs/45471437228)
+- [Latest verified Java 21 Windows/Linux Maven tests](https://github.com/elisseosmav/stratum-83/actions/runs/45473389881)
 - [Issue #13 — Grid Zero educational acceptance](https://github.com/elisseosmav/stratum-83/issues/13)
+- [Issue #14 — Labyrinth educational acceptance](https://github.com/elisseosmav/stratum-83/issues/14)
 
 ## Play and Research are separate
 
