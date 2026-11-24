@@ -24,7 +24,7 @@
 9. After completing a match, ensure both X/O marks remain visible and the last computer decision still has a trace.
 10. Verify `DUEL`, `MAZE`, and Research Lab still work, with no changes to their underlying rules.
 
-**Status:** [Java 21 Maven/JUnit CI passed on Linux and Windows](https://github.com/elisseosmav/stratum-83/actions/runs/45471437228). The **manual Windows JavaFX acceptance checklist remains pending**.
+**Status:** [Java 21 Maven/JUnit CI passed on Linux and Windows](https://github.com/elisseosmav/stratum-83/actions/runs/45473389881). The **manual Windows JavaFX acceptance checklist remains pending**.
 
 ## Automated tests
 
