@@ -44,3 +44,11 @@ The new `MazeChallenge` pure-Java model was compiled using `javac --release 21` 
 The Grid Zero Minimax decision trace and engineering exercise have been implemented on `feature/grid-zero-learning-lab`. JUnit test sources cover trace/action consistency, immutability, scoring and the toy worst-case choice. A GitHub Actions workflow has been added for Java 21 Maven tests on Linux and Windows.
 
 **Verified:** [GitHub Actions run 45471437228](https://github.com/elisseosmav/stratum-83/actions/runs/45471437228) completed with **successful Java 21 Maven/JUnit jobs on ubuntu-latest and windows-latest**, including source compilation. **Not verified:** visual JavaFX startup, the full keyboard interaction, resizing and manual game acceptance on a Windows desktop. See [TESTING.md](TESTING.md).
+
+## Labyrinth algorithm learning pilot — 24 November 2026
+
+The `feature/labyrinth-learning-lab` branch adds shared BFS/Dijkstra/A* trace instrumentation, the `MazeSearchTrace` data model, JavaFX step visualizations and a fictional weighted service-routing exercise. Tests verify the trace result is identical to the uninstrumented solver and that Dijkstra selects the minimum-cost route.
+
+**Verified:** [Java 21 Maven/JUnit GitHub Actions run 45473229283](https://github.com/elisseosmav/stratum-83/actions/runs/45473229283) completed successfully on Ubuntu and Windows, including compilation of the new JavaFX source. **Pending:** direct Windows GUI/manual acceptance of interaction, rendering and resizing.
+
+No stable release or official Wiki publish occurred.
