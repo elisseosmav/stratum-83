@@ -35,6 +35,23 @@ These checks are still required for a complete Windows release:
 10. Use the text commands and keyboard shortcuts in the README.
 11. Disconnect Internet and run with all Maven dependencies already cached.
 
+## Regression test: Issue #10 — Grid Zero marks on Windows
+
+This visual check is required because the issue concerned JavaFX button rendering, not the game rules.
+
+1. Start `PLAY` and click the top-left square (row 1, column 1).
+2. Confirm a high-contrast **X** appears immediately, followed by a visible **O** in the computer's square.
+3. Verify both marks remain visible after the square is no longer selectable. The occupied squares must not accept further moves.
+4. Play until the game ends; ensure all X/O marks remain visible after a win or draw.
+5. Select `NEW GAME`; confirm the board clears and the empty squares are selectable again.
+6. Select `DUEL`; verify X and O both appear and remain visible after alternating moves.
+7. Resize the window and test the same behavior with sound both OFF and ON.
+8. Record the JDK, JavaFX and Windows versions. Attach a screenshot **after making moves** if the issue persists.
+
+**Expected:** No missing or faded marks, and no change to move legality or Minimax behavior.
+
+This regression check still needs to be performed on an actual Windows/JavaFX desktop before Issue #10 is closed.
+
 ## Build status
 
 This source distribution is intended for a standard Java 21 / Maven / JavaFX environment. Full Windows JavaFX GUI acceptance testing is not claimed in advance. See the delivery notes in the accompanying chat for what was actually executed in the build environment.
