@@ -38,3 +38,9 @@ The current `v0.3.0-beta.1` release is not changed by these development commits.
 The new `MazeChallenge` pure-Java model was compiled using `javac --release 21` with the existing maze engine. The compiled source's Git blob hash matched the GitHub file. A Java harness navigated the BFS-optimal path through **200 seeded mazes**, checking completion, exact optimal step count, 0 extra moves, 100% efficiency and rejected post-finish moves. It additionally checked backtracking (6 moves / optimum 4 / 66.7%), illegal moves and start-equals-goal.
 
 **Not yet run:** JavaFX desktop compilation, actual JUnit 5 execution and Windows graphical verification. The route-overlay controls and completion panel were inspected in source only. See [TESTING.md](TESTING.md).
+
+## Play / Trace / Explain / Apply educational pilot — 24 November 2026
+
+The Grid Zero Minimax decision trace and engineering exercise have been implemented on `feature/grid-zero-learning-lab`. JUnit test sources cover trace/action consistency, immutability, scoring and the toy worst-case choice. A GitHub Actions workflow has been added for Java 21 Maven tests on Linux and Windows.
+
+**Verification status:** Writing a workflow does not prove a successful CI run. Full JUnit/Maven and Windows JavaFX visual acceptance results must be checked before the change is merged or released. See [TESTING.md](TESTING.md).
