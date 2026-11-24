@@ -1,76 +1,101 @@
-# Labyrinth — Human vs Algorithm Challenge
+# Labyrinth — Play, Trace, Explain, Apply
 
-**STRATUM-83 / Educational chapter 02 / v0.3 development candidate**
+**STRATUM-83 — Classic Games. Real Algorithms. Practical Engineering.**
 
-Labyrinth now provides a human navigation challenge, scored against the **optimal shortest path** computed by classical AI (Breadth-First Search). It remains completely offline.
+Labyrinth introduces **graph search** through a small retro maze. Playing the maze is the invitation, not the entire lesson. The goal is to understand how BFS, Dijkstra and A* work, then recognize when these methods help solve real software-development problems.
 
-## How to play
+## 1. PLAY — Explore a graph
 
-From the main menu select **02 LABYRINTH**, or type `MAZE`. Reach the goal (`G`) by moving the player (`P`) with arrow keys or mouse clicks on adjacent open cells. Walls and nonadjacent cells cannot be entered.
+Choose **02 LABYRINTH** or type `MAZE`.
 
-- **Every successful step counts**, including steps that backtrack through previously visited cells.
-- Illegal moves do not increase the count.
-- The program **does not show the optimal route while you are playing**.
-- `RETRY SAME MAZE` restarts the identical layout (same seed), resetting your score.
-- `NEW MAZE` increments the seed and produces a different deterministic layout.
-- The challenge is over when the player reaches `G`, and further moves are blocked.
+- `P` marks the player and `G` the destination.
+- Move using arrow keys or click adjacent open squares; every valid move costs one step.
+- Walls and non-adjacent clicks are invalid and do not increase the move count.
+- At the destination, compare your moves with the BFS optimum, then reveal your visited cells or the best route.
+- `RETRY SAME MAZE` lets you repeat the same seed; `NEW MAZE` increments the seed.
 
-The display uses brighter contrast between walls, corridors, the player, the goal and revealed paths.
+The generator currently carves an **11×15 perfect maze**, meaning there is exactly one simple route between any two open cells. That makes it a simple learning example, **not** a sophisticated human navigation challenge.
 
-## Results after reaching the goal
+## 2. TRACE — Watch the actual algorithm
 
-Once you reach `G`, the result panel shows:
+Select **TRACE** inside Labyrinth, or type `TRACE` while the maze is active. The program runs the **same MazeSolver code** used by the game and by Research Lab.
 
-| Metric | Meaning |
+Choose BFS, Dijkstra or A* and navigate the real recorded search with **PREVIOUS**, **NEXT**, or **FINAL RESULT**.
+
+The display visualizes:
+
+| Mark / color | Meaning |
 | --- | --- |
-| **Your moves** | Number of successful steps you made, including backtracking |
-| **BFS optimal** | Fewest possible steps from the start to `G` |
-| **Extra moves** | Your moves minus BFS optimal |
-| **Efficiency** | `100 × BFS optimal / your moves` percent, maximum 100% |
+| `C` | Cell currently being expanded |
+| `F` | Frontier: discovered, not yet expanded |
+| `·` | Previously explored cell |
+| `*` | Final optimal path, visible at the last step |
+| `S` / `G` | Start and goal |
+| Solid wall | Not traversable |
 
-**Example (illustrative):** If you take 38 moves and BFS finds a 24-move solution, your extra moves are 14 and efficiency is `24 / 38 × 100 ≈ 63.2%`.
+For each step, inspect the frontier and explored-node counts as well as:
 
-A score of **100% means your route was optimal**. It does not mean you are faster than a computer—the metric counts steps, not elapsed time.
+- `g`: cost accumulated to the current cell
+- `h`: heuristic estimate of distance to the goal (0 for BFS/Dijkstra)
+- `f = g + h`: priority score (especially relevant to A*)
 
-After completion, you can choose:
+**These are real node-expansion snapshots, not an animation invented separately from the pathfinding algorithm.** For priority-queue algorithms, frontier cells are displayed as a set rather than implying an exact queue order. Showing a trace does **not** move the human player or reset their maze.
 
-- **SHOW MY VISITED CELLS:** highlight all cells you entered (blue-tinted). The screen shows the **set of visited cells**, not each revisit in chronological order. Revisited cells still count toward total moves.
-- **SHOW OPTIMAL PATH:** highlight BFS's shortest route (light green).
-- **HIDE PATH:** remove the overlay.
-- **RETRY SAME MAZE:** attempt the same seed again with zero moves.
+## 3. EXPLAIN — Why three algorithms?
 
-The goal and player remain visible on the board. Both route overlays are available **only after finishing**, so they cannot spoil the challenge.
+| Algorithm | Data structure / rule | What problem it solves |
+| --- | --- | --- |
+| BFS | FIFO queue; search by distance layers | Fewest edges/hops in an unweighted graph |
+| Dijkstra | Priority queue; lowest known accumulated nonnegative cost | Least-cost routes with nonnegative edge weights |
+| A* | Priority `g + h`; goal-directed search with an admissible heuristic | Optimal search with potentially less exploration when useful guidance exists |
 
-## How the computer finds the shortest route
+All current maze edges cost 1 and Manhattan distance is an admissible A* heuristic. Consequently, BFS, Dijkstra and A* agree on the optimal distance. They may explore different numbers of nodes, but **fewer expanded nodes do not automatically mean shorter elapsed runtime**. The perfect-maze topology also limits the variety of paths available.
 
-The `MazeChallenge` class uses the existing `MazeSolver` to compute a BFS shortest route when the maze starts; that route is stored but hidden until completion. BFS explores open cells in layers using a queue, guaranteeing an optimal path on this **four-directional, unweighted grid**.
+The program is entirely offline, with no cloud AI or machine learning.
 
-The maze itself is generated by `MazeGenerator` using seeded randomized depth-first passage carving. It is 11 rows × 15 columns, beginning with seed `1983`. Reusing a seed and the same code produces the same layout.
+## 4. APPLY — Real software engineering transfer
 
-## Research Lab remains separate
+The **APPLY** view presents a fictional software-service routing problem:
 
-The **03 RESEARCH LAB → 02 PATHFINDING BENCHMARK** screen does **not** show a playable maze. Instead, configure a first seed and sample count (1–100). It runs BFS, Dijkstra and A* on the same generated inputs and displays average shortest-path length and explored cells.
+| Available route | Hops | Total hypothetical cost |
+| --- | ---: | ---: |
+| API → DATABASE | 1 | 8 |
+| API → GATEWAY → DATABASE | 2 | 2 + 2 = 4 |
 
-The two experiences serve different questions:
+The player predicts which path minimizes total cost.
 
-- **Challenge:** How close can a human's chosen route get to optimal?
-- **Research:** How much searching do different algorithms do to find optimal routes?
+- **BFS** correctly selects the one-hop route if the objective is *minimum hops*.
+- **Dijkstra** correctly selects the two-hop route if the objective is *minimum total nonnegative cost*.
+- **A*** could be applied if we also had a suitable admissible estimate of the remaining cost.
 
-## Try it yourself
+The numbers are **invented teaching units, not real latency measurements**. The example demonstrates why choosing the appropriate algorithm depends on how the problem is modeled.
 
-1. Finish one maze, record your move count and efficiency.
-2. Replay the same seed; see whether you can improve.
-3. Reveal your visited cells, then the BFS shortest route. Where did you explore unnecessarily?
-4. Run the same seed in Research Lab with one sample and compare BFS's shortest distance.
-5. Explain why explored nodes and human moves are different measures.
+Possible applications include dependency graph traversal, routing across weighted service or network links and planning systems with heuristics. Do not use BFS for weighted minimum-cost routing merely because it uses fewer edges.
 
-## Java source
+## 5. RESEARCH — Compare repeatable results
 
-- [MazeChallenge.java](../src/main/java/org/stratum83/labyrinth/MazeChallenge.java) — validates human steps and scores the attempt.
-- [MazeChallengeTest.java](../src/test/java/org/stratum83/labyrinth/MazeChallengeTest.java) — scoring, retries and edge cases.
-- [MazeGenerator.java](../src/main/java/org/stratum83/labyrinth/MazeGenerator.java) — seed-based layouts.
-- [MazeSolver.java](../src/main/java/org/stratum83/labyrinth/MazeSolver.java) — BFS, Dijkstra and A*.
-- [MazeBenchmarkRunner.java](../src/main/java/org/stratum83/research/MazeBenchmarkRunner.java) — research results across multiple mazes.
-- [StratumApp.java](../src/main/java/org/stratum83/ui/StratumApp.java) — displays routes and completion results.
+Select **03 RESEARCH LAB → PATHFINDING BENCHMARK** or type `BENCHMARK`.
 
-**Status:** Candidate implementation on `feature/labyrinth-human-vs-algorithm`, still requiring Windows GUI and Maven/JUnit acceptance tests. No new GitHub release has been published for this change.
+Choose a first seed and a sample count (1–100). The program runs BFS, Dijkstra and A* on the *same generated mazes*, reporting average optimal path length and expanded nodes. A fixed seed permits reproducible comparisons. Research Lab does not duplicate the interactive game.
+
+## Exercises
+
+1. In TRACE, compare BFS and A* on the same seed. When do their frontiers differ?
+2. Why is `h = 0` for Dijkstra, but Manhattan distance is meaningful for A*?
+3. In APPLY, why does the two-hop route cost less than the direct route?
+4. In a dependency graph where every edge represents one dependency, which algorithm would you use to find a minimum-hop connection?
+5. What additional model information would you need to make A* useful for service routing?
+6. What changes would be necessary to handle negative edge weights?
+
+## Explore the Java implementation
+
+- [MazeSolver.java](../src/main/java/org/stratum83/labyrinth/MazeSolver.java) — actual BFS, Dijkstra and A* searches; trace shares their logic
+- [MazeSearchTrace.java](../src/main/java/org/stratum83/labyrinth/MazeSearchTrace.java) — immutable real expansion snapshots
+- [MazeLearningScreens.java](../src/main/java/org/stratum83/ui/MazeLearningScreens.java) — JavaFX trace/explain/apply views
+- [ServiceRouteExample.java](../src/main/java/org/stratum83/education/ServiceRouteExample.java) — hypothetical weighted service graph
+- [MazeSearchTraceTest.java](../src/test/java/org/stratum83/labyrinth/MazeSearchTraceTest.java) — real trace versus solver consistency
+- [ServiceRouteExampleTest.java](../src/test/java/org/stratum83/education/ServiceRouteExampleTest.java) — fewest hops versus cheapest route
+- [MazeChallenge.java](../src/main/java/org/stratum83/labyrinth/MazeChallenge.java) — human movement and scoring
+- [MazeBenchmarkRunner.java](../src/main/java/org/stratum83/research/MazeBenchmarkRunner.java) — reproducible multi-maze experiments
+
+**Release status:** This is a development candidate on `feature/labyrinth-learning-lab`. The live Wiki and published beta are unchanged until the maintainer reviews and publishes them. A Windows desktop visual test is still needed.
