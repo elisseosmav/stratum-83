@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import org.stratum83.game.GameResult;
 import org.stratum83.game.GridZeroGame;
 import org.stratum83.game.MinimaxPlayer;
+import org.stratum83.game.MinimaxAnalysis;
 import org.stratum83.game.Move;
 import org.stratum83.labyrinth.Maze;
 import org.stratum83.labyrinth.MazeChallenge;
@@ -52,6 +53,8 @@ public class StratumApp extends Application {
     private Button[][] squares;
     private Label[][] marks;
     private Label gameMessage;
+    private VBox gridGameScreen;
+    private MinimaxAnalysis lastDecision;
 
     private Maze maze;
     private MazeChallenge mazeChallenge;
@@ -132,7 +135,7 @@ public class StratumApp extends Application {
     }
 
     private VBox buildConsole() {
-        Label instructions = new Label("COMMANDS: PLAY | DUEL | MAZE | RESEARCH | EXPERIMENT | BENCHMARK | HELP | MENU | EXIT     F1 HELP / F2 SOUND / ESC MENU");
+        Label instructions = new Label("COMMANDS: PLAY | TRACE | EXPLAIN | APPLY | DUEL | MAZE | RESEARCH | HELP | EXIT     F1 HELP / F2 SOUND / ESC MENU");
         instructions.getStyleClass().add("hint");
         instructions.setWrapText(true);
 
@@ -209,6 +212,7 @@ public class StratumApp extends Application {
         maze = null;
         researchMenuOpen = false;
         game = new GridZeroGame();
+        lastDecision = null;
         vsComputer = againstComputer;
         squares = new Button[3][3];
         marks = new Label[3][3];
@@ -248,12 +252,16 @@ public class StratumApp extends Application {
 
         HBox buttons = new HBox(12,
                 actionButton("NEW GAME", () -> startGame(vsComputer)),
+                actionButton("TRACE", this::showGridTrace),
+                actionButton("EXPLAIN", this::showGridExplanation),
+                actionButton("APPLY", this::showEngineeringApplication),
                 actionButton("MAIN MENU", this::showMenu));
         buttons.setAlignment(Pos.CENTER);
+        buttons.setWrap(true);
 
-        VBox content = new VBox(16, title, description, gameMessage, board, buttons);
-        content.setAlignment(Pos.CENTER);
-        screen.getChildren().setAll(content);
+        gridGameScreen = new VBox(16, title, description, gameMessage, board, buttons);
+        gridGameScreen.setAlignment(Pos.CENTER);
+        screen.getChildren().setAll(gridGameScreen);
         refreshBoard();
         consoleMessage.setText("GAME STARTED. CLICK AN EMPTY SQUARE.");
     }
@@ -269,8 +277,8 @@ public class StratumApp extends Application {
         sound.click();
 
         if (vsComputer && game.getResult() == GameResult.PLAYING) {
-            Move computerMove = computer.chooseMove(game);
-            game.play(computerMove);
+            lastDecision = computer.analyzeMove(game);
+            game.play(lastDecision.chosenMove());
         }
         refreshBoard();
     }
@@ -300,6 +308,43 @@ public class StratumApp extends Application {
             case O_WINS -> gameMessage.setText(vsComputer ? "COMPUTER WINS." : "PLAYER O WINS.");
             case DRAW -> gameMessage.setText("DRAW. NO MORE LEGAL MOVES.");
         }
+    }
+
+    private void backToGrid() {
+        if (game != null && gridGameScreen != null) {
+            screen.getChildren().setAll(gridGameScreen);
+        } else {
+            showMenu();
+        }
+    }
+
+    private void showGridTrace() {
+        if (game == null || lastDecision == null) {
+            consoleMessage.setText("PLAY GRID ZERO AGAINST MINIMAX FIRST, THEN TYPE TRACE.");
+            return;
+        }
+        showLearningScreen(GridZeroLearningScreens.trace(lastDecision,
+                this::backToGrid, this::showGridExplanation, this::showEngineeringApplication));
+        consoleMessage.setText("TRACE: STEP THROUGH MINIMAX'S RECORDED SEARCH.");
+    }
+
+    private void showGridExplanation() {
+        showLearningScreen(GridZeroLearningScreens.explain(lastDecision,
+                this::showGridTrace, this::backToGrid, this::showEngineeringApplication));
+        consoleMessage.setText("MINIMAX EXPLAINED. USE TRACE TO INSPECT A REAL DECISION.");
+    }
+
+    private void showEngineeringApplication() {
+        showLearningScreen(GridZeroLearningScreens.apply(this::showGridExplanation,
+                this::backToGrid));
+        consoleMessage.setText("ENGINEERING EXERCISE: MINIMIZE THE WORST-CASE COST.");
+    }
+
+    private void showLearningScreen(VBox content) {
+        ScrollPane scrolling = new ScrollPane(content);
+        scrolling.setFitToWidth(true);
+        scrolling.getStyleClass().add("maze-scroll");
+        screen.getChildren().setAll(scrolling);
     }
 
     private void showExperiment() {
@@ -381,6 +426,9 @@ public class StratumApp extends Application {
         Label help = new Label(
                 "PLAY         Start Grid Zero against perfect Minimax.\n"
                 + "DUEL         Start local two-player Grid Zero.\n"
+                + "TRACE        Step through the last computer decision.\\n"
+                + "EXPLAIN      Learn Minimax and alpha-beta pruning.\\n"
+                + "APPLY        Try an engineering worst-case exercise.\\n"
                 + "MAZE         Play Labyrinth using arrow keys or mouse.\n"
                 + "RESEARCH     Open the Research Lab menu.\n"
                 + "EXPERIMENT   Configure Minimax versus random results.\n"
@@ -417,6 +465,9 @@ public class StratumApp extends Application {
         switch (command) {
             case "PLAY", "1", "SOLO" -> startGame(true);
             case "DUEL" -> startGame(false);
+            case "TRACE" -> showGridTrace();
+            case "EXPLAIN" -> showGridExplanation();
+            case "APPLY" -> showEngineeringApplication();
             case "MAZE", "LABYRINTH", "2" -> showMaze();
             case "RESEARCH", "LAB", "3" -> showResearchMenu();
             case "EXPERIMENT" -> showExperiment();
