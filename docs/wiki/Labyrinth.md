@@ -1,45 +1,58 @@
-# Labyrinth — Game and Algorithms
+# Labyrinth — Human versus Algorithm
 
-**Educational chapter 02 — STRATUM-83**
+**STRATUM-83 / Educational chapter 02**
+
+Labyrinth is more than a maze: **can your route match the BFS shortest path?** The computer calculates an optimal route but keeps it hidden until you finish.
 
 ## How to play
 
-From the main menu select **02 LABYRINTH**, or type `MAZE`. `P` is your current location and `G` is the goal. Move with the arrow keys or by clicking adjacent open cells. Walls cannot be crossed. Select `NEW MAZE` to play a new reproducible layout.
+Select **02 LABYRINTH** from the main menu or type `MAZE`.
 
-The Play screen is for navigation; it no longer contains solver/comparison buttons.
+- Move `P` through the maze using arrow keys or mouse clicks on adjacent open cells.
+- Reach `G` while taking as few steps as possible. Walking back through earlier cells counts as additional moves.
+- Invalid wall or nonadjacent moves do not count.
+- Before completion, there are **no path hints or solver scores**.
+- Choose **RETRY SAME MAZE** to try the identical seed again or **NEW MAZE** to advance to the next seed.
 
-## Learn the algorithms in Research Lab
+## Your score after completion
 
-Select **03 RESEARCH LAB → 02 PATHFINDING BENCHMARK**. The view contains only parameter inputs and results—**no playable maze**.
+Once you reach the goal, the result panel compares:
 
-| Algorithm | Main idea | Guarantee in these unweighted mazes |
-| --- | --- | --- |
-| BFS | Search in layers with a queue | Shortest route |
-| Dijkstra | Expand smallest cumulative cost | Shortest route with nonnegative costs |
-| A* | Expand by distance so far plus Manhattan-distance estimate | Shortest route with an admissible heuristic |
+| Metric | Definition |
+| --- | --- |
+| Your moves | Successful human steps, including backtracking |
+| BFS optimal | Minimum possible moves from start to goal |
+| Extra moves | Your moves minus BFS optimal |
+| Efficiency | `100 × BFS optimal / your moves` |
 
-The grid permits only up, down, left and right steps. Each step costs 1.
+**Example (illustrative):** Your 38 moves vs BFS's 24 moves yields 14 extra moves and **63.2% efficiency**. A 100% score means a shortest route—not faster thinking than a computer.
 
-## What is the seed?
+After finishing, **SHOW MY VISITED CELLS** highlights your explored cells; **SHOW OPTIMAL PATH** highlights BFS's shortest route; **HIDE PATH** clears the overlay. Revisited cells are shown once on the board but **every revisit counts** toward your move total.
 
-The generator uses randomized depth-first passage carving. Seed `1983` always builds the same 11×15 layout with the same implementation. In Research Lab, sample count `100` generates 100 mazes from 100 consecutive seeds, and runs all three algorithms on each.
+## What is BFS?
 
-## How to read results
+Breadth-First Search (BFS) explores a graph layer by layer, using a queue. The maze allows four-direction movement and every legal step costs 1. BFS therefore finds a shortest path in this maze. It does not train or learn.
 
-`AVG STEPS` is the mean optimal route length in maze moves. `AVG EXPLORED` counts the mean number of cells processed by each solver. **A* can explore fewer cells and still find the same optimal path.** An explored-cell count is not an elapsed-time measurement.
+## Why use a seed?
 
-## Exercises
+The maze generator uses a pseudorandom seed. A given seed always produces the same maze for the same Java implementation. `RETRY SAME MAZE` gives you a fair second attempt at exactly the same problem. `NEW MAZE` increases the seed.
 
-1. Run a single seed twice and check that results are identical.
-2. Compare average explored nodes across 100 seeds.
-3. Explain why all three return the same optimal distance.
-4. Describe the limits of comparing a single family of randomly generated mazes.
+## Where do Dijkstra and A* fit?
 
-## Source and documentation
+The separate **03 RESEARCH LAB → 02 PATHFINDING BENCHMARK** uses BFS, Dijkstra and A* over one or many generated mazes and displays average shortest path lengths and explored-cell counts. **Research Lab does not contain an interactive maze.**
 
-- [Full technical Labyrinth guide](https://github.com/elisseosmav/stratum-83/blob/feature/terminal-research-redesign/docs/LABYRINTH.md)
-- [MazeGenerator.java](https://github.com/elisseosmav/stratum-83/blob/feature/terminal-research-redesign/src/main/java/org/stratum83/labyrinth/MazeGenerator.java)
-- [MazeSolver.java](https://github.com/elisseosmav/stratum-83/blob/feature/terminal-research-redesign/src/main/java/org/stratum83/labyrinth/MazeSolver.java)
-- [MazeBenchmarkRunner.java](https://github.com/elisseosmav/stratum-83/blob/feature/terminal-research-redesign/src/main/java/org/stratum83/research/MazeBenchmarkRunner.java)
+## Try it yourself
 
-*Research UI candidate requires Windows acceptance testing before a release.*
+1. Complete a maze without revealing the solution and record your score.
+2. Retry the same seed and try to achieve 100%.
+3. Compare your visited cells with the optimal route after completion.
+4. Explain why algorithm explored-node counts are not comparable to human moves.
+
+## Implementation references
+
+- [MazeChallenge.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-human-vs-algorithm/src/main/java/org/stratum83/labyrinth/MazeChallenge.java)
+- [MazeSolver.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-human-vs-algorithm/src/main/java/org/stratum83/labyrinth/MazeSolver.java)
+- [MazeChallengeTest.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-human-vs-algorithm/src/test/java/org/stratum83/labyrinth/MazeChallengeTest.java)
+- [Full Labyrinth guide](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-human-vs-algorithm/docs/LABYRINTH.md)
+
+*Status: development candidate, not yet Windows acceptance-tested or published as a new release.*
