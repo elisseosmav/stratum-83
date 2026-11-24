@@ -1,12 +1,12 @@
-# STRATUM-83 — Research & Learning Center
+# STRATUM-83 — Classic Games. Real Algorithms. Practical Engineering.
 
 Welcome to **STRATUM-83**, an independent, non-commercial, offline Java research terminal.
 
-**Play, experiment, understand.** The application separates interactive games from reproducible research so that you can learn what happens behind every decision.
+**Play → Trace → Explain → Apply.** The application separates interactive games from reproducible research so that you can learn what happens behind every decision.
 
 ## Play
 
-- **Grid Zero** — classic 3×3 tic-tac-toe against perfect-play Minimax, with a two-player `DUEL` command.
+- **Grid Zero** — play classic tic-tac-toe against Minimax, inspect the computer's real search trace, learn alpha-beta pruning and apply worst-case decision rules to an engineering example. Two players can use `DUEL`.
 - **Labyrinth Challenge** — navigate a seeded maze, then compare your route and efficiency against a hidden BFS shortest path.
 
 ## Research Lab
@@ -24,6 +24,6 @@ Welcome to **STRATUM-83**, an independent, non-commercial, offline Java research
 
 ## Get the source
 
-[STRATUM-83 GitHub repository](https://github.com/elisseosmav/stratum-83) · [Installation instructions](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-human-vs-algorithm/README.md) · [Community discussions](https://github.com/elisseosmav/stratum-83/discussions)
+[STRATUM-83 GitHub repository](https://github.com/elisseosmav/stratum-83) · [Installation instructions](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-learning-lab/README.md) · [Community discussions](https://github.com/elisseosmav/stratum-83/discussions)
 
 *Note: the revised Play / Research interface is a **development candidate** until a new release is tested and published. The current beta 1 release is an earlier snapshot.*
