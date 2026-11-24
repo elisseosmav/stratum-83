@@ -23,12 +23,14 @@ It is an independent project, **not affiliated with or endorsed by the creators 
 
 **Labyrinth** is the next offline research game, planned for **v0.3** and implemented on this feature branch. It is not part of the v0.1 main-branch release yet.
 
-- Type `MAZE` or `LABYRINTH`, or select **06 LABYRINTH** in the menu.
+- Type `MAZE` or `LABYRINTH`, or select **03 LABYRINTH** on the main menu.
 - Move through an original seeded maze using the **arrow keys** or by clicking an **adjacent open cell**.
 - Select **BFS**, **Dijkstra** or **A*** to highlight an optimal path from the start to the goal.
-- Select **COMPARE** to see shortest-path lengths and explored-cell counts for all three algorithms.
+- Select **COMPARE** to see shortest-path lengths and explored-cell counts for all three algorithms, or open **04 RESEARCH LAB → 02 LABYRINTH** for a direct comparison.
 - Select **NEW MAZE** to generate another deterministic layout, and **CLEAR PATH** to remove the overlay.
 - No AWS, external AI models, accounts or runtime Internet access are required.
+
+The main menu keeps the playable games first and places **05 HELP** and **06 EXIT** last. **04 RESEARCH LAB** opens a submenu containing the Grid Zero Minimax experiment and Labyrinth algorithm comparison. The existing `EXPERIMENT` command still opens the Grid Zero experiment directly.
 
 Read [the Labyrinth educational guide](docs/LABYRINTH.md) to learn the algorithms and experiment methodology. Track release work in [Issue #8](https://github.com/elisseosmav/stratum-83/issues/8).
 
