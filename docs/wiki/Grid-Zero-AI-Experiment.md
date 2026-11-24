@@ -35,8 +35,8 @@ The seed controls the pseudorandom opponent, so repeating with the same seed and
 
 ## Java implementation
 
-- [GridZeroGame.java](https://github.com/elisseosmav/stratum-83/blob/feature/terminal-research-redesign/src/main/java/org/stratum83/game/GridZeroGame.java)
-- [MinimaxPlayer.java](https://github.com/elisseosmav/stratum-83/blob/feature/terminal-research-redesign/src/main/java/org/stratum83/game/MinimaxPlayer.java)
-- [ExperimentRunner.java](https://github.com/elisseosmav/stratum-83/blob/feature/terminal-research-redesign/src/main/java/org/stratum83/research/ExperimentRunner.java)
+- [GridZeroGame.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-human-vs-algorithm/src/main/java/org/stratum83/game/GridZeroGame.java)
+- [MinimaxPlayer.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-human-vs-algorithm/src/main/java/org/stratum83/game/MinimaxPlayer.java)
+- [ExperimentRunner.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-human-vs-algorithm/src/main/java/org/stratum83/research/ExperimentRunner.java)
 
 This experiment is classical, deterministic search against a seeded random baseline—not machine learning or an LLM evaluation.
