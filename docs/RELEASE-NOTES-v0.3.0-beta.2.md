@@ -11,7 +11,7 @@ STRATUM-83 is an offline, non-commercial Java research terminal with original re
 
 Grid Zero now demonstrates its actual Minimax decision-making with interactive recorded search steps, candidate move scores, a readable explanation of alpha-beta pruning, and a self-contained hypothetical engineering worst-case policy exercise. The search trace and gameplay use **one shared Minimax algorithm**, with real counts and bounded event capture; no simulated fake search data.
 
-A Java 21 Maven CI test workflow has been added for Linux and Windows, but it must finish successfully before this candidate is called verified.
+Java 21 Maven/JUnit tests have [passed on Linux and Windows GitHub Actions](https://github.com/elisseosmav/stratum-83/actions/runs/45471437228). This does not replace a Windows **GUI** test.
 
 ## What's new since Beta 1
 
@@ -57,7 +57,8 @@ If Maven is not on PATH, use your `mvn.cmd` installation path. An Internet conne
 ## Verification status
 
 - **Checked locally:** New benchmark core compiled using OpenJDK 21; repeated seeded shortest-path comparisons were consistent.
-- **Not yet verified for this candidate:** full Maven/JUnit execution and Windows JavaFX GUI acceptance testing.
+- **Verified:** Java 21 Maven/JUnit CI on Ubuntu and Windows.
+- **Not yet verified:** JavaFX graphical startup and interactive acceptance testing on a Windows desktop.
 - **Not included:** packaged Windows installer, binary assets, cloud functionality or telemetry.
 
 ## Documentation and feedback
