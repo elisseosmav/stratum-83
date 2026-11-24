@@ -22,6 +22,8 @@ The `TRACE`, `EXPLAIN`, and `APPLY` commands are accessible in the terminal, as 
 - [Approved vision and educational principles](docs/EDUCATIONAL-VISION.md)
 - [Grid Zero full educational chapter](docs/GRID-ZERO-LEARNING.md)
 - [Java 21 CI workflow](.github/workflows/java-ci.yml)
+- [Verified Java 21 Windows/Linux Maven tests](https://github.com/elisseosmav/stratum-83/actions/runs/45471437228)
+- [Issue #13 — Grid Zero educational acceptance](https://github.com/elisseosmav/stratum-83/issues/13)
 
 ## Play and Research are separate
 
