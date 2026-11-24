@@ -43,4 +43,4 @@ The new `MazeChallenge` pure-Java model was compiled using `javac --release 21` 
 
 The Grid Zero Minimax decision trace and engineering exercise have been implemented on `feature/grid-zero-learning-lab`. JUnit test sources cover trace/action consistency, immutability, scoring and the toy worst-case choice. A GitHub Actions workflow has been added for Java 21 Maven tests on Linux and Windows.
 
-**Verification status:** Writing a workflow does not prove a successful CI run. Full JUnit/Maven and Windows JavaFX visual acceptance results must be checked before the change is merged or released. See [TESTING.md](TESTING.md).
+**Verified:** [GitHub Actions run 45471437228](https://github.com/elisseosmav/stratum-83/actions/runs/45471437228) completed with **successful Java 21 Maven/JUnit jobs on ubuntu-latest and windows-latest**, including source compilation. **Not verified:** visual JavaFX startup, the full keyboard interaction, resizing and manual game acceptance on a Windows desktop. See [TESTING.md](TESTING.md).
