@@ -6,7 +6,7 @@ Labyrinth is a standalone offline maze game. Find the goal using the arrow keys,
 
 ## How to play
 
-1. Start the application and select **06 LABYRINTH** or type `MAZE`.
+1. Start the application and select **03 LABYRINTH** or type `MAZE`. For an immediate solver comparison, select **04 RESEARCH LAB → 02 LABYRINTH**.
 2. `P` marks the player; `G` marks the goal; green blocks are walls.
 3. Use the arrow keys to move up, right, down or left. Or click any **adjacent open cell**.
 4. Reach `G` to complete the maze. A move into a wall or non-adjacent cell does nothing.
