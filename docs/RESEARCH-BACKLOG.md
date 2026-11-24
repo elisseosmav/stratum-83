@@ -5,6 +5,15 @@
 
 This page collects research questions that could become future STRATUM-83 games or experiments. A backlog entry is **not** a GitHub milestone and has no scheduled delivery date.
 
+## Current implemented experiments (development candidate)
+
+The Research Lab is deliberately **results-focused** and does not duplicate the playable screens:
+
+- **Grid Zero / Minimax vs Random:** a configurable pseudorandom seed and number of games; report wins, draws and losses. The seed controls the random player, not Minimax.
+- **Labyrinth / Pathfinding Benchmark:** select a starting seed and 1–100 generated mazes. BFS, Dijkstra and A* solve identical inputs; compare average shortest-path steps and explored cells, not an interactive maze.
+
+These functions are on [feature/terminal-research-redesign](https://github.com/elisseosmav/stratum-83/tree/feature/terminal-research-redesign) pending acceptance tests, not part of a stable release.
+
 ## Candidate experiments
 
 | Idea | Research question | Candidate algorithms and concepts | Status |
