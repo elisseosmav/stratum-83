@@ -6,7 +6,7 @@
 
 STRATUM-83 combines two playable games with a separate Research Lab for repeatable classical-AI experiments. It is an independent, non-commercial educational project; no account, cloud service, telemetry or LLM subscription is needed.
 
-**Release status:** These changes live on the [terminal research redesign branch](https://github.com/elisseosmav/stratum-83/tree/feature/grid-zero-learning-lab), **not on `main`**. The [existing published beta](https://github.com/elisseosmav/stratum-83/releases/tag/v0.3.0-beta.1) is a prior snapshot. This candidate is not an official release until the maintainer publishes a new tag.
+**Release status:** These changes live on the [Labyrinth Learning Lab development branch](https://github.com/elisseosmav/stratum-83/tree/feature/labyrinth-learning-lab), **not on `main`**. The [existing published beta](https://github.com/elisseosmav/stratum-83/releases/tag/v0.3.0-beta.1) is a prior snapshot. This candidate is not an official release until the maintainer publishes a new tag.
 
 ## The educational experience: Play → Trace → Explain → Apply
 
@@ -17,10 +17,20 @@ Games introduce a problem, but **learning how the algorithm works and when it ap
 - **EXPLAIN:** Learn how the score is computed and why the computer chooses a particular move.
 - **APPLY:** Choose a retry policy in a small hypothetical worst-case engineering exercise, then see why minimizing maximum loss selects the bounded policy.
 
-The `TRACE`, `EXPLAIN`, and `APPLY` commands are accessible in the terminal, as well as buttons inside Grid Zero. `DUEL` remains a human-versus-human mode. All lessons are local and do not require an LLM.
+The `TRACE`, `EXPLAIN`, and `APPLY` commands work **contextually in Grid Zero and Labyrinth**, and the same actions are clickable inside each game. `DUEL` remains a human-versus-human mode. All lessons are local and do not require an LLM.
+
+**Labyrinth now follows the same learning journey:**
+
+- **PLAY:** Navigate the seeded grid maze, optionally compare your route against the BFS optimum when you finish.
+- **TRACE:** Switch between BFS, Dijkstra and A*, use Previous / Next / Final Result to inspect real node expansions, the current cell, frontier, explored cells and optimal path. The actual `MazeSolver` computes these traces, not a separate animation.
+- **EXPLAIN:** Understand queues, priority queues, `g`, admissible Manhattan `h`, and the limitations of an equal-cost, perfect maze.
+- **APPLY:** Compare fictional software-service routes: a direct 1-hop route costing 8 versus a 2-hop route costing 4. Predict the lowest-cost path and learn why BFS optimizes hops but Dijkstra optimizes weighted cost.
+
+The engineering costs are **illustrative units**, not real network measurements. Maze trace screens do not change human gameplay state.
 
 - [Approved vision and educational principles](docs/EDUCATIONAL-VISION.md)
 - [Grid Zero full educational chapter](docs/GRID-ZERO-LEARNING.md)
+- [Labyrinth full educational chapter](docs/LABYRINTH.md)
 - [Java 21 CI workflow](.github/workflows/java-ci.yml)
 - [Verified Java 21 Windows/Linux Maven tests](https://github.com/elisseosmav/stratum-83/actions/runs/45471437228)
 - [Issue #13 — Grid Zero educational acceptance](https://github.com/elisseosmav/stratum-83/issues/13)
@@ -32,7 +42,7 @@ The main menu has **three options**:
 | Menu | Program | Purpose |
 | --- | --- | --- |
 | 01 | **GRID ZERO** | Play 3×3 tic-tac-toe against perfect-play Minimax |
-| 02 | **LABYRINTH** | Human-versus-algorithm challenge: compare your route with BFS |
+| 02 | **LABYRINTH** | Learn graph algorithms: play, trace, explain and apply BFS/Dijkstra/A* |
 | 03 | **RESEARCH LAB** | Configure and run experiments without gameplay |
 
 Two-player Grid Zero remains available with `DUEL` in the command line. `HELP` and `EXIT` are **commands**, not main-menu buttons.
@@ -42,7 +52,7 @@ The **Research Lab** has two result-only experiments:
 1. **Minimax vs Random:** choose a random seed and 1–2000 games. Minimax alternates between X and O; report wins, draws and losses.
 2. **Pathfinding Benchmark:** choose a first maze seed and 1–100 maze samples. BFS, Dijkstra and A* solve the **same generated mazes**. Report mean shortest-path length and mean explored cells. The benchmark does **not** show a playable maze.
 
-**Labyrinth Challenge:** reach the goal `G` before seeing the computer's answer. After you finish, the terminal reveals **your moves**, the **BFS shortest route**, **extra moves**, and an **efficiency percentage** (`optimal / your moves × 100`). You can highlight your visited cells or the optimal route, **RETRY SAME MAZE** to improve, or select **NEW MAZE** for the next seed. Invalid moves do not count, but backtracking does. The score is shown only after completion.
+**Labyrinth Play:** reach the goal `G` before seeing the computer's answer. After you finish, the terminal reveals **your moves**, the **BFS shortest route**, **extra moves**, and an **efficiency percentage** (`optimal / your moves × 100`). You can highlight your visited cells or the optimal route, **RETRY SAME MAZE** to improve, or select **NEW MAZE** for the next seed. Invalid moves do not count, but backtracking does. The score is shown only after completion.
 
 `RESEARCH LAB` stays separate: its pathfinding benchmark compares BFS, Dijkstra and A* over one or many seeded mazes without a human player. Both modes share the same Java maze and solver classes.
 
@@ -103,11 +113,11 @@ Option A: clone with Git (requires Git installed):
 
 ```powershell
 cd "$HOME\Projects"
-git clone --branch feature/grid-zero-learning-lab https://github.com/elisseosmav/stratum-83.git stratum-83-learning
-cd .\stratum-83-learning
+git clone --branch feature/labyrinth-learning-lab https://github.com/elisseosmav/stratum-83.git stratum-83-lab
+cd .\stratum-83-lab
 ```
 
-Option B: open [STRATUM-83 on GitHub](https://github.com/elisseosmav/stratum-83), select the **feature/grid-zero-learning-lab** branch and choose **Code → Download ZIP**, extract it, and open PowerShell **inside the extracted source directory**.
+Option B: open [STRATUM-83 on GitHub](https://github.com/elisseosmav/stratum-83), select the **feature/labyrinth-learning-lab** branch and choose **Code → Download ZIP**, extract it, and open PowerShell **inside the extracted source directory**.
 
 You **must** run Maven from the directory that contains `pom.xml`, not the Maven `bin` directory. Verify:
 
@@ -139,14 +149,14 @@ STRATUM-83\
 ├── apache-maven\
 │   └── bin\
 │       └── mvn.cmd
-└── stratum-83-learning\
+└── stratum-83-lab\
     └── pom.xml
 ```
 
 Use these PowerShell commands:
 
 ```powershell
-cd "$HOME\Projects\STRATUM-83\stratum-83-learning"
+cd "$HOME\Projects\STRATUM-83\stratum-83-lab"
 Test-Path .\pom.xml
 & "..\apache-maven\bin\mvn.cmd" -version
 & "..\apache-maven\bin\mvn.cmd" clean test
@@ -178,9 +188,11 @@ Use JDK 21 and Maven 3.9+, then run `mvn test` and `mvn javafx:run`. A desktop e
 | Command | Action |
 | --- | --- |
 | `PLAY` | Grid Zero against Minimax |
-| `TRACE` | Step through the last computer search |
+| `TRACE` | Step through Grid Zero Minimax or active Labyrinth search |
 | `EXPLAIN` | Learn the live move's reasoning and Minimax rules |
-| `APPLY` | Try a worst-case software engineering exercise |
+| `APPLY` | Try a contextual software engineering exercise (worst-case policy or weighted service routing) |
+| `MTRACE`, `MEXPLAIN`, `MAPPLY` | Open Labyrinth educational views directly |
+| `BFS`, `DIJKSTRA`, `ASTAR` | Select the Labyrinth trace algorithm |
 | `DUEL` | Grid Zero, two local players |
 | `MAZE` | Play Labyrinth |
 | `RESEARCH` | Open Research Lab |
