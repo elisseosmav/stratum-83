@@ -14,7 +14,7 @@ The Research Lab is deliberately **results-focused** and does not duplicate the 
 - **Grid Zero / Minimax vs Random:** a configurable pseudorandom seed and number of games; report wins, draws and losses. The seed controls the random player, not Minimax.
 - **Labyrinth / Pathfinding Benchmark:** select a starting seed and 1–100 generated mazes. BFS, Dijkstra and A* solve identical inputs; compare average shortest-path steps and explored cells, not an interactive maze.
 
-Grid Zero now additionally has a trace/explain/apply learning pilot on [feature/grid-zero-learning-lab](https://github.com/elisseosmav/stratum-83/tree/feature/grid-zero-learning-lab). The candidate still requires Windows acceptance testing and is not a stable release.
+Grid Zero and Labyrinth now have Play/Trace/Explain/Apply educational pilots on [feature/labyrinth-learning-lab](https://github.com/elisseosmav/stratum-83/tree/feature/labyrinth-learning-lab). The candidate still requires Windows acceptance testing and is not a stable release.
 
 ## Candidate experiments
 
