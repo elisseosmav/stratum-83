@@ -4,7 +4,7 @@
 
 STRATUM-83 combines two playable games with a separate Research Lab for repeatable classical-AI experiments. It is an independent, non-commercial educational project; no account, cloud service, telemetry or LLM subscription is needed.
 
-**Release status:** These changes live on the [terminal research redesign branch](https://github.com/elisseosmav/stratum-83/tree/feature/terminal-research-redesign), **not on `main`**. The [existing published beta](https://github.com/elisseosmav/stratum-83/releases/tag/v0.3.0-beta.1) is a prior snapshot. This candidate is not an official release until the maintainer publishes a new tag.
+**Release status:** These changes live on the [terminal research redesign branch](https://github.com/elisseosmav/stratum-83/tree/feature/labyrinth-human-vs-algorithm), **not on `main`**. The [existing published beta](https://github.com/elisseosmav/stratum-83/releases/tag/v0.3.0-beta.1) is a prior snapshot. This candidate is not an official release until the maintainer publishes a new tag.
 
 ## Play and Research are separate
 
@@ -13,7 +13,7 @@ The main menu has **three options**:
 | Menu | Program | Purpose |
 | --- | --- | --- |
 | 01 | **GRID ZERO** | Play 3×3 tic-tac-toe against perfect-play Minimax |
-| 02 | **LABYRINTH** | Navigate a seeded maze manually |
+| 02 | **LABYRINTH** | Human-versus-algorithm challenge: compare your route with BFS |
 | 03 | **RESEARCH LAB** | Configure and run experiments without gameplay |
 
 Two-player Grid Zero remains available with `DUEL` in the command line. `HELP` and `EXIT` are **commands**, not main-menu buttons.
@@ -23,7 +23,9 @@ The **Research Lab** has two result-only experiments:
 1. **Minimax vs Random:** choose a random seed and 1–2000 games. Minimax alternates between X and O; report wins, draws and losses.
 2. **Pathfinding Benchmark:** choose a first maze seed and 1–100 maze samples. BFS, Dijkstra and A* solve the **same generated mazes**. Report mean shortest-path length and mean explored cells. The benchmark does **not** show a playable maze.
 
-Playing Labyrinth increments the maze seed when you choose `NEW MAZE`. Changing the seed changes the layout reproducibly. Both engines run entirely on your computer.
+**Labyrinth Challenge:** reach the goal `G` before seeing the computer's answer. After you finish, the terminal reveals **your moves**, the **BFS shortest route**, **extra moves**, and an **efficiency percentage** (`optimal / your moves × 100`). You can highlight your visited cells or the optimal route, **RETRY SAME MAZE** to improve, or select **NEW MAZE** for the next seed. Invalid moves do not count, but backtracking does. The score is shown only after completion.
+
+`RESEARCH LAB` stays separate: its pathfinding benchmark compares BFS, Dijkstra and A* over one or many seeded mazes without a human player. Both modes share the same Java maze and solver classes.
 
 - [Labyrinth algorithm guide](docs/LABYRINTH.md)
 - [Research Lab guide (Wiki-ready)](docs/wiki/Research-Lab.md)
