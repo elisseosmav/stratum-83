@@ -1,6 +1,6 @@
 # Test and Acceptance Checklist
 
-**Candidate:** STRATUM-83 v0.3.0-beta.2 on `feature/grid-zero-learning-lab`
+**Candidate:** STRATUM-83 v0.3.0-beta.2 on `feature/labyrinth-learning-lab`
 
 ## Grid Zero educational acceptance — Play / Trace / Explain / Apply
 
@@ -43,7 +43,7 @@ JUnit tests cover Grid Zero rules, Minimax strategy, reproducible Grid Zero expe
 1. Launch `mvn javafx:run`; confirm there are **exactly three main menu buttons**, in order: Grid Zero, Labyrinth, Research Lab.
 2. Confirm **Help**, **Exit**, and **Two Players** are **not main-menu buttons**.
 3. Click Grid Zero; confirm Minimax mode. Type `DUEL`; confirm two-player mode.
-4. Click Labyrinth; verify the playable maze has `P`, `G` and walls; there are **no research solver buttons**.
+4. Click Labyrinth; verify the playable maze has `P`, `G`, walls, and buttons **TRACE / EXPLAIN / APPLY**. The separate Research Lab is still results-only.
 5. Click Research Lab; verify just two options: Minimax vs Random and Pathfinding Benchmark, plus Back.
 6. Verify typed commands `PLAY`, `DUEL`, `MAZE`, `RESEARCH`, `EXPERIMENT`, `BENCHMARK`, `HELP`, `MENU`, `BACK`, `EXIT`. F1 opens Help, F2 toggles sound, Esc returns to main menu.
 7. Numbered entry `1` in the main menu starts Grid Zero; numbered entry `1` in Research Lab opens Minimax experiment.
@@ -63,6 +63,21 @@ JUnit tests cover Grid Zero rules, Minimax strategy, reproducible Grid Zero expe
 15. Click **RETRY SAME MAZE**; confirm the same seed/layout and zero moves with no route revealed.
 16. Click **NEW MAZE**; confirm seed advances and a different layout is generated.
 17. Backtrack deliberately in one attempt; ensure those steps increase actual moves and reduce efficiency if the final route is longer than BFS's shortest path.
+
+### Labyrinth educational acceptance — Play / Trace / Explain / Apply
+
+1. Open a maze, make at least three human moves, and record the count and seed.
+2. Select **TRACE**. Verify the display offers **BFS**, **DIJKSTRA**, and **A*** as selectable algorithms.
+3. Use **PREVIOUS** and **NEXT** to inspect real current (`C`), frontier (`F`), explored (`·`) and goal cells. Verify the explored-node count changes at each expansion. Verify the UI displays `g`, `h`, and `f` and explains how these values are used.
+4. Select **FINAL RESULT**. Confirm a shortest path (`*`) appears. It must match the selected algorithm's shortest-path length in Research Lab when the seed is the same.
+5. Change from **BFS** to **DIJKSTRA** and **A***; verify the algorithm label, expansion count and trace are updated. Manhattan `h` must be nonzero for A* on a nontrivial start.
+6. Select **EXPLAIN**. Verify the differences between unweighted BFS, nonnegative weighted Dijkstra and admissible-heuristic A* are explained, including the perfect-maze / unit-cost limitations.
+7. Select **APPLY**. With fictional network costs API → DATABASE 8 and API → GATEWAY → DATABASE 2+2, select both route options. Confirm the direct path is **1 hop/8 cost** and Dijkstra picks **2 hops/4 cost**. The values must be labeled illustrative.
+8. Return to the maze. Verify the same seed, player position and move count were preserved. **Arrow keys must not move the player while TRACE/EXPLAIN/APPLY screens are visible.**
+9. Test terminal commands `TRACE`, `EXPLAIN`, `APPLY` while in Labyrinth, and `MTRACE`, `MEXPLAIN`, `MAPPLY`, `BFS`, `DIJKSTRA`, `ASTAR`. Verify Grid Zero still routes its own commands correctly.
+10. Resize to **680×600**. Verify scrolling, path colors and captions remain readable. Retest Grid Zero marks, Labyrinth scoring and Research Lab to detect regressions.
+
+**Automatic tests:** `MazeSearchTraceTest` checks trace consistency across 30 seeded mazes, path lengths, snapshots and immutability. `ServiceRouteExampleTest` checks BFS hop minimization versus weighted Dijkstra costs. GitHub Actions' Linux/Windows Java 21 builds passed; manual Windows GUI acceptance is still pending.
 
 ### Research Lab
 
