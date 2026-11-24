@@ -34,8 +34,10 @@ public class MinimaxPlayer {
             GridZeroGame next = game.copy();
             next.play(move);
 
-            recorder.add("TRY MOVE", next, 1, "Evaluate row " + (move.row() + 1)
-                    + ", column " + (move.column() + 1) + " for " + player + ".");
+            if (recordSteps) {
+                recorder.add("TRY MOVE", next, 1, "Evaluate row " + (move.row() + 1)
+                        + ", column " + (move.column() + 1) + " for " + player + ".");
+            }
 
             // Independent full windows give every root candidate its exact score.
             // Internal branches still use alpha-beta pruning.
@@ -48,7 +50,11 @@ public class MinimaxPlayer {
             }
         }
 
-        recorder.addFinal(game, bestMove, bestScore);
+        if (recordSteps) {
+            GridZeroGame selected = game.copy();
+            selected.play(bestMove);
+            recorder.addFinal(selected, bestMove, bestScore);
+        }
         return new MinimaxAnalysis(player, bestMove, bestScore, candidates,
                 recorder.steps, recorder.nodes, recorder.cutoffs, recorder.truncated);
     }
@@ -59,15 +65,19 @@ public class MinimaxPlayer {
         GameResult result = game.getResult();
         if (result != GameResult.PLAYING) {
             int score = terminalScore(result, player, depth);
-            recorder.add("OUTCOME", game, depth, "Terminal result: " + result
-                    + ". Score from " + player + "'s perspective: " + score + ".");
+            if (recorder.enabled) {
+                recorder.add("OUTCOME", game, depth, "Terminal result: " + result
+                        + ". Score from " + player + "'s perspective: " + score + ".");
+            }
             return score;
         }
 
         boolean maximizing = game.getCurrentPlayer() == player;
-        recorder.add(maximizing ? "MAX" : "MIN", game, depth,
-                "It is " + game.getCurrentPlayer() + "'s turn: "
-                        + (maximizing ? "seek the highest score." : "seek the lowest score."));
+        if (recorder.enabled) {
+            recorder.add(maximizing ? "MAX" : "MIN", game, depth,
+                    "It is " + game.getCurrentPlayer() + "'s turn: "
+                            + (maximizing ? "seek the highest score." : "seek the lowest score."));
+        }
 
         int best = maximizing ? Integer.MIN_VALUE : Integer.MAX_VALUE;
         for (Move move : game.availableMoves()) {
@@ -84,9 +94,11 @@ public class MinimaxPlayer {
             }
             if (beta <= alpha) {
                 recorder.cutoffs++;
-                recorder.add("PRUNE", game, depth,
-                        "Alpha-beta cutoff: remaining sibling moves cannot change "
-                                + "this branch's decision.");
+                if (recorder.enabled) {
+                    recorder.add("PRUNE", game, depth,
+                            "Alpha-beta cutoff: remaining sibling moves cannot change "
+                                    + "this branch's decision.");
+                }
                 break;
             }
         }
