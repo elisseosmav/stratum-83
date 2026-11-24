@@ -24,7 +24,7 @@
 9. After completing a match, ensure both X/O marks remain visible and the last computer decision still has a trace.
 10. Verify `DUEL`, `MAZE`, and Research Lab still work, with no changes to their underlying rules.
 
-**Status:** Until an actual Windows run and CI tests succeed, these remain acceptance criteria, not claims of passed validation.
+**Status:** [Java 21 Maven/JUnit CI passed on Linux and Windows](https://github.com/elisseosmav/stratum-83/actions/runs/45471437228). The **manual Windows JavaFX acceptance checklist remains pending**.
 
 ## Automated tests
 
@@ -34,7 +34,7 @@ In the directory containing `pom.xml`, run:
 mvn clean test
 ```
 
-JUnit tests cover Grid Zero rules, Minimax strategy, reproducible Grid Zero experiments, seeded maze generation, BFS/Dijkstra/A* shortest paths, the multi-maze benchmark and the new `MazeChallenge` route/score model. **The Windows Maven/JUnit suite has not yet been verified for this candidate.**
+JUnit tests cover Grid Zero rules, Minimax strategy, reproducible Grid Zero experiments, seeded maze generation, BFS/Dijkstra/A* shortest paths, the multi-maze benchmark and the new `MazeChallenge` route/score model. **Java 21 Maven/JUnit tests passed in GitHub Actions on windows-latest and ubuntu-latest; local graphical acceptance testing is still pending.**
 
 ## Windows JavaFX acceptance checklist
 
