@@ -35,6 +35,8 @@ The **Research Lab** remains the location for reproducible experiments with conf
 | Checkers (proposal) | Heuristic evaluation and depth-limited search | Compute-budget trade-offs |
 | Chess (proposal) | Search optimization | Managing large decision spaces |
 
+**Grid Zero** implements Minimax decision tracing and a hypothetical worst-case policy exercise. **Labyrinth** now implements real BFS/Dijkstra/A* expansion tracing, written algorithm explanations and a weighted service-routing exercise. Both rely on the exact same Java algorithms used in gameplay/research. The current maze remains unweighted and loop-free, so its comparative limitations must be explained rather than obscured.
+
 Every implemented game needs a corresponding Wiki chapter with Play, Trace, Explain, Apply and links to the source.
 
 ## Grid Zero first implementation
