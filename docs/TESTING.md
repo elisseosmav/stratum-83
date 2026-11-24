@@ -37,11 +37,11 @@ These checks are still required for a complete Windows release:
 
 ## Regression test: Issue #10 — Grid Zero marks on Windows
 
-This visual check is required because the issue concerned JavaFX button rendering, not the game rules.
+This visual check is required because the issue concerns JavaFX rendering, not the game rules. The first attempt changed disabled-button handling but did not resolve the problem on Windows. The second attempt displays X/O in separate Label nodes above the clickable square buttons.
 
 1. Start `PLAY` and click the top-left square (row 1, column 1).
 2. Confirm a high-contrast **X** appears immediately, followed by a visible **O** in the computer's square.
-3. Verify both marks remain visible after the square is no longer selectable. The occupied squares must not accept further moves.
+3. Verify both marks remain visible after the square is no longer selectable. The occupied squares must not accept further moves. Confirm the marks are centered above the squares and are not clipped or covered.
 4. Play until the game ends; ensure all X/O marks remain visible after a win or draw.
 5. Select `NEW GAME`; confirm the board clears and the empty squares are selectable again.
 6. Select `DUEL`; verify X and O both appear and remain visible after alternating moves.
