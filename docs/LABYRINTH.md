@@ -1,58 +1,60 @@
-# Labyrinth — Game and Algorithm Guide
+# Labyrinth — Playing and Research
 
-**STRATUM-83 / Experiment 02 / Proposed release v0.3**
+**STRATUM-83 / Educational chapter 02 / v0.3 development candidate**
 
-Labyrinth is a standalone offline maze game. Find the goal using the arrow keys, or ask one of three classical search algorithms to solve the maze and show the shortest route.
+Labyrinth combines a **playable maze** with a **separate, non-interactive experiment**. Both use the same Java generator and search engine.
 
-## How to play
+## Play mode
 
-1. Start the application and select **03 LABYRINTH** or type `MAZE`. For an immediate solver comparison, select **04 RESEARCH LAB → 02 LABYRINTH**.
-2. `P` marks the player; `G` marks the goal; green blocks are walls.
-3. Use the arrow keys to move up, right, down or left. Or click any **adjacent open cell**.
-4. Reach `G` to complete the maze. A move into a wall or non-adjacent cell does nothing.
-5. Select `NEW MAZE` for a different reproducible maze seed. `MAIN MENU` returns to the terminal.
+Select **02 LABYRINTH** from the main menu, or type `MAZE`.
 
-## Algorithm mode
+- `P` is the player and `G` is the goal.
+- Use arrow keys, or click an **adjacent open cell**; walls block movement.
+- `NEW MAZE` uses the next seed, producing a reproducible 11×15 maze.
+- Reach `G` to finish. Player moves are **not** the same metric as solver steps.
+- No algorithm result buttons appear in Play mode.
 
-Press **BFS**, **DIJKSTRA** or **A\*** to highlight a path from the *maze start to the goal*. `COMPARE` runs all three algorithms and displays shortest-path steps and explored-cell counts. `CLEAR PATH` removes the overlay. Players can keep exploring after a path is shown.
+## Research Lab
 
-The three solvers share the same rules: a 4-directional grid, no diagonal movement, each step costs **1**, and no movement through walls.
+Select **03 RESEARCH LAB → 02 PATHFINDING** or type `BENCHMARK`. The research screen displays **settings and results only, not the maze**.
 
-| Solver | How it works | Expected result here |
+Configuration:
+
+- **First maze seed:** a signed 64-bit integer; default `1983`.
+- **Maze samples:** 1–100; default `1`.
+- The runner generates mazes using `seed`, `seed + 1`, and so forth.
+- All three algorithms process the **same generated maze for each seed**.
+- The report shows **average shortest-path length** and **average explored cells**.
+
+With one sample, averages equal that single maze's figures. With multiple samples, values are arithmetic means across mazes. Results are reproducible with the same first seed and count.
+
+## Three algorithms
+
+| Algorithm | Method | Guarantee under current rules |
 | --- | --- | --- |
-| **BFS (Breadth-First Search)** | Visits reachable cells layer-by-layer using a queue | Shortest path in an unweighted grid |
-| **Dijkstra** | Expands the reachable cell with the lowest known cost so far | Shortest path for nonnegative edge costs |
-| **A\*** | Uses Dijkstra-like path costs plus Manhattan-distance guidance | Shortest path here because Manhattan distance never overestimates the remaining cost |
+| BFS | Queue, exploring cell distance in layers | Shortest path in an unweighted graph |
+| Dijkstra | Priority queue ordered by cumulative cost | Shortest path with nonnegative edge weights |
+| A* | Cost so far plus Manhattan-distance heuristic | Shortest path because this heuristic does not overestimate |
 
-All three must return the **same optimal step count** in the same maze. They might visit different numbers of cells or return different equally short routes when ties exist.
+All moves are four-directional and cost 1. No diagonal moves or weighted terrain. Each result counts **explored cells** when popped and processed from a frontier, including the goal, rather than just discovered cells. The algorithms may explore different numbers of cells but must agree on optimal path length.
 
-**Explored nodes** means cells removed from the search frontier and actually processed, including the start and goal when reached. This does *not* count all nodes first placed in the queue. It is algorithm work, not the number of player moves.
+## Example experiment
 
-## Maze generation
+Use seed `1983` and `1` maze sample. Select **RUN BENCHMARK** and compare the rows. Now try `100` samples with the same starting seed: the output reflects averages across 100 different generated mazes.
 
-`MazeGenerator` uses a randomized depth-first carving procedure over an odd-sized wall grid. Each run starts with the same `seed` and dimensions; the algorithm creates a connected maze with a guaranteed route from start to goal. The display initially uses **11 rows × 15 columns** and seed **1983**.
-
-Every click of `NEW MAZE` increments the seed. The same seed and dimensions produce identical maze walls with the same Java implementation.
-
-## Research exercise
-
-1. Generate several mazes with consecutive seeds.
-2. Compare BFS, Dijkstra and A\* for shortest-path length and explored cells.
-3. Identify cases where A\* processes fewer cells. Is that always true?
-4. Explain why Dijkstra cannot produce a shorter path than BFS here.
-5. Discuss why algorithm timing from a single desktop run is **not** a reliable performance benchmark.
+Try another first seed, then rerun with the original. Why can A* sometimes explore fewer cells than BFS even when both return the same shortest path?
 
 ## Source code
 
-- [`Maze.java`](../src/main/java/org/stratum83/labyrinth/Maze.java) — grid and movement rules.
-- [`MazeGenerator.java`](../src/main/java/org/stratum83/labyrinth/MazeGenerator.java) — seeded generation.
-- [`MazeSolver.java`](../src/main/java/org/stratum83/labyrinth/MazeSolver.java) — BFS, Dijkstra and A\*.
-- [`StratumApp.java`](../src/main/java/org/stratum83/ui/StratumApp.java) — JavaFX view and keyboard/mouse controls.
-- [`MazeSolverTest.java`](../src/test/java/org/stratum83/labyrinth/MazeSolverTest.java) — algorithm correctness cases.
+- [Maze.java](../src/main/java/org/stratum83/labyrinth/Maze.java): maze state and valid neighbors
+- [MazeGenerator.java](../src/main/java/org/stratum83/labyrinth/MazeGenerator.java): seeded randomized depth-first carving
+- [MazeSolver.java](../src/main/java/org/stratum83/labyrinth/MazeSolver.java): BFS, Dijkstra and A*
+- [MazeBenchmarkRunner.java](../src/main/java/org/stratum83/research/MazeBenchmarkRunner.java): repeated comparisons and input checks
+- [MazeBenchmarkRunnerTest.java](../src/test/java/org/stratum83/research/MazeBenchmarkRunnerTest.java): reproducibility and output tests
+- [StratumApp.java](../src/main/java/org/stratum83/ui/StratumApp.java): JavaFX screens and user actions
 
-## Limitations
+## Scope and limitations
 
-- The displayed route always begins at the **original maze start**, even if the player has already moved.
-- No diagonal motion, weighted terrain or animated search replay yet.
-- There is no online service, database or AI model. Everything is computed locally with Java.
-- The UI requires Windows desktop acceptance testing before a public release.
+This is an educational simulation, not a runtime benchmark. The displayed statistics are **path lengths and visited-node counts**, not statistically sound timing measurements. Mazes are generated from reproducible pseudorandom seeds, but that does not make the measured averages generalizable to all possible maze structures. There is no cloud processing or LLM involved.
+
+**Status:** development branch implementation; Windows GUI validation is still required before a new release.
