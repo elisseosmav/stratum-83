@@ -1,23 +1,35 @@
 # STRATUM-83
 
-**Version 0.1.0 — a local Java research terminal**
+**Development candidate: v0.3.0-beta.2 — Java 21 / JavaFX offline research terminal**
 
-STRATUM-83 is a small, offline desktop program inspired by the atmosphere of early computer terminals. It contains an original implementation of **Grid Zero** (tic-tac-toe), a perfect-play **Minimax** computer opponent, a local two-player mode, and a repeatable AI experiment.
+STRATUM-83 combines two playable games with a separate Research Lab for repeatable classical-AI experiments. It is an independent, non-commercial educational project; no account, cloud service, telemetry or LLM subscription is needed.
 
-The project is for educational, non-commercial research and demonstration. It does not connect to AWS or any AI service, and it does not send telemetry.
+**Release status:** These changes live on the [terminal research redesign branch](https://github.com/elisseosmav/stratum-83/tree/feature/terminal-research-redesign), **not on `main`**. The [existing published beta](https://github.com/elisseosmav/stratum-83/releases/tag/v0.3.0-beta.1) is a prior snapshot. This candidate is not an official release until the maintainer publishes a new tag.
 
-It is an independent project, **not affiliated with or endorsed by the creators of any film**. It does not include movie artwork, dialogue, music, or sound assets.
+## Play and Research are separate
 
-## What works in v0.1
+The main menu has **three options**:
 
-- Resizable green-on-black JavaFX terminal window.
-- Menu buttons, text commands and keyboard shortcuts.
-- Grid Zero: human versus perfect-play Minimax computer, or two local players.
-- Restart a game and return to the menu.
-- Minimax versus random: a repeatable, seeded 200-game experiment.
-- Optional synthesized retro click sound, **off by default**.
-- Completely offline while playing; no account or API key required.
-- JUnit tests for game rules, AI moves and reproducible experiments.
+| Menu | Program | Purpose |
+| --- | --- | --- |
+| 01 | **GRID ZERO** | Play 3×3 tic-tac-toe against perfect-play Minimax |
+| 02 | **LABYRINTH** | Navigate a seeded maze manually |
+| 03 | **RESEARCH LAB** | Configure and run experiments without gameplay |
+
+Two-player Grid Zero remains available with `DUEL` in the command line. `HELP` and `EXIT` are **commands**, not main-menu buttons.
+
+The **Research Lab** has two result-only experiments:
+
+1. **Minimax vs Random:** choose a random seed and 1–2000 games. Minimax alternates between X and O; report wins, draws and losses.
+2. **Pathfinding Benchmark:** choose a first maze seed and 1–100 maze samples. BFS, Dijkstra and A* solve the **same generated mazes**. Report mean shortest-path length and mean explored cells. The benchmark does **not** show a playable maze.
+
+Playing Labyrinth increments the maze seed when you choose `NEW MAZE`. Changing the seed changes the layout reproducibly. Both engines run entirely on your computer.
+
+- [Labyrinth algorithm guide](docs/LABYRINTH.md)
+- [Research Lab guide (Wiki-ready)](docs/wiki/Research-Lab.md)
+- [Release candidate notes](docs/RELEASE-NOTES-v0.3.0-beta.2.md)
+
+The code uses original games and assets; it is not affiliated with or endorsed by any film producer or rights holder.
 
 ## Development roadmap and research ideas
 
@@ -33,7 +45,7 @@ Proposed future games include Checkers, Blackjack and Chess. These are **researc
 
 ## Windows setup (Java 21 and Maven)
 
-STRATUM-83 v0.1 is a **source project**. Building and playing it locally requires **JDK 21** and **Apache Maven 3.9+**. JavaFX is downloaded by Maven, so you do not need to install JavaFX yourself.
+STRATUM-83 is currently distributed as a **source project**. Building and playing it locally requires **JDK 21** and **Apache Maven 3.9+**. JavaFX is downloaded by Maven, so you do not need to install JavaFX yourself.
 
 ### Step 1 — Install Java 21
 
@@ -68,11 +80,11 @@ Option A: clone with Git (requires Git installed):
 
 ```powershell
 cd "$HOME\Projects"
-git clone https://github.com/elisseosmav/stratum-83.git
-cd .\stratum-83
+git clone --branch feature/terminal-research-redesign https://github.com/elisseosmav/stratum-83.git stratum-83-research
+cd .\stratum-83-research
 ```
 
-Option B: open [STRATUM-83 on GitHub](https://github.com/elisseosmav/stratum-83), choose **Code → Download ZIP**, extract it, and open PowerShell **inside the extracted source directory**.
+Option B: open [STRATUM-83 on GitHub](https://github.com/elisseosmav/stratum-83), select the **feature/terminal-research-redesign** branch and choose **Code → Download ZIP**, extract it, and open PowerShell **inside the extracted source directory**.
 
 You **must** run Maven from the directory that contains `pom.xml`, not the Maven `bin` directory. Verify:
 
@@ -104,14 +116,14 @@ STRATUM-83\
 ├── apache-maven\
 │   └── bin\
 │       └── mvn.cmd
-└── stratum-83-v0.1\
+└── stratum-83-research\
     └── pom.xml
 ```
 
 Use these PowerShell commands:
 
 ```powershell
-cd "$HOME\Projects\STRATUM-83\stratum-83-v0.1"
+cd "$HOME\Projects\STRATUM-83\stratum-83-research"
 Test-Path .\pom.xml
 & "..\apache-maven\bin\mvn.cmd" -version
 & "..\apache-maven\bin\mvn.cmd" clean test
@@ -132,43 +144,50 @@ If your Maven folder is called `apache-maven-3.10.2` instead, replace `apache-ma
 
 **Offline operation:** The application itself requires no Internet connection. The first Maven build downloads dependencies from Maven Central. Future Maven runs may also require the local Maven cache to contain all dependencies and plugins.
 
-**Not a packaged Windows installer:** Version 0.1 contains source code only. A self-contained Windows executable is planned for a later release. Full Windows/JavaFX acceptance testing remains pending; see [build notes](docs/BUILD-NOTES.md).
+**Not a packaged Windows installer:** This development candidate contains source code only. A self-contained Windows executable is planned for a later release. Full Windows/JavaFX acceptance testing remains pending; see [build notes](docs/BUILD-NOTES.md).
 
 ## Linux and macOS
 
-Use JDK 21 and Maven 3.9+, then run `mvn test` and `mvn javafx:run`. A desktop environment and graphics support are required. Windows is the priority platform for v0.1; the others are not yet acceptance-tested.
+Use JDK 21 and Maven 3.9+, then run `mvn test` and `mvn javafx:run`. A desktop environment and graphics support are required. Windows remains the priority platform; the others are not yet acceptance-tested.
 
 ## Terminal commands
 
-| Command | Meaning |
+| Command | Action |
 | --- | --- |
-| `PLAY` | Start human vs computer (you are X) |
-| `DUEL` | Start two-player local Grid Zero |
-| `EXPERIMENT` | Open the Minimax vs random experiment |
-| `HELP` | Show help |
-| `MENU` | Return to the main menu |
-| `SOUND ON` / `SOUND OFF` | Toggle optional click sounds |
-| `EXIT` | Close the program |
+| `PLAY` | Grid Zero against Minimax |
+| `DUEL` | Grid Zero, two local players |
+| `MAZE` | Play Labyrinth |
+| `RESEARCH` | Open Research Lab |
+| `EXPERIMENT` | Open Minimax vs Random experiment directly |
+| `BENCHMARK` | Open result-only BFS/Dijkstra/A* benchmark |
+| `HELP` | Display command reference |
+| `BACK` / `MENU` | Return to the main menu |
+| `SOUND ON` / `SOUND OFF` | Toggle sound (off at startup) |
+| `EXIT` | Close the terminal |
 
-Shortcuts: **F1** help, **F2** sound toggle, **Esc** main menu.
+Main menu uses keys `1`–`3`; Research Lab uses `1`–`2`. Shortcuts: **F1** help, **F2** sound, **Esc** main menu.
 
-## Experiment details
+## Algorithms and experiment setup
 
-The experiment runs 200 games against a random legal-move opponent using a fixed random seed (`1983`). Minimax alternates between X and O across matches. The result counts are for this experiment and do not measure the behaviour of a language model or cloud AI service. Minimax should never lose at 3x3 tic-tac-toe.
+**Grid Zero:** `MinimaxPlayer` performs exhaustive minimax search with alpha-beta pruning; `ExperimentRunner` uses a seeded pseudorandom legal-move opponent. Changing the seed changes the random choices, not the Minimax strategy. No training is involved.
+
+**Labyrinth:** `MazeGenerator` creates a seeded 11×15 connected maze. `MazeSolver` supports unweighted BFS, Dijkstra and Manhattan-heuristic A*. `MazeBenchmarkRunner` executes all three algorithms on the **same set of seeds**, so comparisons are fair. With multiple samples, results are arithmetic means, not total steps or simulated player moves. No elapsed-time benchmark is claimed.
 
 ## Code organization
 
 ```text
 src/main/java/org/stratum83/
   game/       GridZeroGame, Move, MinimaxPlayer, GameResult
-  research/   ExperimentRunner, ExperimentResult
+  labyrinth/  Maze, MazeGenerator, MazeSolver, PathResult, Position
+  research/   ExperimentRunner, ExperimentResult,
+              MazeBenchmarkRunner, MazeBenchmarkResult
   ui/         StratumApp, SoundPlayer
 src/main/resources/terminal.css
-src/test/java/org/stratum83/   JUnit tests
-docs/                           design notes and test checklist
+src/test/java/org/stratum83/  JUnit tests
+docs/                       Design, testing, roadmap, Wiki-ready pages
 ```
 
-The game and research code do not import JavaFX. Only the UI layer depends on JavaFX. There is no dependency injection framework, database or network layer.
+The game and research engines have no JavaFX dependencies. The UI handles presentation only. All experiments are local and reproducible.
 
 ## Development guidelines
 
@@ -182,10 +201,12 @@ See [docs/DESIGN.md](docs/DESIGN.md) for the design, [docs/TESTING.md](docs/TEST
 
 ## Scope and limitations
 
-- One playable game in v0.1. Labyrinth and Crisis Protocol are future ideas, **not implemented**.
-- The interface is an original retro style, not an exact recreation of a film interface.
-- Sound depends on an available local audio output device. If unavailable, the game continues silently.
-- No native Windows `.exe` is included.
+- This is a development branch, **not** a verified native Windows executable.
+- The latest UI changes still require Maven/JUnit and Windows JavaFX acceptance testing.
+- A native `.exe` and CI pipeline are planned, but are not included in this candidate.
+- The Labyrinth research view intentionally reports statistics without displaying a maze.
+- Checkers, Blackjack, Chess and Crisis Protocol remain future concepts or milestones, not implemented games.
+- STRATUM-83 has an original retro aesthetic; it does not copy movie visuals or dialogue.
 
 ## Licence
 
