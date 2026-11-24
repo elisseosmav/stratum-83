@@ -1,6 +1,30 @@
 # Test and Acceptance Checklist
 
-**Candidate:** STRATUM-83 v0.3.0-beta.2 on `feature/labyrinth-human-vs-algorithm`
+**Candidate:** STRATUM-83 v0.3.0-beta.2 on `feature/grid-zero-learning-lab`
+
+## Grid Zero educational acceptance — Play / Trace / Explain / Apply
+
+### Automated test expectations
+
+- `MinimaxAnalysisTest` verifies that the trace's chosen move is **exactly** the actual Minimax move.
+- The trace must not mutate the game state. Root move scores must be highest for the chosen move, and the trace must include the final `CHOSEN` event.
+- `WorstCasePolicyTest` verifies that bounded retries win with the hypothetical cost matrix and that ties and invalid policies are handled.
+- Run the full test suite with `mvn clean test`; GitHub Actions should also run Maven tests on Linux and Windows when enabled.
+
+### Manual Windows/JavaFX validation
+
+1. Open **Grid Zero**; confirm you can still play X and see computer O marks correctly after a move.
+2. Select **TRACE** after the computer has moved. Confirm that **NEXT** and **PREVIOUS** display actual X/O board states with `.` for empty squares, and that the event name and depth change.
+3. Confirm the trace shows each legal root move and its score, the actual chosen move, evaluated positions and cutoff count. If truncated, confirm the screen clearly says that only early events and the final choice were recorded.
+4. In **EXPLAIN**, confirm scoring rules and the last actual decision are readable. Open `TRACE` using a terminal command and return to the **same game without resetting it**.
+5. In **APPLY**, choose *Aggressive retries* and *Bounded retries*. With toy costs (1/9) and (3/4), the worst-case policy must favor **Bounded retries**. The screen must say the costs are illustrative.
+6. Type `TRACE` before the first AI move and verify a helpful message rather than a crash.
+7. Type `EXPLAIN` or `APPLY` from the main menu; the educational screen must be usable even without an active match, and Back must return to the menu.
+8. Verify Help lists `TRACE`, `EXPLAIN`, and `APPLY`. The game buttons must wrap or remain reachable at 680×600.
+9. After completing a match, ensure both X/O marks remain visible and the last computer decision still has a trace.
+10. Verify `DUEL`, `MAZE`, and Research Lab still work, with no changes to their underlying rules.
+
+**Status:** Until an actual Windows run and CI tests succeed, these remain acceptance criteria, not claims of passed validation.
 
 ## Automated tests
 
