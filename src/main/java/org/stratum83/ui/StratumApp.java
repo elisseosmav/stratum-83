@@ -212,7 +212,18 @@ public class StratumApp extends Application {
                 char mark = game.getCell(row, column);
                 Button square = squares[row][column];
                 square.setText(mark == GridZeroGame.EMPTY ? "" : String.valueOf(mark));
-                square.setDisable(mark != GridZeroGame.EMPTY || game.getResult() != GameResult.PLAYING);
+
+                // Disabled buttons can dim their text. Keep X and O fully visible,
+                // but only let players select empty squares while the game is active.
+                boolean occupied = mark != GridZeroGame.EMPTY;
+                boolean canPlay = !occupied && game.getResult() == GameResult.PLAYING;
+                square.setMouseTransparent(!canPlay);
+                square.setFocusTraversable(canPlay);
+
+                if (occupied && !square.getStyleClass().contains("filled")) {
+                    square.getStyleClass().add("filled");
+                }
+
                 square.setAccessibleText("Row " + (row + 1) + ", column " + (column + 1)
                         + (mark == GridZeroGame.EMPTY ? ", empty" : ", " + mark));
             }
