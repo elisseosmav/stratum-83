@@ -56,6 +56,17 @@ This regression check still needs to be performed on an actual Windows/JavaFX de
 
 This source distribution is intended for a standard Java 21 / Maven / JavaFX environment. Full Windows JavaFX GUI acceptance testing is not claimed in advance. See the delivery notes in the accompanying chat for what was actually executed in the build environment.
 
+## Menu navigation regression checks (Labyrinth preview)
+
+1. Open the **main menu** and verify the order is **01 Grid Zero (Human)**, **02 Grid Zero (Two Players)**, **03 Labyrinth**, **04 Research Lab**, **05 Help**, **06 Exit**. Help and Exit must always be the final two entries.
+2. Select **04 Research Lab**. Verify the submenu contains **01 Minimax vs Random**, **02 Labyrinth solver comparison**, **03 Back**, **04 Help** and **05 Exit**, in that order.
+3. Select the **Grid Zero experiment** from Research Lab; run it, then choose **RESEARCH LAB** to return to the submenu.
+4. Select **Labyrinth solver comparison** from Research Lab; verify the maze opens and the report shows **BFS**, **DIJKSTRA**, and **A_STAR** completely.
+5. Select **03 Back** in Research Lab and verify the main menu opens.
+6. Verify command input numeric selections use the **current menu** (main: 1–6; Research Lab: 1–5). Named commands `PLAY`, `DUEL`, `MAZE`, `RESEARCH`, `EXPERIMENT`, `HELP`, `MENU`, `EXIT` remain usable.
+7. Verify **Escape** returns to the main menu, and **F1** displays Help.
+8. After opening Research Lab, use `MENU` and verify the next numeric command selects a **main-menu** entry rather than a Research Lab entry.
+
 ## Labyrinth acceptance checks (v0.3 preview)
 
 1. Start `MAZE`; confirm the board contains walls, P and G.
