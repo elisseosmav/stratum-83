@@ -79,10 +79,6 @@
     -fx-border-width: 2px;
     -fx-background-radius: 2px;
     -fx-border-radius: 2px;
-    -fx-text-fill: #c1ffd2;
-    -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-font-size: 61px;
-    -fx-font-weight: bold;
     -fx-cursor: hand;
 }
 
@@ -93,8 +89,15 @@
 
 .board-square.filled {
     -fx-background-color: #12341f;
-    -fx-text-fill: #d2ffe0;
     -fx-cursor: default;
+}
+
+.board-mark {
+    -fx-text-fill: #d2ffe0;
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 61px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
 }
 
 .game-message {
