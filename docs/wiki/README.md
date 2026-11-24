@@ -4,6 +4,8 @@ The public GitHub Wiki is stored in a **separate Git repository** from STRATUM-8
 
 Pages to publish or revise:
 
+The revised **Grid Zero** page includes the approved Play → Trace → Explain → Apply learning workflow and a link to [the full chapter](../GRID-ZERO-LEARNING.md). The approved [educational principles](../EDUCATIONAL-VISION.md) should be reflected in every future game page.
+
 | Prepared Markdown | Wiki page title |
 | --- | --- |
 | `Home.md` | Home (replace the default welcome message) |
