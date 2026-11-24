@@ -12,13 +12,20 @@ STRATUM-83 is an offline-first Java 21 / JavaFX terminal for playable games and 
 | --- | --- | --- | --- |
 | **v0.1** | Initial source build | Grid Zero (tic-tac-toe), Minimax, local two-player mode, seeded AI experiment and terminal UI | **Source published**; Windows play confirmed, complete acceptance testing pending |
 | **v0.2** | Reliability and distribution | Windows acceptance tests, CI, standalone Windows packaging, display polish, local preferences | **Planned / work underway** |
-| **v0.3** | Classical search algorithms | Grid Zero search metrics; playable Labyrinth with BFS, Dijkstra and A* | **Planned** |
+| **v0.3** | Classical search algorithms | Playable Labyrinth, BFS/Dijkstra/A* benchmark and separated Research Lab; Grid Zero search metrics remain future work | **Beta 1 published; Beta 2 candidate in review** |
 | **v0.4** | Strategic simulation research | Crisis Protocol prototype with fictional agents, uncertainty, transparent rules and reproducible results | **Planned** |
 | **v0.5** | Two-player game AI | Checkers and heuristic evaluation of larger game trees | **Proposed idea — not scheduled** |
 | **v0.6** | Probability and decision-making | Blackjack and Monte Carlo experiments, simulated chips only | **Proposed idea — not scheduled** |
 | **v0.7** | Advanced search | Chess and performance comparisons of search heuristics | **Proposed idea — not scheduled** |
 
 The proposed v0.5–v0.7 entries do **not** have approved milestones or implementation commitments.
+
+## Current development preview
+
+- [v0.3.0-beta.1](https://github.com/elisseosmav/stratum-83/releases/tag/v0.3.0-beta.1) is a **published source-only prerelease**, with Grid Zero, Labyrinth and initial Research Lab.
+- **v0.3.0-beta.2** is a **candidate on [feature/terminal-research-redesign](https://github.com/elisseosmav/stratum-83/tree/feature/terminal-research-redesign)**, not a published release. Its three-entry main menu separates playable Grid Zero and Labyrinth from results-only Research Lab. `DUEL`, `HELP` and `EXIT` are command-line actions.
+- Experiments now accept configurable seeds. The maze benchmark compares BFS, Dijkstra and A* over 1–100 identically seeded mazes; Grid Zero compares Minimax against random over 1–2000 games.
+- The candidate needs Windows build and GUI acceptance testing before any new tag or release is announced. There is **no Windows installer**.
 
 ## Approved GitHub milestones
 
@@ -37,7 +44,7 @@ The proposed v0.5–v0.7 entries do **not** have approved milestones or implemen
 - [#7 Extend Grid Zero Minimax experiments with search metrics](https://github.com/elisseosmav/stratum-83/issues/7)
 - [#8 Implement Labyrinth with BFS, Dijkstra and A*](https://github.com/elisseosmav/stratum-83/issues/8)
 
-Educational objective: compare optimal game-tree search with shortest-path algorithms. Track outcomes, visited nodes, path lengths and timing with reproducible inputs. The algorithms must remain independent of the JavaFX interface.
+Educational objective: separate interactive games from repeatable experiments. Track outcomes, visited nodes and path lengths with reproducible seeds; avoid claiming runtime benchmarks until timing methodology is implemented. The algorithms must remain independent of the JavaFX interface.
 
 ### [v0.4 — Crisis Protocol](https://github.com/elisseosmav/stratum-83/milestone/3)
 
