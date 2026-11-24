@@ -14,6 +14,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -250,14 +251,14 @@ public class StratumApp extends Application {
             }
         }
 
-        HBox buttons = new HBox(12,
+        FlowPane buttons = new FlowPane(12, 10);
+        buttons.setAlignment(Pos.CENTER);
+        buttons.getChildren().addAll(
                 actionButton("NEW GAME", () -> startGame(vsComputer)),
                 actionButton("TRACE", this::showGridTrace),
                 actionButton("EXPLAIN", this::showGridExplanation),
                 actionButton("APPLY", this::showEngineeringApplication),
                 actionButton("MAIN MENU", this::showMenu));
-        buttons.setAlignment(Pos.CENTER);
-        // Keep a compact row; users can also use all functions from the command line.
 
         gridGameScreen = new VBox(16, title, description, gameMessage, board, buttons);
         gridGameScreen.setAlignment(Pos.CENTER);
@@ -426,9 +427,9 @@ public class StratumApp extends Application {
         Label help = new Label(
                 "PLAY         Start Grid Zero against perfect Minimax.\n"
                 + "DUEL         Start local two-player Grid Zero.\n"
-                + "TRACE        Step through the last computer decision.\\n"
-                + "EXPLAIN      Learn Minimax and alpha-beta pruning.\\n"
-                + "APPLY        Try an engineering worst-case exercise.\\n"
+                + "TRACE        Step through the last computer decision.\n"
+                + "EXPLAIN      Learn Minimax and alpha-beta pruning.\n"
+                + "APPLY        Try an engineering worst-case exercise.\n"
                 + "MAZE         Play Labyrinth using arrow keys or mouse.\n"
                 + "RESEARCH     Open the Research Lab menu.\n"
                 + "EXPERIMENT   Configure Minimax versus random results.\n"
