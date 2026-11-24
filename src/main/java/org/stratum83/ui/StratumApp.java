@@ -170,7 +170,7 @@ public class StratumApp extends Application {
                 "LOCAL GAMES / ALGORITHM EXPERIMENTS / NO NETWORK REQUIRED");
         VBox menu = new VBox(11,
                 menuButton("01  GRID ZERO       HUMAN VS COMPUTER", () -> startGame(true)),
-                menuButton("02  LABYRINTH       MAZE EXPLORATION", this::showMaze),
+                menuButton("02  LABYRINTH       HUMAN VS ALGORITHM", this::showMaze),
                 menuButton("03  RESEARCH LAB    ALGORITHMS AND RESULTS", this::showResearchMenu));
         menu.setMaxWidth(570);
 
