@@ -60,6 +60,7 @@ public class StratumApp extends Application {
     private long mazeSeed = 1983;
     private int mazeSteps;
     private boolean vsComputer;
+    private boolean researchMenuOpen;
 
     @Override
     public void start(Stage primaryStage) {
@@ -127,7 +128,7 @@ public class StratumApp extends Application {
     }
 
     private VBox buildConsole() {
-        Label instructions = new Label("COMMANDS: PLAY  |  DUEL  |  EXPERIMENT  |  MAZE  |  HELP  |  MENU  |  EXIT     F1 HELP  /  F2 SOUND  /  ESC MENU");
+        Label instructions = new Label("COMMANDS: PLAY  |  DUEL  |  MAZE  |  RESEARCH  |  EXPERIMENT  |  HELP  |  MENU  |  EXIT     F1 HELP  /  F2 SOUND  /  ESC MENU");
         instructions.getStyleClass().add("hint");
         instructions.setWrapText(true);
 
@@ -158,6 +159,7 @@ public class StratumApp extends Application {
     private void showMenu() {
         game = null;
         maze = null;
+        researchMenuOpen = false;
         Label heading = makeTitle("SELECT PROGRAM");
         Label introduction = makeDescription(
                 "LOCAL GAMES / ALGORITHM EXPERIMENTS / NO NETWORK REQUIRED");
@@ -165,10 +167,10 @@ public class StratumApp extends Application {
         VBox menu = new VBox(11,
                 menuButton("01  GRID ZERO       HUMAN VS COMPUTER", () -> startGame(true)),
                 menuButton("02  GRID ZERO       TWO PLAYERS", () -> startGame(false)),
-                menuButton("03  AI EXPERIMENT   MINIMAX VS RANDOM", this::showExperiment),
-                menuButton("04  HELP            COMMAND REFERENCE", this::showHelp),
-                menuButton("05  EXIT            CLOSE TERMINAL", () -> stage.close()),
-                menuButton("06  LABYRINTH       PATHFINDING LAB", this::showMaze)
+                menuButton("03  LABYRINTH       PATHFINDING LAB", this::showMaze),
+                menuButton("04  RESEARCH LAB    ALGORITHMS AND RESULTS", this::showResearchMenu),
+                menuButton("05  HELP            COMMAND REFERENCE", this::showHelp),
+                menuButton("06  EXIT            CLOSE TERMINAL", () -> stage.close())
         );
         menu.setMaxWidth(570);
 
@@ -180,8 +182,34 @@ public class StratumApp extends Application {
         consoleMessage.setText("READY. SELECT A PROGRAM OR TYPE A COMMAND.");
     }
 
+    private void showResearchMenu() {
+        game = null;
+        maze = null;
+        researchMenuOpen = true;
+
+        Label heading = makeTitle("RESEARCH LAB");
+        Label introduction = makeDescription(
+                "CHOOSE AN ALGORITHM EXPERIMENT / RESULTS ARE CALCULATED LOCALLY");
+
+        VBox menu = new VBox(11,
+                menuButton("01  GRID ZERO       MINIMAX VS RANDOM", this::showExperiment),
+                menuButton("02  LABYRINTH       BFS / DIJKSTRA / A*", this::showMazeComparison),
+                menuButton("03  BACK            MAIN MENU", this::showMenu),
+                menuButton("04  HELP            COMMAND REFERENCE", this::showHelp),
+                menuButton("05  EXIT            CLOSE TERMINAL", () -> stage.close())
+        );
+        menu.setMaxWidth(570);
+
+        VBox content = new VBox(24, heading, introduction, menu);
+        content.setAlignment(Pos.CENTER_LEFT);
+        content.setMaxWidth(600);
+        screen.getChildren().setAll(content);
+        consoleMessage.setText("SELECT AN EXPERIMENT OR TYPE A NUMBER.");
+    }
+
     private void startGame(boolean againstComputer) {
         maze = null;
+        researchMenuOpen = false;
         game = new GridZeroGame();
         vsComputer = againstComputer;
         squares = new Button[3][3];
@@ -279,6 +307,7 @@ public class StratumApp extends Application {
     private void showExperiment() {
         game = null;
         maze = null;
+        researchMenuOpen = false;
         Label title = makeTitle("AI EXPERIMENT");
         Label details = makeDescription(
                 "200 SEEDED GAMES  /  PERFECT MINIMAX VS RANDOM MOVES  /  ALTERNATING START POSITION");
@@ -318,7 +347,9 @@ public class StratumApp extends Application {
             worker.start();
         });
 
-        HBox buttons = new HBox(12, runButton, actionButton("MAIN MENU", this::showMenu));
+        HBox buttons = new HBox(12, runButton,
+                actionButton("RESEARCH LAB", this::showResearchMenu),
+                actionButton("MAIN MENU", this::showMenu));
         buttons.setAlignment(Pos.CENTER);
         VBox content = new VBox(24, title, details, report, buttons);
         content.setAlignment(Pos.CENTER);
@@ -330,17 +361,20 @@ public class StratumApp extends Application {
     private void showHelp() {
         game = null;
         maze = null;
+        researchMenuOpen = false;
         Label title = makeTitle("HELP / SYSTEM GUIDE");
         Label description = makeDescription("STRATUM-83 IS A LOCAL, OFFLINE JAVA EXPERIMENT.");
         Label text = new Label(
                 "PLAY         Start Grid Zero against a perfect-play computer.\n"
                 + "DUEL         Start Grid Zero for two people at one keyboard.\n"
-                + "EXPERIMENT   Compare Minimax against a seeded random player.\n"
                 + "MAZE         Explore Labyrinth and compare pathfinding algorithms.\n"
-                + "MENU         Return to the program selection screen.\n"
+                + "RESEARCH     Open the Research Lab submenu.\n"
+                + "EXPERIMENT   Run Minimax versus random directly.\n"
+                + "MENU         Return to the main program menu.\n"
                 + "SOUND ON     Enable generated click sounds.\n"
                 + "SOUND OFF    Disable sounds (the default).\n"
                 + "EXIT         Close the program.\n\n"
+                + "Main menu: 1-6. Research Lab: 1-5.\n"
                 + "F1 = Help    F2 = Toggle sound    ESC = Menu\n\n"
                 + "Grid Zero rules: three in a row wins. X moves first.\n"
                 + "All game rules and AI algorithms run locally in Java.");
@@ -357,14 +391,27 @@ public class StratumApp extends Application {
     private void runCommand(String rawCommand) {
         String command = rawCommand.trim().toUpperCase();
         sound.click();
+        // Numbered selections depend on which menu is currently open.
+        if (researchMenuOpen) {
+            switch (command) {
+                case "1" -> { showExperiment(); return; }
+                case "2" -> { showMazeComparison(); return; }
+                case "3" -> { showMenu(); return; }
+                case "4" -> { showHelp(); return; }
+                case "5" -> { stage.close(); return; }
+                default -> { } // Named commands still work from any screen.
+            }
+        }
+
         switch (command) {
             case "PLAY", "1", "SOLO" -> startGame(true);
             case "DUEL", "2" -> startGame(false);
-            case "EXPERIMENT", "3" -> showExperiment();
-            case "MAZE", "LABYRINTH", "6" -> showMaze();
-            case "HELP", "4" -> showHelp();
+            case "MAZE", "LABYRINTH", "3" -> showMaze();
+            case "RESEARCH", "LAB", "EXPERIMENTS", "4" -> showResearchMenu();
+            case "EXPERIMENT" -> showExperiment();
+            case "HELP", "5" -> showHelp();
             case "MENU", "HOME" -> showMenu();
-            case "EXIT", "QUIT", "5" -> stage.close();
+            case "EXIT", "QUIT", "6" -> stage.close();
             case "SOUND ON" -> setSound(true);
             case "SOUND OFF" -> setSound(false);
             case "" -> { }
@@ -374,6 +421,7 @@ public class StratumApp extends Application {
 
     private void showMaze() {
         game = null;
+        researchMenuOpen = false;
         maze = new MazeGenerator().generate(11, 15, mazeSeed);
         mazePlayer = maze.start();
         mazeSteps = 0;
@@ -432,6 +480,11 @@ public class StratumApp extends Application {
         refreshMaze();
         consoleMessage.setText("LABYRINTH READY. USE ARROW KEYS OR CLICK AN ADJACENT OPEN CELL.");
         Platform.runLater(board::requestFocus);
+    }
+
+    private void showMazeComparison() {
+        showMaze();
+        compareMazeAlgorithms();
     }
 
     private void moveMaze(Position destination) {
