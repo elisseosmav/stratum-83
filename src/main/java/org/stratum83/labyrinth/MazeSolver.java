@@ -55,8 +55,10 @@ public class MazeSolver {
             Position current = queue.remove();
             explored++;
             if (current.equals(maze.goal())) {
-                recorder.record(current, List.copyOf(queue), distance[current.row()][current.column()],
-                        0, true);
+                if (recorder.enabled) {
+                    recorder.record(current, List.copyOf(queue),
+                            distance[current.row()][current.column()], 0, true);
+                }
                 return new PathResult(buildPath(previous, current), explored);
             }
             for (Position next : maze.neighbors(current)) {
@@ -67,8 +69,10 @@ public class MazeSolver {
                     queue.add(next);
                 }
             }
-            recorder.record(current, List.copyOf(queue), distance[current.row()][current.column()],
-                    0, false);
+            if (recorder.enabled) {
+                recorder.record(current, List.copyOf(queue),
+                        distance[current.row()][current.column()], 0, false);
+            }
         }
         return new PathResult(List.of(), explored);
     }
@@ -98,8 +102,10 @@ public class MazeSolver {
             explored++;
             int estimate = heuristic(current, maze.goal(), useHeuristic);
             if (current.equals(maze.goal())) {
-                recorder.record(current, activeFrontier(queue, settled, distance),
-                        node.cost(), estimate, true);
+                if (recorder.enabled) {
+                    recorder.record(current, activeFrontier(queue, settled, distance),
+                            node.cost(), estimate, true);
+                }
                 return new PathResult(buildPath(previous, current), explored);
             }
 
@@ -112,8 +118,10 @@ public class MazeSolver {
                     queue.add(new SearchNode(next, newDistance, newDistance + newEstimate));
                 }
             }
-            recorder.record(current, activeFrontier(queue, settled, distance),
-                    node.cost(), estimate, false);
+            if (recorder.enabled) {
+                recorder.record(current, activeFrontier(queue, settled, distance),
+                        node.cost(), estimate, false);
+            }
         }
         return new PathResult(List.of(), explored);
     }
