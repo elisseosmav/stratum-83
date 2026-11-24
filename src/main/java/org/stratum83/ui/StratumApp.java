@@ -257,7 +257,7 @@ public class StratumApp extends Application {
                 actionButton("APPLY", this::showEngineeringApplication),
                 actionButton("MAIN MENU", this::showMenu));
         buttons.setAlignment(Pos.CENTER);
-        buttons.setWrap(true);
+        // Keep a compact row; users can also use all functions from the command line.
 
         gridGameScreen = new VBox(16, title, description, gameMessage, board, buttons);
         gridGameScreen.setAlignment(Pos.CENTER);
