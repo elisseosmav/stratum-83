@@ -6,7 +6,15 @@ on:
       - main
       - 'feature/**'
       - 'fix/**'
+    paths:
+      - 'pom.xml'
+      - 'src/**'
+      - '.github/workflows/**'
   pull_request:
+    paths:
+      - 'pom.xml'
+      - 'src/**'
+      - '.github/workflows/**'
 
 jobs:
   test:
