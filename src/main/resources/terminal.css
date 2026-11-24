@@ -79,25 +79,16 @@
     -fx-border-width: 2px;
     -fx-background-radius: 2px;
     -fx-border-radius: 2px;
+    -fx-text-fill: #c1ffd2;
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 61px;
+    -fx-font-weight: bold;
     -fx-cursor: hand;
 }
 
 .board-square:hover, .board-square:focused {
     -fx-background-color: #1b4728;
     -fx-border-color: #b7facc;
-}
-
-.board-square.filled {
-    -fx-background-color: #12341f;
-    -fx-cursor: default;
-}
-
-.board-mark {
-    -fx-text-fill: #d2ffe0;
-    -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-font-size: 61px;
-    -fx-font-weight: bold;
-    -fx-alignment: center;
 }
 
 .game-message {
@@ -152,4 +143,41 @@
 .console-message {
     -fx-text-fill: #7fac8b;
     -fx-font-size: 12px;
+}
+
+/* Labyrinth uses labels rather than buttons, so player and goal text stay visible. */
+.maze-cell {
+    -fx-background-color: #10251a;
+    -fx-border-color: #296342;
+    -fx-border-width: 1px;
+    -fx-text-fill: #b6ffd0;
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
+.maze-wall { -fx-background-color: #346347; -fx-border-color: #346347; }
+.maze-open { -fx-background-color: #06150d; }
+.maze-player { -fx-background-color: #194930; -fx-text-fill: #ffffff; }
+.maze-goal { -fx-background-color: #3a4820; -fx-text-fill: #ffe899; }
+.maze-path { -fx-background-color: #17402a; -fx-text-fill: #a8ffc3; }
+.maze-report {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-text-fill: #a9efbb;
+    -fx-font-size: 12px;
+    -fx-text-alignment: center;
+}
+/* Grid Zero X/O marks are drawn in labels above the buttons. */
+.board-mark {
+    -fx-text-fill: #d2ffe0;
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 61px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
+.board-square.filled { -fx-background-color: #12341f; -fx-cursor: default; }
+
+.maze-scroll, .maze-scroll > .viewport {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
 }
