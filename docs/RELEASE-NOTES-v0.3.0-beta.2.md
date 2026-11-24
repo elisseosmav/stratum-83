@@ -17,7 +17,7 @@ Java 21 Maven/JUnit tests have [passed on Linux and Windows GitHub Actions](http
 
 The Labyrinth Play screen now adds **TRACE / EXPLAIN / APPLY** beside navigation controls. TRACE visualizes real BFS, Dijkstra and A* node expansions, current/frontier/explored states, path costs and final shortest route. EXPLAIN details the algorithms and the fact that the current generated maze is unit-cost and loop-free. APPLY presents a fictional weighted software routing puzzle where a two-hop route can cost less than a direct edge. `MTRACE`, `MEXPLAIN`, `MAPPLY`, `BFS`, `DIJKSTRA` and `ASTAR` are available by terminal command.
 
-Shared search routines, immutable snapshots and JUnit tests keep the explanation faithful to the real solver. The example uses hypothetical units; it makes no network performance claims. [Java 21 Maven/JUnit CI passed on Ubuntu and Windows](https://github.com/elisseosmav/stratum-83/actions/runs/45473229283); visual Windows JavaFX acceptance remains pending.
+Shared search routines, immutable snapshots and JUnit tests keep the explanation faithful to the real solver. The example uses hypothetical units; it makes no network performance claims. [Java 21 Maven/JUnit CI passed on Ubuntu and Windows](https://github.com/elisseosmav/stratum-83/actions/runs/45473389881); visual Windows JavaFX acceptance remains pending.
 
 ## What's new since Beta 1
 
