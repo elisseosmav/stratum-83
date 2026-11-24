@@ -1,12 +1,14 @@
 package org.stratum83.ui;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
@@ -21,6 +23,13 @@ import org.stratum83.game.GameResult;
 import org.stratum83.game.GridZeroGame;
 import org.stratum83.game.MinimaxPlayer;
 import org.stratum83.game.Move;
+import org.stratum83.labyrinth.Maze;
+import org.stratum83.labyrinth.MazeGenerator;
+import org.stratum83.labyrinth.MazeSolver;
+import org.stratum83.labyrinth.PathResult;
+import org.stratum83.labyrinth.Position;
+import java.util.HashSet;
+import java.util.Set;
 import org.stratum83.research.ExperimentResult;
 import org.stratum83.research.ExperimentRunner;
 
@@ -40,6 +49,15 @@ public class StratumApp extends Application {
     private Button[][] squares;
     private Label[][] marks;
     private Label gameMessage;
+
+    private Maze maze;
+    private Position mazePlayer;
+    private Label[][] mazeCells;
+    private Label mazeMessage;
+    private Label mazeReport;
+    private Set<Position> shownPath = Set.of();
+    private long mazeSeed = 1983;
+    private int mazeSteps;
     private boolean vsComputer;
 
     @Override
@@ -63,6 +81,18 @@ public class StratumApp extends Application {
                 showHelp();
             } else if (event.getCode() == KeyCode.F2) {
                 toggleSound();
+            } else if (maze != null && !(scene.getFocusOwner() instanceof TextField)) {
+                int rowStep = 0;
+                int colStep = 0;
+                switch (event.getCode()) {
+                    case UP -> rowStep = -1;
+                    case DOWN -> rowStep = 1;
+                    case LEFT -> colStep = -1;
+                    case RIGHT -> colStep = 1;
+                    default -> { return; }
+                }
+                moveMaze(new Position(mazePlayer.row() + rowStep, mazePlayer.column() + colStep));
+                event.consume();
             }
         });
 
@@ -126,6 +156,7 @@ public class StratumApp extends Application {
 
     private void showMenu() {
         game = null;
+        maze = null;
         Label heading = makeTitle("SELECT PROGRAM");
         Label introduction = makeDescription(
                 "LOCAL GAMES / ALGORITHM EXPERIMENTS / NO NETWORK REQUIRED");
@@ -135,7 +166,8 @@ public class StratumApp extends Application {
                 menuButton("02  GRID ZERO       TWO PLAYERS", () -> startGame(false)),
                 menuButton("03  AI EXPERIMENT   MINIMAX VS RANDOM", this::showExperiment),
                 menuButton("04  HELP            COMMAND REFERENCE", this::showHelp),
-                menuButton("05  EXIT            CLOSE TERMINAL", () -> stage.close())
+                menuButton("05  EXIT            CLOSE TERMINAL", () -> stage.close()),
+                menuButton("06  LABYRINTH       PATHFINDING LAB", this::showMaze)
         );
         menu.setMaxWidth(570);
 
@@ -148,6 +180,7 @@ public class StratumApp extends Application {
     }
 
     private void startGame(boolean againstComputer) {
+        maze = null;
         game = new GridZeroGame();
         vsComputer = againstComputer;
         squares = new Button[3][3];
@@ -175,11 +208,10 @@ public class StratumApp extends Application {
                 square.setMinSize(95, 95);
                 square.setOnAction(event -> playAt(selectedRow, selectedColumn));
 
-                // Draw the mark above the button so it does not depend on the button skin.
+                // The mark sits above the button, avoiding button-skin text rendering problems.
                 Label markLabel = new Label();
                 markLabel.getStyleClass().add("board-mark");
                 markLabel.setMouseTransparent(true);
-
                 StackPane cell = new StackPane(square, markLabel);
                 board.add(cell, column, row);
                 squares[row][column] = square;
@@ -223,17 +255,13 @@ public class StratumApp extends Application {
                 Button square = squares[row][column];
                 marks[row][column].setText(
                         mark == GridZeroGame.EMPTY ? "" : String.valueOf(mark));
-
-                // Block moves on filled squares without dimming the visible mark.
                 boolean occupied = mark != GridZeroGame.EMPTY;
                 boolean canPlay = !occupied && game.getResult() == GameResult.PLAYING;
                 square.setMouseTransparent(!canPlay);
                 square.setFocusTraversable(canPlay);
-
                 if (occupied && !square.getStyleClass().contains("filled")) {
                     square.getStyleClass().add("filled");
                 }
-
                 square.setAccessibleText("Row " + (row + 1) + ", column " + (column + 1)
                         + (mark == GridZeroGame.EMPTY ? ", empty" : ", " + mark));
             }
@@ -249,6 +277,7 @@ public class StratumApp extends Application {
 
     private void showExperiment() {
         game = null;
+        maze = null;
         Label title = makeTitle("AI EXPERIMENT");
         Label details = makeDescription(
                 "200 SEEDED GAMES  /  PERFECT MINIMAX VS RANDOM MOVES  /  ALTERNATING START POSITION");
@@ -299,12 +328,14 @@ public class StratumApp extends Application {
 
     private void showHelp() {
         game = null;
+        maze = null;
         Label title = makeTitle("HELP / SYSTEM GUIDE");
         Label description = makeDescription("STRATUM-83 IS A LOCAL, OFFLINE JAVA EXPERIMENT.");
         Label text = new Label(
                 "PLAY         Start Grid Zero against a perfect-play computer.\n"
                 + "DUEL         Start Grid Zero for two people at one keyboard.\n"
                 + "EXPERIMENT   Compare Minimax against a seeded random player.\n"
+                + "MAZE         Explore Labyrinth and compare pathfinding algorithms.\n"
                 + "MENU         Return to the program selection screen.\n"
                 + "SOUND ON     Enable generated click sounds.\n"
                 + "SOUND OFF    Disable sounds (the default).\n"
@@ -329,6 +360,7 @@ public class StratumApp extends Application {
             case "PLAY", "1", "SOLO" -> startGame(true);
             case "DUEL", "2" -> startGame(false);
             case "EXPERIMENT", "3" -> showExperiment();
+            case "MAZE", "LABYRINTH", "6" -> showMaze();
             case "HELP", "4" -> showHelp();
             case "MENU", "HOME" -> showMenu();
             case "EXIT", "QUIT", "5" -> stage.close();
@@ -337,6 +369,139 @@ public class StratumApp extends Application {
             case "" -> { }
             default -> consoleMessage.setText("UNKNOWN COMMAND: " + command + ". TYPE HELP.");
         }
+    }
+
+    private void showMaze() {
+        game = null;
+        maze = new MazeGenerator().generate(11, 15, mazeSeed);
+        mazePlayer = maze.start();
+        mazeSteps = 0;
+        shownPath = Set.of();
+        mazeCells = new Label[maze.rows()][maze.columns()];
+
+        Label title = makeTitle("LABYRINTH");
+        Label instructions = makeDescription(
+                "FIND G  /  ARROW KEYS OR CLICK ADJACENT CELLS  /  WALLS BLOCK MOVEMENT");
+        mazeMessage = new Label();
+        mazeMessage.getStyleClass().add("game-message");
+
+        GridPane board = new GridPane();
+        board.setHgap(2);
+        board.setVgap(2);
+        board.setAlignment(Pos.CENTER);
+        board.setFocusTraversable(true);
+        for (int row = 0; row < maze.rows(); row++) {
+            for (int column = 0; column < maze.columns(); column++) {
+                int selectedRow = row;
+                int selectedColumn = column;
+                Label cell = new Label();
+                cell.getStyleClass().add("maze-cell");
+                cell.setPrefSize(27, 27);
+                cell.setMinSize(27, 27);
+                cell.setAlignment(Pos.CENTER);
+                cell.setOnMouseClicked(event -> moveMaze(new Position(selectedRow, selectedColumn)));
+                board.add(cell, column, row);
+                mazeCells[row][column] = cell;
+            }
+        }
+
+        HBox solverButtons = new HBox(10,
+                actionButton("BFS", () -> showMazeSolution(MazeSolver.Algorithm.BFS)),
+                actionButton("DIJKSTRA", () -> showMazeSolution(MazeSolver.Algorithm.DIJKSTRA)),
+                actionButton("A*", () -> showMazeSolution(MazeSolver.Algorithm.A_STAR)),
+                actionButton("COMPARE", this::compareMazeAlgorithms));
+        solverButtons.setAlignment(Pos.CENTER);
+        HBox navigationButtons = new HBox(10,
+                actionButton("NEW MAZE", () -> { mazeSeed++; showMaze(); }),
+                actionButton("CLEAR PATH", () -> { shownPath = Set.of(); refreshMaze(); }),
+                actionButton("MAIN MENU", this::showMenu));
+        navigationButtons.setAlignment(Pos.CENTER);
+
+        mazeReport = new Label("SEED: " + mazeSeed + "  |  EXPLORE OR SELECT A SOLVER");
+        mazeReport.getStyleClass().add("maze-report");
+        mazeReport.setWrapText(true);
+
+        VBox content = new VBox(11, title, instructions, mazeMessage, board,
+                solverButtons, navigationButtons, mazeReport);
+        content.setAlignment(Pos.CENTER);
+        ScrollPane scrollingBoard = new ScrollPane(content);
+        scrollingBoard.setFitToWidth(true);
+        scrollingBoard.getStyleClass().add("maze-scroll");
+        screen.getChildren().setAll(scrollingBoard);
+        refreshMaze();
+        consoleMessage.setText("LABYRINTH READY. USE ARROW KEYS OR CLICK AN ADJACENT OPEN CELL.");
+        Platform.runLater(board::requestFocus);
+    }
+
+    private void moveMaze(Position destination) {
+        if (maze == null || mazePlayer.equals(maze.goal())) return;
+        int distance = Math.abs(destination.row() - mazePlayer.row())
+                + Math.abs(destination.column() - mazePlayer.column());
+        if (distance != 1 || !maze.isOpen(destination)) return;
+        mazePlayer = destination;
+        mazeSteps++;
+        shownPath = Set.of();
+        sound.click();
+        refreshMaze();
+        if (mazePlayer.equals(maze.goal())) {
+            consoleMessage.setText("GOAL REACHED IN " + mazeSteps + " MOVES.");
+        }
+    }
+
+    private void refreshMaze() {
+        for (int row = 0; row < maze.rows(); row++) {
+            for (int column = 0; column < maze.columns(); column++) {
+                Position place = new Position(row, column);
+                Label cell = mazeCells[row][column];
+                cell.getStyleClass().removeAll(
+                        "maze-wall", "maze-open", "maze-player", "maze-goal", "maze-path");
+                if (!maze.isOpen(place)) {
+                    cell.getStyleClass().add("maze-wall");
+                    cell.setText("");
+                } else if (place.equals(mazePlayer)) {
+                    cell.getStyleClass().add("maze-player");
+                    cell.setText("P");
+                } else if (place.equals(maze.goal())) {
+                    cell.getStyleClass().add("maze-goal");
+                    cell.setText("G");
+                } else if (shownPath.contains(place)) {
+                    cell.getStyleClass().add("maze-path");
+                    cell.setText("·");
+                } else {
+                    cell.getStyleClass().add("maze-open");
+                    cell.setText("");
+                }
+                cell.setAccessibleText("Row " + (row + 1) + ", column " + (column + 1)
+                        + (maze.isOpen(place) ? ", open" : ", wall"));
+            }
+        }
+        mazeMessage.setText(mazePlayer.equals(maze.goal())
+                ? "MAZE COMPLETE IN " + mazeSteps + " MOVES"
+                : "MOVES: " + mazeSteps + "  /  GOAL: G  /  PLAYER: P");
+    }
+
+    private void showMazeSolution(MazeSolver.Algorithm algorithm) {
+        if (maze == null) return;
+        PathResult result = new MazeSolver().solve(maze, algorithm);
+        shownPath = new HashSet<>(result.path());
+        refreshMaze();
+        mazeReport.setText(algorithm + "  /  SHORTEST PATH: " + result.steps()
+                + " MOVES  /  EXPLORED CELLS: " + result.exploredNodes()
+                + "  /  SEED: " + mazeSeed);
+        consoleMessage.setText("PATH HIGHLIGHTED. ALL ALGORITHMS RUN LOCALLY.");
+    }
+
+    private void compareMazeAlgorithms() {
+        if (maze == null) return;
+        MazeSolver solver = new MazeSolver();
+        StringBuilder report = new StringBuilder("ALGORITHM      STEPS   EXPLORED\n");
+        for (MazeSolver.Algorithm algorithm : MazeSolver.Algorithm.values()) {
+            PathResult result = solver.solve(maze, algorithm);
+            report.append(String.format("%-14s %5d  %5d\n",
+                    algorithm, result.steps(), result.exploredNodes()));
+        }
+        mazeReport.setText(report.toString());
+        consoleMessage.setText("COMPARISON COMPLETE. ALL METHODS MUST FIND THE SHORTEST PATH.");
     }
 
     private void toggleSound() {
