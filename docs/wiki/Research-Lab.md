@@ -57,7 +57,7 @@ All three algorithms must return **equal shortest-path lengths** on each maze. T
 
 ## Source code
 
-- [ExperimentRunner.java](https://github.com/elisseosmav/stratum-83/blob/feature/terminal-research-redesign/src/main/java/org/stratum83/research/ExperimentRunner.java)
-- [MazeBenchmarkRunner.java](https://github.com/elisseosmav/stratum-83/blob/feature/terminal-research-redesign/src/main/java/org/stratum83/research/MazeBenchmarkRunner.java)
-- [MazeSolver.java](https://github.com/elisseosmav/stratum-83/blob/feature/terminal-research-redesign/src/main/java/org/stratum83/labyrinth/MazeSolver.java)
-- [Acceptance checklist](https://github.com/elisseosmav/stratum-83/blob/feature/terminal-research-redesign/docs/TESTING.md)
+- [ExperimentRunner.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-human-vs-algorithm/src/main/java/org/stratum83/research/ExperimentRunner.java)
+- [MazeBenchmarkRunner.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-human-vs-algorithm/src/main/java/org/stratum83/research/MazeBenchmarkRunner.java)
+- [MazeSolver.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-human-vs-algorithm/src/main/java/org/stratum83/labyrinth/MazeSolver.java)
+- [Acceptance checklist](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-human-vs-algorithm/docs/TESTING.md)
