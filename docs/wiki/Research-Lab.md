@@ -5,7 +5,7 @@
 
 ## What is different from Play?
 
-**Play mode** lets you navigate a maze or challenge Minimax as a human player. **Research mode** runs algorithms with specified inputs and reports reproducible results. Research Lab does **not** contain an interactive maze.
+**Play mode** lets you challenge Minimax or navigate a maze, then compare your human route against the BFS shortest path **after finishing**. **Research mode** runs algorithms with specified inputs and reports reproducible results. Research Lab does **not** contain an interactive maze.
 
 Choose **03 RESEARCH LAB** in the main menu or type `RESEARCH`. Then choose:
 
