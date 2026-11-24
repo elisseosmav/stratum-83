@@ -84,11 +84,11 @@ Option A: clone with Git (requires Git installed):
 
 ```powershell
 cd "$HOME\Projects"
-git clone --branch feature/terminal-research-redesign https://github.com/elisseosmav/stratum-83.git stratum-83-research
-cd .\stratum-83-research
+git clone --branch feature/labyrinth-human-vs-algorithm https://github.com/elisseosmav/stratum-83.git stratum-83-challenge
+cd .\stratum-83-challenge
 ```
 
-Option B: open [STRATUM-83 on GitHub](https://github.com/elisseosmav/stratum-83), select the **feature/terminal-research-redesign** branch and choose **Code → Download ZIP**, extract it, and open PowerShell **inside the extracted source directory**.
+Option B: open [STRATUM-83 on GitHub](https://github.com/elisseosmav/stratum-83), select the **feature/labyrinth-human-vs-algorithm** branch and choose **Code → Download ZIP**, extract it, and open PowerShell **inside the extracted source directory**.
 
 You **must** run Maven from the directory that contains `pom.xml`, not the Maven `bin` directory. Verify:
 
@@ -120,14 +120,14 @@ STRATUM-83\
 ├── apache-maven\
 │   └── bin\
 │       └── mvn.cmd
-└── stratum-83-research\
+└── stratum-83-challenge\
     └── pom.xml
 ```
 
 Use these PowerShell commands:
 
 ```powershell
-cd "$HOME\Projects\STRATUM-83\stratum-83-research"
+cd "$HOME\Projects\STRATUM-83\stratum-83-challenge"
 Test-Path .\pom.xml
 & "..\apache-maven\bin\mvn.cmd" -version
 & "..\apache-maven\bin\mvn.cmd" clean test
