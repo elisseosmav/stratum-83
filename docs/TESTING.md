@@ -1,6 +1,6 @@
 # Test and Acceptance Checklist
 
-**Candidate:** STRATUM-83 v0.3.0-beta.2 on `feature/terminal-research-redesign`
+**Candidate:** STRATUM-83 v0.3.0-beta.2 on `feature/labyrinth-human-vs-algorithm`
 
 ## Automated tests
 
@@ -10,7 +10,7 @@ In the directory containing `pom.xml`, run:
 mvn clean test
 ```
 
-JUnit tests cover Grid Zero rules, Minimax strategy, reproducible Grid Zero experiments, seeded maze generation, BFS/Dijkstra/A* shortest paths and the new multi-maze benchmark. **The Windows Maven/JUnit suite has not yet been verified for this candidate.**
+JUnit tests cover Grid Zero rules, Minimax strategy, reproducible Grid Zero experiments, seeded maze generation, BFS/Dijkstra/A* shortest paths, the multi-maze benchmark and the new `MazeChallenge` route/score model. **The Windows Maven/JUnit suite has not yet been verified for this candidate.**
 
 ## Windows JavaFX acceptance checklist
 
@@ -31,24 +31,30 @@ JUnit tests cover Grid Zero rules, Minimax strategy, reproducible Grid Zero expe
 
 ### Labyrinth play
 
-10. Use arrow keys and click adjacent open cells. Walls/nonadjacent clicks must not move the player.
-11. Reach G and confirm the victory state. Use New Maze and confirm seed changes and the route updates.
+10. Use arrow keys and click adjacent open cells. Valid moves increment the score; walls and nonadjacent clicks must **not** change it.
+11. Before reaching G, verify **no optimal path, score/efficiency or route-reveal buttons** are visible.
+12. Finish the maze and verify **YOUR MOVES**, **BFS OPTIMAL**, **EXTRA MOVES**, and **EFFICIENCY** (optimal / actual × 100). A shortest route must score 100%.
+13. Click **SHOW MY VISITED CELLS**, **SHOW OPTIMAL PATH**, and **HIDE PATH** after completion. Overlays must be visible, visually distinct and must not obscure G. My visited cells reflect all visited positions, not visit order.
+14. Verify arrows/clicks cannot move after completion.
+15. Click **RETRY SAME MAZE**; confirm the same seed/layout and zero moves with no route revealed.
+16. Click **NEW MAZE**; confirm seed advances and a different layout is generated.
+17. Backtrack deliberately in one attempt; ensure those steps increase actual moves and reduce efficiency if the final route is longer than BFS's shortest path.
 
 ### Research Lab
 
-12. Open Minimax vs Random; run default **seed 1983 / 200 games**; wins+draws+losses must equal 200, losses should be 0.
-13. Rerun with the same seed and count; outcomes must match. Try different seed and counts, including 1 and 2000.
-14. Enter invalid seed or game count (zero, 2001, letters); an error should display without crashing.
-15. Open Pathfinding Benchmark; enter seed 1983, count 1. Confirm **BFS, DIJKSTRA, A_STAR** appear completely and all report the same average shortest-path steps.
-16. Run the same benchmark twice and compare results, then try **100 mazes** and verify averages are displayed.
-17. Enter invalid count (0, 101, letters) and invalid seed; confirm errors without crashing.
-18. Confirm Research Lab shows **only configuration and results**, not the interactive maze, and Back returns to Research Lab.
-19. Resize the app to 680×600 and confirm all reports remain readable without missing lines or ellipses.
+18. Open Minimax vs Random; run default **seed 1983 / 200 games**; wins+draws+losses must equal 200, losses should be 0.
+19. Rerun with the same seed and count; outcomes must match. Try different seed and counts, including 1 and 2000.
+20. Enter invalid seed or game count (zero, 2001, letters); an error should display without crashing.
+21. Open Pathfinding Benchmark; enter seed 1983, count 1. Confirm **BFS, DIJKSTRA, A_STAR** appear completely and all report the same average shortest-path steps.
+22. Run the same benchmark twice and compare results, then try **100 mazes** and verify averages are displayed.
+23. Enter invalid count (0, 101, letters) and invalid seed; confirm errors without crashing.
+24. Confirm Research Lab shows **only configuration and results**, not the interactive maze, and Back returns to Research Lab.
+25. Resize the app to 680×600 and confirm all reports remain readable without missing lines or ellipses.
 
 ### Distribution / offline
 
-20. Confirm sound starts OFF on a fresh launch; test F2 on and off.
-21. Confirm all gameplay and computations work offline *after* Maven dependencies are cached. The first source build may require Internet.
+26. Confirm sound starts OFF on a fresh launch; test F2 on and off.
+27. Confirm all gameplay and computations work offline *after* Maven dependencies are cached. The first source build may require Internet.
 
 ## Local checks already completed (not Maven/JUnit)
 
@@ -62,3 +68,7 @@ These are targeted core checks, **not** a claim that Maven/JUnit or the desktop 
 ## Release gate
 
 Do not tag this as a verified stable Windows release until the acceptance checklist and actual Maven tests have passed on Windows. The current GitHub beta 1 tag is an older, separate snapshot.
+
+## Independent Java 21 core verification (human challenge)
+
+The new `MazeChallenge` model compiled with Java 21. It was exercised on 200 seeded 11×15 mazes, following the BFS optimal route each time, and achieved 100% efficiency. Additional checks covered backtracking (6 human moves versus a 4-move optimum, 66.7%), illegal steps, finished-game locking and a start-equals-goal case. This was **not a Maven/JUnit or JavaFX acceptance run**.
