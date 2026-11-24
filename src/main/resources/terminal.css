@@ -163,7 +163,7 @@
 .maze-path { -fx-background-color: #17402a; -fx-text-fill: #a8ffc3; }
 .maze-report {
     -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-text-fill: #a9efbb;
+    -fx-fill: #a9efbb;
     -fx-font-size: 12px;
     -fx-text-alignment: center;
 }
