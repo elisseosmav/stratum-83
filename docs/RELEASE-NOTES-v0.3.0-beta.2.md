@@ -1,6 +1,6 @@
 # STRATUM-83 v0.3.0 Beta 2 — Release Candidate
 
-> **Not yet published.** These notes describe the proposed `v0.3.0-beta.2` release, sourced from [feature/terminal-research-redesign](https://github.com/elisseosmav/stratum-83/tree/feature/terminal-research-redesign).  
+> **Not yet published.** These notes describe the proposed `v0.3.0-beta.2` release, sourced from [feature/labyrinth-human-vs-algorithm](https://github.com/elisseosmav/stratum-83/tree/feature/terminal-research-redesign).  
 > Do not rewrite or move the published `v0.3.0-beta.1` tag.
 
 STRATUM-83 is an offline, non-commercial Java research terminal with original retro styling, playable games and educational classical-AI experiments.
@@ -13,7 +13,7 @@ The three primary entries are now **GRID ZERO**, **LABYRINTH**, and **RESEARCH L
 
 ### Play and Research are separate
 
-**Labyrinth Play** is now a playable maze only: move with arrow keys or mouse, reach G and generate new seeded mazes.
+**Labyrinth Play** is now a **human-versus-BFS challenge**: move with arrow keys or mouse, reach G and compare your successful steps with the shortest possible route. After completion, see extra moves and efficiency, reveal your visited cells or the optimal route, retry the same seed, or create a new maze. Paths remain hidden until completion.
 
 **Research Lab** has two result-only screens—no interactive maze in the benchmark:
 - **Minimax vs Random:** configurable signed integer seed, 1–2000 games, wins/draws/losses.
@@ -26,6 +26,7 @@ Both modes are deterministic with identical inputs and code. All algorithms use 
 - Grid Zero X/O labels are drawn separately from buttons and remain visible after moves (Issue #10).
 - Experiment reports use JavaFX `Text` to avoid multiline `Label` ellipsis truncation.
 - Numbered menu shortcuts and full text-command navigation.
+- Human route scoring and Java 21 tests for valid/invalid steps, backtracking, route reveal state and same-seed retry.
 - Updated documentation, test checklist and Wiki-ready educational materials.
 
 ## Requirements
