@@ -5,7 +5,7 @@
 
 ## What is different from Play?
 
-**Play mode** lets you challenge Minimax or navigate a maze, then compare your human route against the BFS shortest path **after finishing**. **Research mode** runs algorithms with specified inputs and reports reproducible results. Research Lab does **not** contain an interactive maze.
+**Play mode** now introduces a four-step educational flow in Grid Zero: Play, Trace, Explain and Apply. Labyrinth still lets you compare your route against BFS after completion. Research Lab separately runs reproducible experiments. **Research mode** runs algorithms with specified inputs and reports reproducible results. Research Lab does **not** contain an interactive maze.
 
 Choose **03 RESEARCH LAB** in the main menu or type `RESEARCH`. Then choose:
 
@@ -57,7 +57,7 @@ All three algorithms must return **equal shortest-path lengths** on each maze. T
 
 ## Source code
 
-- [ExperimentRunner.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-human-vs-algorithm/src/main/java/org/stratum83/research/ExperimentRunner.java)
-- [MazeBenchmarkRunner.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-human-vs-algorithm/src/main/java/org/stratum83/research/MazeBenchmarkRunner.java)
-- [MazeSolver.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-human-vs-algorithm/src/main/java/org/stratum83/labyrinth/MazeSolver.java)
-- [Acceptance checklist](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-human-vs-algorithm/docs/TESTING.md)
+- [ExperimentRunner.java](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-learning-lab/src/main/java/org/stratum83/research/ExperimentRunner.java)
+- [MazeBenchmarkRunner.java](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-learning-lab/src/main/java/org/stratum83/research/MazeBenchmarkRunner.java)
+- [MazeSolver.java](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-learning-lab/src/main/java/org/stratum83/labyrinth/MazeSolver.java)
+- [Acceptance checklist](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-learning-lab/docs/TESTING.md)
