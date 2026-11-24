@@ -25,9 +25,12 @@ import org.stratum83.game.GridZeroGame;
 import org.stratum83.game.MinimaxPlayer;
 import org.stratum83.game.Move;
 import org.stratum83.labyrinth.Maze;
+import org.stratum83.labyrinth.MazeChallenge;
 import org.stratum83.labyrinth.MazeGenerator;
 import org.stratum83.labyrinth.Position;
 import java.util.Locale;
+import java.util.HashSet;
+import java.util.Set;
 import org.stratum83.research.ExperimentResult;
 import org.stratum83.research.ExperimentRunner;
 import org.stratum83.research.MazeBenchmarkResult;
@@ -51,11 +54,14 @@ public class StratumApp extends Application {
     private Label gameMessage;
 
     private Maze maze;
-    private Position mazePlayer;
+    private MazeChallenge mazeChallenge;
     private Label[][] mazeCells;
     private Label mazeMessage;
+    private Text mazeResults;
+    private HBox mazePathButtons;
+    private boolean showMyRoute;
+    private boolean showOptimalRoute;
     private long mazeSeed = 1983;
-    private int mazeSteps;
     private boolean vsComputer;
     private boolean researchMenuOpen;
 
@@ -90,7 +96,8 @@ public class StratumApp extends Application {
                     case RIGHT -> colStep = 1;
                     default -> { return; }
                 }
-                moveMaze(new Position(mazePlayer.row() + rowStep, mazePlayer.column() + colStep));
+                moveMaze(new Position(mazeChallenge.playerPosition().row() + rowStep,
+                        mazeChallenge.playerPosition().column() + colStep));
                 event.consume();
             }
         });
@@ -428,13 +435,14 @@ public class StratumApp extends Application {
         game = null;
         researchMenuOpen = false;
         maze = new MazeGenerator().generate(11, 15, mazeSeed);
-        mazePlayer = maze.start();
-        mazeSteps = 0;
+        mazeChallenge = new MazeChallenge(maze);
+        showMyRoute = false;
+        showOptimalRoute = false;
         mazeCells = new Label[maze.rows()][maze.columns()];
 
-        Label title = makeTitle("LABYRINTH");
+        Label title = makeTitle("LABYRINTH CHALLENGE");
         Label instructions = makeDescription(
-                "FIND G / ARROW KEYS OR CLICK ADJACENT CELLS / WALLS BLOCK MOVEMENT");
+                "REACH G WITH AS FEW MOVES AS POSSIBLE / ARROWS OR CLICK ADJACENT CELLS");
         mazeMessage = new Label();
         mazeMessage.getStyleClass().add("game-message");
 
@@ -459,54 +467,111 @@ public class StratumApp extends Application {
         }
 
         HBox buttons = new HBox(12,
+                actionButton("RETRY SAME MAZE", this::showMaze),
                 actionButton("NEW MAZE", () -> { mazeSeed++; showMaze(); }),
                 actionButton("MAIN MENU", this::showMenu));
         buttons.setAlignment(Pos.CENTER);
 
+        mazePathButtons = new HBox(10,
+                actionButton("SHOW MY VISITED CELLS", () -> {
+                    showMyRoute = true;
+                    showOptimalRoute = false;
+                    refreshMaze();
+                }),
+                actionButton("SHOW OPTIMAL PATH", () -> {
+                    showMyRoute = false;
+                    showOptimalRoute = true;
+                    refreshMaze();
+                }),
+                actionButton("HIDE PATH", () -> {
+                    showMyRoute = false;
+                    showOptimalRoute = false;
+                    refreshMaze();
+                }));
+        mazePathButtons.setAlignment(Pos.CENTER);
+        mazePathButtons.setVisible(false);
+        mazePathButtons.setManaged(false);
+
+        mazeResults = new Text();
+        mazeResults.getStyleClass().add("challenge-results");
+        mazeResults.setVisible(false);
+        mazeResults.setManaged(false);
+
         Label seedNote = makeDescription("MAZE SEED: " + mazeSeed
-                + "  /  RUN RESEARCH FOR ALGORITHM COMPARISONS");
-        VBox content = new VBox(16, title, instructions, mazeMessage, board, buttons, seedNote);
+                + " / THE BFS REFERENCE ROUTE IS REVEALED AFTER FINISHING");
+
+        VBox content = new VBox(14, title, instructions, mazeMessage, board,
+                buttons, mazeResults, mazePathButtons, seedNote);
         content.setAlignment(Pos.CENTER);
         ScrollPane scrolling = new ScrollPane(content);
         scrolling.setFitToWidth(true);
         scrolling.getStyleClass().add("maze-scroll");
         screen.getChildren().setAll(scrolling);
         refreshMaze();
-        consoleMessage.setText("LABYRINTH READY. MOVE USING ARROW KEYS OR THE MOUSE.");
+        consoleMessage.setText("LABYRINTH CHALLENGE STARTED. REACH G WITH AS FEW MOVES AS POSSIBLE.");
         Platform.runLater(board::requestFocus);
     }
 
     private void moveMaze(Position destination) {
-        if (maze == null || mazePlayer.equals(maze.goal())) return;
-        int distance = Math.abs(destination.row() - mazePlayer.row())
-                + Math.abs(destination.column() - mazePlayer.column());
-        if (distance != 1 || !maze.isOpen(destination)) return;
-        mazePlayer = destination;
-        mazeSteps++;
+        if (maze == null || !mazeChallenge.moveTo(destination)) {
+            return;
+        }
         sound.click();
         refreshMaze();
-        if (mazePlayer.equals(maze.goal())) {
-            consoleMessage.setText("GOAL REACHED IN " + mazeSteps + " MOVES.");
+        if (mazeChallenge.finished()) {
+            showChallengeResults();
         }
     }
 
+    private void showChallengeResults() {
+        String efficiency = String.format(Locale.ROOT, "%.1f", mazeChallenge.efficiencyPercent());
+        String verdict = mazeChallenge.extraMoves() == 0
+                ? "PERFECT! YOUR ROUTE IS OPTIMAL."
+                : "YOU CAN DO BETTER. TRY THE SAME MAZE AGAIN.";
+        mazeResults.setText("YOUR MOVES:       " + mazeChallenge.moves()
+                + "\nBFS OPTIMAL:      " + mazeChallenge.optimalMoves()
+                + "\nEXTRA MOVES:      +" + mazeChallenge.extraMoves()
+                + "\nEFFICIENCY:       " + efficiency + "%"
+                + "\n\n" + verdict
+                + "\nCOMPARE VISITED CELLS WITH THE SHORTEST PATH.");
+        mazeResults.setVisible(true);
+        mazeResults.setManaged(true);
+        mazePathButtons.setVisible(true);
+        mazePathButtons.setManaged(true);
+        consoleMessage.setText("CHALLENGE COMPLETE. COMPARE YOUR ROUTE OR RETRY THE SAME SEED.");
+    }
+
     private void refreshMaze() {
+        Set<Position> humanVisited = showMyRoute
+                ? new HashSet<>(mazeChallenge.playerRoute()) : Set.of();
+        Set<Position> optimalCells = showOptimalRoute
+                ? new HashSet<>(mazeChallenge.optimalRoute()) : Set.of();
+
         for (int row = 0; row < maze.rows(); row++) {
             for (int column = 0; column < maze.columns(); column++) {
                 Position place = new Position(row, column);
                 Label cell = mazeCells[row][column];
                 cell.getStyleClass().removeAll(
-                        "maze-wall", "maze-open", "maze-player", "maze-goal", "maze-path");
-
+                        "maze-wall", "maze-open", "maze-player", "maze-goal",
+                        "maze-human-route", "maze-optimal-route");
                 if (!maze.isOpen(place)) {
                     cell.getStyleClass().add("maze-wall");
                     cell.setText("");
-                } else if (place.equals(mazePlayer)) {
+                } else if (place.equals(maze.goal()) && mazeChallenge.finished()) {
+                    cell.getStyleClass().add("maze-goal");
+                    cell.setText("G");
+                } else if (place.equals(mazeChallenge.playerPosition())) {
                     cell.getStyleClass().add("maze-player");
                     cell.setText("P");
                 } else if (place.equals(maze.goal())) {
                     cell.getStyleClass().add("maze-goal");
                     cell.setText("G");
+                } else if (optimalCells.contains(place)) {
+                    cell.getStyleClass().add("maze-optimal-route");
+                    cell.setText("·");
+                } else if (humanVisited.contains(place)) {
+                    cell.getStyleClass().add("maze-human-route");
+                    cell.setText("·");
                 } else {
                     cell.getStyleClass().add("maze-open");
                     cell.setText("");
@@ -515,9 +580,13 @@ public class StratumApp extends Application {
                         + (maze.isOpen(place) ? ", open" : ", wall"));
             }
         }
-        mazeMessage.setText(mazePlayer.equals(maze.goal())
-                ? "MAZE COMPLETE IN " + mazeSteps + " MOVES"
-                : "MOVES: " + mazeSteps + "  /  GOAL: G  /  PLAYER: P");
+
+        if (mazeChallenge.finished()) {
+            mazeMessage.setText("GOAL REACHED / " + mazeChallenge.moves()
+                    + " MOVES / BFS BEST: " + mazeChallenge.optimalMoves());
+        } else {
+            mazeMessage.setText("MOVES: " + mazeChallenge.moves() + " / GOAL: G / PLAYER: P");
+        }
     }
 
     private void showMazeBenchmark() {
