@@ -47,6 +47,16 @@ A score of 100% means shortest route, not faster computation or a learning AI. T
 
 The `TRACE` viewer records only **159 initial events and the final choice**, rather than every node, while still reporting full search counts. Different root moves are individually searched with full alpha/beta windows so candidate scores are exact and comparable. Ties are resolved in row-major board order.
 
+## Labyrinth educational trace architecture
+
+`MazeSolver.solve(maze, algorithm)` and `MazeSolver.trace(maze, algorithm)` call the **same algorithm implementations** for BFS, Dijkstra and A*. The optional trace recorder captures one immutable snapshot per expanded node, including the current position, discovered frontier, explored cells and the values `g` (accumulated path cost), `h` (admissible Manhattan heuristic for A*) and `f=g+h`. Recorded steps match `PathResult.exploredNodes()`. Normal gameplay and benchmarks do not allocate trace snapshots.
+
+`MazeLearningScreens` draws the actual search state on a JavaFX grid and provides algorithm switching, Previous/Next/Final Result controls, clear definitions and the practical Apply exercise. The controller keeps the original maze scroll view, so viewing the trace does **not** reset the human player. Global arrow keys move the player only when the playable maze itself is visible.
+
+`ServiceRouteExample` is an independent pure-Java illustration using **BFS for fewest hops** and **Dijkstra for minimum nonnegative weighted cost**. The fictional graph has API → DATABASE cost 8 and API → GATEWAY → DATABASE cost 2 + 2. These values are examples, not latency benchmarks.
+
+The generated maze remains a perfect maze with unit-cost edges, so BFS/Dijkstra/A* all find the same optimal distance. This is clearly explained to learners, who practice weighted routing in APPLY rather than drawing false conclusions from the maze alone.
+
 ## Experiment semantics
 
 **Minimax vs Random:** `ExperimentRunner` uses `java.util.Random(seed)` to select uniformly among legal random-player moves. Minimax alternates between X and O across games. Scores are always wins, draws and losses for Minimax, and results should be repeatable for the same seed and game count.
