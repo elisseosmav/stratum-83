@@ -55,3 +55,15 @@ This regression check still needs to be performed on an actual Windows/JavaFX de
 ## Build status
 
 This source distribution is intended for a standard Java 21 / Maven / JavaFX environment. Full Windows JavaFX GUI acceptance testing is not claimed in advance. See the delivery notes in the accompanying chat for what was actually executed in the build environment.
+
+## Labyrinth acceptance checks (v0.3 preview)
+
+1. Start `MAZE`; confirm the board contains walls, P and G.
+2. Use the arrow keys to move one step. Click an adjacent open cell to move one step.
+3. Attempt to cross a wall or click a distant cell; confirm no movement occurs.
+4. Select BFS, Dijkstra and A*; verify all paths reach G and the step counts agree.
+5. Select COMPARE; confirm all three algorithms show shortest-path steps and explored-cell counts.
+6. Select NEW MAZE; confirm the seed changes and the previous path is cleared.
+7. Complete a maze; confirm the status announces completion and blocks further movement.
+8. Return to Grid Zero and confirm X and O remain visible after moves (Issue #10 fix).
+9. Resize the window to 680×600 and ensure the Labyrinth UI remains usable.
