@@ -1,6 +1,6 @@
 # STRATUM-83 — Architecture and UI Design
 
-**Current design candidate: v0.3.0-beta.2** (not yet an official release)
+**Current educational design candidate: v0.3.0-beta.2 / Play → Trace → Explain → Apply** (not yet an official release)
 
 ## Purpose
 
@@ -38,6 +38,14 @@ The pure-Java `MazeChallenge` class owns the player's visited route and validate
 After the player reaches the goal, JavaFX displays **moves, optimal BFS moves, extra moves and efficiency** (`100 × optimal / actual`). Backtracking counts as real movement. Both the player's visited-cell set and the BFS route can then be highlighted separately; visited-cell coloring does not attempt to show revisit order. `RETRY SAME MAZE` starts again from the same seed and clears all score and overlay state, while `NEW MAZE` increments the seed.
 
 A score of 100% means shortest route, not faster computation or a learning AI. The Research Lab keeps its pathfinding benchmark separate and uses the same solver classes.
+
+## Grid Zero educational trace architecture
+
+`MinimaxPlayer.chooseMove()` and `MinimaxPlayer.analyzeMove()` call the **same minimax/alpha-beta search routine**. An immutable `MinimaxAnalysis` returns candidate scores, bounded search events, exact visited-state and cutoff counts, and the chosen move. When a player places X, the JavaFX controller invokes `analyzeMove()` and executes that decision's move; no duplicate AI rules exist.
+
+`GridZeroLearningScreens` renders the saved decision as step-by-step text boards and event explanations. It also provides the Explain view and a toy engineering Apply exercise. `WorstCasePolicy` is a separate ordinary Java class that minimizes a modeled maximum cost; input costs are illustrative and have no claim to real service measurement.
+
+The `TRACE` viewer records only **159 initial events and the final choice**, rather than every node, while still reporting full search counts. Different root moves are individually searched with full alpha/beta windows so candidate scores are exact and comparable. Ties are resolved in row-major board order.
 
 ## Experiment semantics
 
