@@ -156,10 +156,20 @@
     -fx-font-weight: bold;
     -fx-alignment: center;
 }
-.maze-wall { -fx-background-color: #346347; -fx-border-color: #346347; }
-.maze-open { -fx-background-color: #06150d; }
-.maze-player { -fx-background-color: #194930; -fx-text-fill: #ffffff; }
-.maze-goal { -fx-background-color: #3a4820; -fx-text-fill: #ffe899; }
+.maze-wall { -fx-background-color: #2d563f; -fx-border-color: #2d563f; }
+.maze-open { -fx-background-color: #04130b; -fx-border-color: #346d4a; }
+.maze-player { -fx-background-color: #145c37; -fx-border-color: #8cddac; -fx-text-fill: #ffffff; }
+.maze-goal { -fx-background-color: #4a4e20; -fx-border-color: #ebdb83; -fx-text-fill: #ffe899; }
+.maze-human-route { -fx-background-color: #173a42; -fx-border-color: #4798b0; -fx-text-fill: #97e8ff; }
+.maze-optimal-route { -fx-background-color: #26482b; -fx-border-color: #a6e86d; -fx-text-fill: #e2ffb2; }
+
+/* Only shown after a human reaches the maze goal. */
+.challenge-results {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 14px;
+    -fx-fill: #d2ffe0;
+    -fx-text-alignment: center;
+}
 /* Grid Zero X/O marks are drawn in labels above the buttons. */
 .board-mark {
     -fx-text-fill: #d2ffe0;
