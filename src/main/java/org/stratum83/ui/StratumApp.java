@@ -18,6 +18,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.stratum83.game.GameResult;
 import org.stratum83.game.GridZeroGame;
@@ -54,7 +55,7 @@ public class StratumApp extends Application {
     private Position mazePlayer;
     private Label[][] mazeCells;
     private Label mazeMessage;
-    private Label mazeReport;
+    private Text mazeReport;
     private Set<Position> shownPath = Set.of();
     private long mazeSeed = 1983;
     private int mazeSteps;
@@ -126,7 +127,7 @@ public class StratumApp extends Application {
     }
 
     private VBox buildConsole() {
-        Label instructions = new Label("COMMANDS: PLAY  |  DUEL  |  EXPERIMENT  |  HELP  |  MENU  |  EXIT     F1 HELP  /  F2 SOUND  /  ESC MENU");
+        Label instructions = new Label("COMMANDS: PLAY  |  DUEL  |  EXPERIMENT  |  MAZE  |  HELP  |  MENU  |  EXIT     F1 HELP  /  F2 SOUND  /  ESC MENU");
         instructions.getStyleClass().add("hint");
         instructions.setWrapText(true);
 
@@ -417,9 +418,9 @@ public class StratumApp extends Application {
                 actionButton("MAIN MENU", this::showMenu));
         navigationButtons.setAlignment(Pos.CENTER);
 
-        mazeReport = new Label("SEED: " + mazeSeed + "  |  EXPLORE OR SELECT A SOLVER");
+        // Text displays each report line without Label's ellipsis/truncation.
+        mazeReport = new Text("SEED: " + mazeSeed + "  |  EXPLORE OR SELECT A SOLVER");
         mazeReport.getStyleClass().add("maze-report");
-        mazeReport.setWrapText(true);
 
         VBox content = new VBox(11, title, instructions, mazeMessage, board,
                 solverButtons, navigationButtons, mazeReport);
