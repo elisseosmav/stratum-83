@@ -62,7 +62,7 @@ This source distribution is intended for a standard Java 21 / Maven / JavaFX env
 2. Use the arrow keys to move one step. Click an adjacent open cell to move one step.
 3. Attempt to cross a wall or click a distant cell; confirm no movement occurs.
 4. Select BFS, Dijkstra and A*; verify all paths reach G and the step counts agree.
-5. Select COMPARE; confirm all three algorithms show shortest-path steps and explored-cell counts.
+5. Select COMPARE; confirm **three complete rows** (BFS, DIJKSTRA, A_STAR) show shortest-path steps and explored-cell counts. The third row must not be clipped or display `...` (Windows screenshot regression).
 6. Select NEW MAZE; confirm the seed changes and the previous path is cleared.
 7. Complete a maze; confirm the status announces completion and blocks further movement.
 8. Return to Grid Zero and confirm X and O remain visible after moves (Issue #10 fix).
