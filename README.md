@@ -2,9 +2,26 @@
 
 **Development candidate: v0.3.0-beta.2 — Java 21 / JavaFX offline research terminal**
 
+**Classic Games. Real Algorithms. Practical Engineering.**
+
 STRATUM-83 combines two playable games with a separate Research Lab for repeatable classical-AI experiments. It is an independent, non-commercial educational project; no account, cloud service, telemetry or LLM subscription is needed.
 
-**Release status:** These changes live on the [terminal research redesign branch](https://github.com/elisseosmav/stratum-83/tree/feature/labyrinth-human-vs-algorithm), **not on `main`**. The [existing published beta](https://github.com/elisseosmav/stratum-83/releases/tag/v0.3.0-beta.1) is a prior snapshot. This candidate is not an official release until the maintainer publishes a new tag.
+**Release status:** These changes live on the [terminal research redesign branch](https://github.com/elisseosmav/stratum-83/tree/feature/grid-zero-learning-lab), **not on `main`**. The [existing published beta](https://github.com/elisseosmav/stratum-83/releases/tag/v0.3.0-beta.1) is a prior snapshot. This candidate is not an official release until the maintainer publishes a new tag.
+
+## The educational experience: Play → Trace → Explain → Apply
+
+Games introduce a problem, but **learning how the algorithm works and when it applies to software engineering is the main purpose**.
+
+- **PLAY:** Play Grid Zero against Minimax using the same AI that generates the trace.
+- **TRACE:** After the computer moves, step through recorded board states, Minimax/MAX/MIN outcomes and alpha-beta pruning. See exact candidate move scores, evaluated positions and cutoffs. The UI samples at most 159 early search events plus the final selection and tells you when the trace is truncated.
+- **EXPLAIN:** Learn how the score is computed and why the computer chooses a particular move.
+- **APPLY:** Choose a retry policy in a small hypothetical worst-case engineering exercise, then see why minimizing maximum loss selects the bounded policy.
+
+The `TRACE`, `EXPLAIN`, and `APPLY` commands are accessible in the terminal, as well as buttons inside Grid Zero. `DUEL` remains a human-versus-human mode. All lessons are local and do not require an LLM.
+
+- [Approved vision and educational principles](docs/EDUCATIONAL-VISION.md)
+- [Grid Zero full educational chapter](docs/GRID-ZERO-LEARNING.md)
+- [Java 21 CI workflow](.github/workflows/java-ci.yml)
 
 ## Play and Research are separate
 
@@ -84,11 +101,11 @@ Option A: clone with Git (requires Git installed):
 
 ```powershell
 cd "$HOME\Projects"
-git clone --branch feature/labyrinth-human-vs-algorithm https://github.com/elisseosmav/stratum-83.git stratum-83-challenge
-cd .\stratum-83-challenge
+git clone --branch feature/grid-zero-learning-lab https://github.com/elisseosmav/stratum-83.git stratum-83-learning
+cd .\stratum-83-learning
 ```
 
-Option B: open [STRATUM-83 on GitHub](https://github.com/elisseosmav/stratum-83), select the **feature/labyrinth-human-vs-algorithm** branch and choose **Code → Download ZIP**, extract it, and open PowerShell **inside the extracted source directory**.
+Option B: open [STRATUM-83 on GitHub](https://github.com/elisseosmav/stratum-83), select the **feature/grid-zero-learning-lab** branch and choose **Code → Download ZIP**, extract it, and open PowerShell **inside the extracted source directory**.
 
 You **must** run Maven from the directory that contains `pom.xml`, not the Maven `bin` directory. Verify:
 
@@ -120,14 +137,14 @@ STRATUM-83\
 ├── apache-maven\
 │   └── bin\
 │       └── mvn.cmd
-└── stratum-83-challenge\
+└── stratum-83-learning\
     └── pom.xml
 ```
 
 Use these PowerShell commands:
 
 ```powershell
-cd "$HOME\Projects\STRATUM-83\stratum-83-challenge"
+cd "$HOME\Projects\STRATUM-83\stratum-83-learning"
 Test-Path .\pom.xml
 & "..\apache-maven\bin\mvn.cmd" -version
 & "..\apache-maven\bin\mvn.cmd" clean test
@@ -159,6 +176,9 @@ Use JDK 21 and Maven 3.9+, then run `mvn test` and `mvn javafx:run`. A desktop e
 | Command | Action |
 | --- | --- |
 | `PLAY` | Grid Zero against Minimax |
+| `TRACE` | Step through the last computer search |
+| `EXPLAIN` | Learn the live move's reasoning and Minimax rules |
+| `APPLY` | Try a worst-case software engineering exercise |
 | `DUEL` | Grid Zero, two local players |
 | `MAZE` | Play Labyrinth |
 | `RESEARCH` | Open Research Lab |
