@@ -8,7 +8,7 @@ A small, offline Java 21/JavaFX educational application demonstrating classical 
 
 ## Two experiences
 
-1. **Play:** Grid Zero (against Minimax) and Labyrinth (navigate the maze).
+1. **Play:** Grid Zero (against Minimax) and Labyrinth human-versus-algorithm challenge (navigate, then compare your route with BFS).
 2. **Research Lab:** Minimax vs Random and Pathfinding Benchmark, both displaying configurable inputs and results rather than duplicated game screens.
 
 The main menu has just three buttons: Grid Zero, Labyrinth, Research Lab. Two-player Grid Zero is available through `DUEL`. `HELP` and `EXIT` are terminal commands / keyboard shortcuts, not menu buttons.
@@ -20,7 +20,7 @@ StratumApp (JavaFX views, keyboard and terminal commands)
   |
   +-- Play: GridZeroGame -- MinimaxPlayer
   |
-  +-- Play: Maze / MazeGenerator
+  +-- Play: Maze / MazeGenerator -- MazeChallenge -- MazeSolver (BFS)
   |
   +-- Research Lab: ExperimentRunner -- GridZeroGame / MinimaxPlayer
   |
@@ -30,6 +30,14 @@ StratumApp (JavaFX views, keyboard and terminal commands)
 ```
 
 The JavaFX screen handles input and draws output. It never computes paths or AI decisions itself. Game state is updated through the game-engine API. The latest Grid Zero layout uses **independent text labels above its buttons** so occupied marks remain visible after moves.
+
+## Human-versus-algorithm Labyrinth challenge
+
+The pure-Java `MazeChallenge` class owns the player's visited route and validates every movement. It computes the BFS optimum once per attempt using the existing `MazeSolver`. It does **not** reveal the reference route during play.
+
+After the player reaches the goal, JavaFX displays **moves, optimal BFS moves, extra moves and efficiency** (`100 × optimal / actual`). Backtracking counts as real movement. Both the player's visited-cell set and the BFS route can then be highlighted separately; visited-cell coloring does not attempt to show revisit order. `RETRY SAME MAZE` starts again from the same seed and clears all score and overlay state, while `NEW MAZE` increments the seed.
+
+A score of 100% means shortest route, not faster computation or a learning AI. The Research Lab keeps its pathfinding benchmark separate and uses the same solver classes.
 
 ## Experiment semantics
 
