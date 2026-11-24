@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.stratum83.education.WorstCasePolicy;
@@ -173,10 +174,10 @@ public final class GridZeroLearningScreens {
         return result;
     }
 
-    private static HBox actions(Button... buttons) {
-        HBox row = new HBox(12, buttons);
+    private static FlowPane actions(Button... buttons) {
+        FlowPane row = new FlowPane(12, 10);
         row.setAlignment(Pos.CENTER);
-        row.setWrap(true);
+        row.getChildren().addAll(buttons);
         return row;
     }
 }
