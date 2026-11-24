@@ -218,3 +218,25 @@
     -fx-text-fill: #9cddb4;
     -fx-text-alignment: center;
 }
+
+/* Actual search-frontier visualization for Labyrinth TRACE. */
+.maze-trace-current {
+    -fx-background-color: #5b7624;
+    -fx-border-color: #e6ff9d;
+    -fx-text-fill: #ffffff;
+}
+.maze-trace-frontier {
+    -fx-background-color: #164352;
+    -fx-border-color: #68ccf2;
+    -fx-text-fill: #e1faff;
+}
+.maze-trace-explored {
+    -fx-background-color: #15452b;
+    -fx-border-color: #397f55;
+    -fx-text-fill: #89cda3;
+}
+.maze-trace-path {
+    -fx-background-color: #507136;
+    -fx-border-color: #d9ff88;
+    -fx-text-fill: #ffffff;
+}
