@@ -19,6 +19,23 @@ It is an independent project, **not affiliated with or endorsed by the creators 
 - Completely offline while playing; no account or API key required.
 - JUnit tests for game rules, AI moves and reproducible experiments.
 
+## Labyrinth — Second playable game (development preview)
+
+**Labyrinth** is the next offline research game, planned for **v0.3** and implemented on this feature branch. It is not part of the v0.1 main-branch release yet.
+
+- Type `MAZE` or `LABYRINTH`, or select **06 LABYRINTH** in the menu.
+- Move through an original seeded maze using the **arrow keys** or by clicking an **adjacent open cell**.
+- Select **BFS**, **Dijkstra** or **A*** to highlight an optimal path from the start to the goal.
+- Select **COMPARE** to see shortest-path lengths and explored-cell counts for all three algorithms.
+- Select **NEW MAZE** to generate another deterministic layout, and **CLEAR PATH** to remove the overlay.
+- No AWS, external AI models, accounts or runtime Internet access are required.
+
+Read [the Labyrinth educational guide](docs/LABYRINTH.md) to learn the algorithms and experiment methodology. Track release work in [Issue #8](https://github.com/elisseosmav/stratum-83/issues/8).
+
+**Build and run on Windows:** in the project folder containing `pom.xml`, run `mvn clean test` and then `mvn javafx:run`. If Maven is installed alongside the project, use the relative `mvn.cmd` commands in the Windows setup below.
+
+The Java 21 search engine has passed local correctness checks, including repeated seeded mazes. The full JavaFX GUI still requires Windows testing before this feature can be released.
+
 ## Windows setup (Java 21 and Maven)
 
 STRATUM-83 v0.1 is a **source project**. Building and playing it locally requires **JDK 21** and **Apache Maven 3.9+**. JavaFX is downloaded by Maven, so you do not need to install JavaFX yourself.
@@ -133,6 +150,7 @@ Use JDK 21 and Maven 3.9+, then run `mvn test` and `mvn javafx:run`. A desktop e
 | `PLAY` | Start human vs computer (you are X) |
 | `DUEL` | Start two-player local Grid Zero |
 | `EXPERIMENT` | Open the Minimax vs random experiment |
+| `MAZE` / `LABYRINTH` | Play Labyrinth and compare pathfinding algorithms (feature branch) |
 | `HELP` | Show help |
 | `MENU` | Return to the main menu |
 | `SOUND ON` / `SOUND OFF` | Toggle optional click sounds |
@@ -149,6 +167,7 @@ The experiment runs 200 games against a random legal-move opponent using a fixed
 ```text
 src/main/java/org/stratum83/
   game/       GridZeroGame, Move, MinimaxPlayer, GameResult
+  labyrinth/  Maze, MazeGenerator, MazeSolver, Position, PathResult
   research/   ExperimentRunner, ExperimentResult
   ui/         StratumApp, SoundPlayer
 src/main/resources/terminal.css
