@@ -26,8 +26,6 @@ import org.stratum83.game.MinimaxPlayer;
 import org.stratum83.game.Move;
 import org.stratum83.labyrinth.Maze;
 import org.stratum83.labyrinth.MazeGenerator;
-import org.stratum83.labyrinth.MazeSolver;
-import org.stratum83.labyrinth.PathResult;
 import org.stratum83.labyrinth.Position;
 import java.util.Locale;
 import org.stratum83.research.ExperimentResult;
@@ -127,7 +125,7 @@ public class StratumApp extends Application {
     }
 
     private VBox buildConsole() {
-        Label instructions = new Label("COMMANDS: PLAY  |  DUEL  |  MAZE  |  RESEARCH  |  EXPERIMENT  |  HELP  |  MENU  |  EXIT     F1 HELP  /  F2 SOUND  /  ESC MENU");
+        Label instructions = new Label("COMMANDS: PLAY | DUEL | MAZE | RESEARCH | EXPERIMENT | BENCHMARK | HELP | MENU | EXIT     F1 HELP / F2 SOUND / ESC MENU");
         instructions.getStyleClass().add("hint");
         instructions.setWrapText(true);
 
