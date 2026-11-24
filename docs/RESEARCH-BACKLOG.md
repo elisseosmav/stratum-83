@@ -3,6 +3,8 @@
 > **Status:** exploratory ideas, **not** approved releases or promised features  
 > **Updated:** 24 November 2026
 
+**Classic Games. Real Algorithms. Practical Engineering.** Each approved game must move from Play to Trace, Explain and Apply—with a realistic and bounded software engineering problem.
+
 This page collects research questions that could become future STRATUM-83 games or experiments. A backlog entry is **not** a GitHub milestone and has no scheduled delivery date.
 
 ## Current implemented experiments (development candidate)
@@ -12,7 +14,7 @@ The Research Lab is deliberately **results-focused** and does not duplicate the 
 - **Grid Zero / Minimax vs Random:** a configurable pseudorandom seed and number of games; report wins, draws and losses. The seed controls the random player, not Minimax.
 - **Labyrinth / Pathfinding Benchmark:** select a starting seed and 1–100 generated mazes. BFS, Dijkstra and A* solve identical inputs; compare average shortest-path steps and explored cells, not an interactive maze.
 
-These functions are on [feature/terminal-research-redesign](https://github.com/elisseosmav/stratum-83/tree/feature/terminal-research-redesign) pending acceptance tests, not part of a stable release.
+Grid Zero now additionally has a trace/explain/apply learning pilot on [feature/grid-zero-learning-lab](https://github.com/elisseosmav/stratum-83/tree/feature/grid-zero-learning-lab). The candidate still requires Windows acceptance testing and is not a stable release.
 
 ## Candidate experiments
 
@@ -39,6 +41,7 @@ A candidate should satisfy most of these questions:
 5. **Manageable scope:** Can we release a useful first version without unnecessary frameworks?
 6. **Originality:** Can we use original code, game assets and descriptions?
 7. **Documentation:** Can a Wiki chapter explain the methods and their limitations?
+8. **Engineering transfer:** Can learners practice the principle on a credible non-game software problem?
 
 The maintainer decides if an idea becomes a GitHub Issue and later an approved milestone.
 
