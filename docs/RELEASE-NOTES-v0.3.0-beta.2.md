@@ -1,9 +1,17 @@
 # STRATUM-83 v0.3.0 Beta 2 — Release Candidate
 
-> **Not yet published.** These notes describe the proposed `v0.3.0-beta.2` release, sourced from [feature/labyrinth-human-vs-algorithm](https://github.com/elisseosmav/stratum-83/tree/feature/terminal-research-redesign).  
+> **Not yet published.** These notes describe the proposed `v0.3.0-beta.2` release, sourced from [feature/grid-zero-learning-lab](https://github.com/elisseosmav/stratum-83/tree/feature/terminal-research-redesign).  
 > Do not rewrite or move the published `v0.3.0-beta.1` tag.
 
 STRATUM-83 is an offline, non-commercial Java research terminal with original retro styling, playable games and educational classical-AI experiments.
+
+## Educational direction: Play → Trace → Explain → Apply
+
+**STRATUM-83 — Classic Games. Real Algorithms. Practical Engineering.**
+
+Grid Zero now demonstrates its actual Minimax decision-making with interactive recorded search steps, candidate move scores, a readable explanation of alpha-beta pruning, and a self-contained hypothetical engineering worst-case policy exercise. The search trace and gameplay use **one shared Minimax algorithm**, with real counts and bounded event capture; no simulated fake search data.
+
+A Java 21 Maven CI test workflow has been added for Linux and Windows, but it must finish successfully before this candidate is called verified.
 
 ## What's new since Beta 1
 
