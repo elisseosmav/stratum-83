@@ -38,6 +38,7 @@ public class StratumApp extends Application {
 
     private GridZeroGame game;
     private Button[][] squares;
+    private Label[][] marks;
     private Label gameMessage;
     private boolean vsComputer;
 
@@ -150,6 +151,7 @@ public class StratumApp extends Application {
         game = new GridZeroGame();
         vsComputer = againstComputer;
         squares = new Button[3][3];
+        marks = new Label[3][3];
 
         Label title = makeTitle("GRID ZERO");
         Label description = makeDescription(againstComputer
@@ -172,8 +174,16 @@ public class StratumApp extends Application {
                 square.setPrefSize(118, 118);
                 square.setMinSize(95, 95);
                 square.setOnAction(event -> playAt(selectedRow, selectedColumn));
-                board.add(square, column, row);
+
+                // Draw the mark above the button so it does not depend on the button skin.
+                Label markLabel = new Label();
+                markLabel.getStyleClass().add("board-mark");
+                markLabel.setMouseTransparent(true);
+
+                StackPane cell = new StackPane(square, markLabel);
+                board.add(cell, column, row);
                 squares[row][column] = square;
+                marks[row][column] = markLabel;
             }
         }
 
@@ -211,10 +221,10 @@ public class StratumApp extends Application {
             for (int column = 0; column < 3; column++) {
                 char mark = game.getCell(row, column);
                 Button square = squares[row][column];
-                square.setText(mark == GridZeroGame.EMPTY ? "" : String.valueOf(mark));
+                marks[row][column].setText(
+                        mark == GridZeroGame.EMPTY ? "" : String.valueOf(mark));
 
-                // Disabled buttons can dim their text. Keep X and O fully visible,
-                // but only let players select empty squares while the game is active.
+                // Block moves on filled squares without dimming the visible mark.
                 boolean occupied = mark != GridZeroGame.EMPTY;
                 boolean canPlay = !occupied && game.getResult() == GameResult.PLAYING;
                 square.setMouseTransparent(!canPlay);
