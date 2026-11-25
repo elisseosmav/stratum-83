@@ -3,7 +3,7 @@
 > **Status:** exploratory ideas, **not** approved releases or promised features  
 > **Updated:** 24 November 2026
 
-**Classic Games. Real Algorithms. Practical Engineering.** Each approved game must move from Play to Trace, Explain and Apply—with a realistic and bounded software engineering problem.
+**Classic Games. Real Algorithms. Practical Engineering.** Classic games are the main experience; detailed algorithm traces, explanations and engineering examples are optional, not compulsory to play.
 
 This page collects research questions that could become future STRATUM-83 games or experiments. A backlog entry is **not** a GitHub milestone and has no scheduled delivery date.
 
@@ -14,7 +14,7 @@ The Research Lab is deliberately **results-focused** and does not duplicate the 
 - **Grid Zero / Minimax vs Random:** a configurable pseudorandom seed and number of games; report wins, draws and losses. The seed controls the random player, not Minimax.
 - **Labyrinth / Pathfinding Benchmark:** select a starting seed and 1–100 generated mazes. BFS, Dijkstra and A* solve identical inputs; compare average shortest-path steps and explored cells, not an interactive maze.
 
-Grid Zero and Labyrinth now have Play/Trace/Explain/Apply educational pilots on [feature/labyrinth-learning-lab](https://github.com/elisseosmav/stratum-83/tree/feature/labyrinth-learning-lab). The candidate still requires Windows acceptance testing and is not a stable release.
+Grid Zero and Labyrinth now have Play/Trace/Explain/Apply educational pilots on [feature/retro-ai-game-catalog](https://github.com/elisseosmav/stratum-83/tree/feature/retro-ai-game-catalog). The candidate still requires Windows acceptance testing and is not a stable release.
 
 ## Candidate experiments
 
