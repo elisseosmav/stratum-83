@@ -302,3 +302,21 @@
     -fx-border-color: #477d53;
     -fx-text-alignment: center;
 }
+
+/* Game-history Minimax lessons. The board is deliberately large and simple. */
+.history-square {
+    -fx-background-color: #0e2a18;
+    -fx-border-color: #4b8c61;
+    -fx-border-width: 1px;
+    -fx-text-fill: #d9ffe3;
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-alignment: center;
+}
+.history-highlight {
+    -fx-background-color: #244d2f;
+    -fx-border-color: #e2fb84;
+    -fx-border-width: 2px;
+    -fx-text-fill: #ffffff;
+}
