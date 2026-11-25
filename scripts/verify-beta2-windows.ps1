@@ -10,7 +10,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
-$expectedBranch = 'feature/labyrinth-learning-lab'
+$expectedBranch = 'feature/grid-zero-game-history-lessons'
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     throw 'Git is required to verify the tested commit.'
@@ -80,8 +80,8 @@ if (-not $SkipGui) {
 $checks = @(
     [pscustomobject]@{ Key = 'Main menu'; Question = 'Three main menu entries, command help, and navigation work' },
     [pscustomobject]@{ Key = 'Grid Zero Play'; Question = 'X/O remain visible and normal Minimax gameplay works' },
-    [pscustomobject]@{ Key = 'Grid Zero Trace'; Question = 'TRACE shows real candidate scores and PREVIOUS/NEXT steps' },
-    [pscustomobject]@{ Key = 'Grid Zero Explain/Apply'; Question = 'EXPLAIN is readable; APPLY correctly picks bounded retries' },
+    [pscustomobject]@{ Key = 'Grid Zero History'; Question = 'HISTORY lists actual moves; selecting human move 3 explains computer move 4' },
+    [pscustomobject]@{ Key = 'Grid Zero Lesson'; Question = 'EXPLAIN shows real board, hypothetical outcomes, actual computer decision; APPLY remains available' },
     [pscustomobject]@{ Key = 'Labyrinth Play'; Question = 'Human navigation, move count, retry and goal results work' },
     [pscustomobject]@{ Key = 'Labyrinth Trace'; Question = 'BFS/Dijkstra/A* show current, frontier, explored and final path' },
     [pscustomobject]@{ Key = 'Labyrinth Explain/Apply'; Question = 'EXPLAIN works; APPLY picks weighted two-hop cost 4' },
