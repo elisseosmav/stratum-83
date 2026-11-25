@@ -13,9 +13,9 @@ STRATUM-83 combines two playable games with a separate Research Lab for repeatab
 Games introduce a problem, but **learning how the algorithm works and when it applies to software engineering is the main purpose**.
 
 - **PLAY:** Play Grid Zero against Minimax using the same AI that generates the trace.
-- **TRACE:** After the computer moves, step through recorded board states, Minimax/MAX/MIN outcomes and alpha-beta pruning. See exact candidate move scores, evaluated positions and cutoffs. The UI samples at most 159 early search events plus the final selection and tells you when the trace is truncated.
-- **EXPLAIN:** Learn how the score is computed and why the computer chooses a particular move.
-- **APPLY:** Choose a retry policy in a small hypothetical worst-case engineering exercise, then see why minimizing maximum loss selects the bounded policy.
+- **TRACE:** Starts with a plain-language explanation of the computer's chosen move. Step through a clear 3×3 board showing possible futures, then optionally reveal alternative move scores and search statistics. See exact candidate move scores, evaluated positions and cutoffs. The UI samples at most 159 early search events plus the final selection and tells you when the trace is truncated.
+- **EXPLAIN:** Learn three basic steps—imagine, predict and decide—before optionally showing scores and pruning details.
+- **APPLY:** Choose between two retry policies, then reveal the worst-case reasoning. All numbers are fictional and used only for teaching.
 
 The `TRACE`, `EXPLAIN`, and `APPLY` commands work **contextually in Grid Zero and Labyrinth**, and the same actions are clickable inside each game. `DUEL` remains a human-versus-human mode. All lessons are local and do not require an LLM.
 
