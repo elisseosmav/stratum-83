@@ -14,12 +14,12 @@ An original, non-commercial **offline Java 21 / JavaFX retro game collection**. 
 | --- | --- | --- | --- |
 | **Grid Zero** | Human plays X | Minimax with alpha-beta chooses O | Playable |
 | **Labyrinth** | Human uses arrow keys to explore in fog | A* finds a shortest reference route | Playable |
-| Crisis Protocol | Future human/agent interaction | Rule-based agents | Planned |
 | Checkers | Future human opponent | Minimax and heuristics | Proposed |
 | Blackjack | Future human player | Probabilistic strategy | Proposed |
 | Chess | Future human opponent | Search and evaluation | Proposed |
+| Crisis Protocol | Future human/agent interaction | Rule-based agents | Planned |
 
-Unavailable titles are disabled—not working demos. There is **no local human-vs-human mode** in the rebuilt interface.
+Unavailable titles remain disabled without showing Planned or Proposed labels in the game menu—not working demos. There is **no local human-vs-human mode** in the rebuilt interface.
 
 **ALGORITHMS** is a separate screen with short explanations of Minimax, alpha-beta pruning, randomized depth-first maze generation, BFS, Dijkstra, A* and line-of-sight visibility. It explains what each method does and a practical use. The explanations are optional; playing games does not require reading them.
 
