@@ -15,7 +15,19 @@ The interactive Grid Zero learning pilot adds the `TRACE`, `EXPLAIN`, and `APPLY
 
 **Key limitation:** Minimax fits modeled competitive/worst-case decisions, while expected value is often better for probabilistic problems.
 
-[Read the full Grid Zero learning guide](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-learning-lab/docs/GRID-ZERO-LEARNING.md) for source links, exercises and limitations.
+[Read the full Grid Zero learning guide](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-game-history-lessons/docs/GRID-ZERO-LEARNING.md) for source links, exercises and limitations.
+
+## A lesson from your own match
+
+The newest development candidate uses **PLAY → GAME HISTORY → EXPLAIN MOVE**.
+
+After playing Grid Zero, select **GAME HISTORY** and choose an actual X move such as **move 3**. STRATUM-83 reconstructs the position from your game and explains why Minimax chose the following **O move 4**.
+
+You can examine alternative O placements and step through the future moves that would follow if both sides played optimally. These are labeled **hypothetical** and never overwrite the match's real history. Finally, reveal the move the computer truly selected.
+
+`EXPLAIN` opens the latest recorded computer decision; `HISTORY` or `TRACE` opens the move list. The technical search-tree display is available separately through `ADVANCED`.
+
+[Read the full updated Grid Zero learning chapter](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-game-history-lessons/docs/GRID-ZERO-LEARNING.md).
 
 ## New beginner-friendly learning view
 
@@ -27,7 +39,7 @@ The TRACE, EXPLAIN and APPLY screens now teach the **answer first**, with option
 
 **Worked example:** On board `OXX / .O. / XOX`, O chooses the last square in the middle row (row 2, column 3): that produces a draw (0), instead of choosing row 2, column 1 and eventually losing (−8).
 
-[Full Grid Zero learning chapter](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-learning-lab/docs/GRID-ZERO-LEARNING.md).
+[Full Grid Zero learning chapter](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-game-history-lessons/docs/GRID-ZERO-LEARNING.md).
 
 ## Perfect Minimax
 
@@ -60,8 +72,8 @@ The seed controls the pseudorandom opponent, so repeating with the same seed and
 
 ## Java implementation
 
-- [GridZeroGame.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-learning-lab/src/main/java/org/stratum83/game/GridZeroGame.java)
-- [MinimaxPlayer.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-learning-lab/src/main/java/org/stratum83/game/MinimaxPlayer.java)
-- [ExperimentRunner.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-learning-lab/src/main/java/org/stratum83/research/ExperimentRunner.java)
+- [GridZeroGame.java](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-game-history-lessons/src/main/java/org/stratum83/game/GridZeroGame.java)
+- [MinimaxPlayer.java](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-game-history-lessons/src/main/java/org/stratum83/game/MinimaxPlayer.java)
+- [ExperimentRunner.java](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-game-history-lessons/src/main/java/org/stratum83/research/ExperimentRunner.java)
 
 This experiment is classical, deterministic search against a seeded random baseline—not machine learning or an LLM evaluation.
