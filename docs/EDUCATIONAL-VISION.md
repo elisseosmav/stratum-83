@@ -13,6 +13,14 @@ STRATUM-83 is an independent, non-commercial, offline Java 21 learning terminal.
 
 The **Research Lab** remains the location for reproducible experiments with configurable seeds and metrics. It complements—not replaces—the four-stage learning experience.
 
+## Teach from the player's actual game
+
+Grid Zero's preferred learning journey is now **Play → Game History → Explain Move → Apply**. The learner chooses a turn from their own match, e.g. X on move 3, to learn why Minimax chose the next O move 4.
+
+An explanation begins with a replay of the actual position. The learner predicts alternative O moves, sees hypothetical future responses under perfect play, and finally compares the possibilities with the computer's recorded decision. **Actual moves and simulated futures must never be conflated.**
+
+Technical search-tree events and numerical scores remain optional advanced material. This is a refinement of the approved **Play → Trace → Explain → Apply** vision, not a change in the project's fundamental purpose.
+
 ## Quality rules
 
 - **One source of truth:** game AI and recorded trace must use the same algorithm, scoring scheme and tie-breaking.
