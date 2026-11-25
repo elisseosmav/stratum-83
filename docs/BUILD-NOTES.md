@@ -1,3 +1,7 @@
+> **CURRENT STATUS — 25 NOVEMBER 2026:** The latest unreleased user-facing UI is **GAMES + ALGORITHMS**, on [feature/clean-games-algorithm-library](https://github.com/elisseosmav/stratum-83/tree/feature/clean-games-algorithm-library). Grid Zero (human X vs Minimax O) and Labyrinth (arrow keys, fog of war, A* comparison after reaching the exit) are playable in that branch. [Latest applicable Java 21 Windows/Ubuntu CI passed](https://github.com/elisseosmav/stratum-83/actions/runs/45683775591); Windows JavaFX visual acceptance is **not yet confirmed**. The historical sections below describe previous development stages and are **not the current UI**. `main` and the published v0.3.0-beta.1 prerelease do not contain this rebuild.
+
+---
+
 # Build and Verification Notes
 
 ## Verification performed in the authoring environment
