@@ -2,6 +2,9 @@ package org.stratum83.ui;
 
 import java.util.List;
 import java.util.function.IntConsumer;
+import javafx.application.Platform;
+import javafx.scene.Parent;
+import javafx.scene.control.ScrollPane;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -101,6 +104,18 @@ public final class GridZeroHistoryScreens {
                 case 4 -> showActualChoice();
                 default -> throw new IllegalStateException("Unknown lesson stage");
             }
+            // Navigation replaces the lesson body. Bring the reader back to the
+            // new heading instead of leaving the viewport scrolled to old content.
+            Platform.runLater(() -> {
+                Parent parent = page.getParent();
+                while (parent != null) {
+                    if (parent instanceof ScrollPane scrolling) {
+                        scrolling.setVvalue(0.0);
+                        break;
+                    }
+                    parent = parent.getParent();
+                }
+            });
         }
 
         private void initialPosition() {
