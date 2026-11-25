@@ -33,6 +33,7 @@ import org.stratum83.game.BlackjackGame;
 import org.stratum83.game.BlackjackOdds;
 import org.stratum83.chess.ChessAI;
 import org.stratum83.chess.ChessGame;
+import org.stratum83.crisis.CrisisGame;
 import org.stratum83.game.GameCatalog;
 import org.stratum83.game.GameResult;
 import org.stratum83.game.GridZeroGame;
@@ -48,7 +49,7 @@ import org.stratum83.labyrinth.Position;
 
 public final class StratumApp extends Application {
 
-    private enum View { GAMES, ALGORITHMS, GRID_ZERO, LABYRINTH, CHECKERS, BLACKJACK, CHESS }
+    private enum View { GAMES, ALGORITHMS, GRID_ZERO, LABYRINTH, CHECKERS, BLACKJACK, CHESS, CRISIS }
 
     private final SoundPlayer sound = new SoundPlayer();
     private final MinimaxPlayer minimax = new MinimaxPlayer();
@@ -112,6 +113,15 @@ public final class StratumApp extends Application {
     private int chessSelectedRow = -1;
     private int chessSelectedCol = -1;
     private boolean chessThinking;
+
+    private CrisisGame crisisGame;
+    private Button[][] crisisCells;
+    private int crisisSelectedTeam;
+    private Label crisisMessage;
+    private Label crisisScore;
+    private Label crisisHumanLog;
+    private Label crisisComputerLog;
+    private Button crisisEndTurn;
 
     @Override
     public void start(Stage stage) {
@@ -217,6 +227,7 @@ public final class StratumApp extends Application {
             case 3 -> startCheckers();
             case 4 -> startBlackjack();
             case 5 -> startChess();
+            case 6 -> startCrisis();
             default -> throw new IllegalStateException("No game for catalog entry " + number);
         }
     }
@@ -1003,6 +1014,164 @@ public final class StratumApp extends Application {
                 + "Threefold repetition, the 50-move rule, and basic insufficient "
                 + "material positions result in a draw. This is a casual opponent, "
                 + "not a full tournament-strength chess engine.");
+        dialog.showAndWait();
+    }
+
+
+    private void startCrisis() {
+        currentView = View.CRISIS;
+        crisisGame = new CrisisGame();
+        crisisSelectedTeam = 0;
+        crisisCells = new Button[CrisisGame.SIZE][CrisisGame.SIZE];
+
+        GridPane board = new GridPane();
+        board.getStyleClass().add("crisis-board");
+        board.setHgap(2);
+        board.setVgap(2);
+        board.setAlignment(Pos.CENTER);
+        for (int row = 0; row < CrisisGame.SIZE; row++) {
+            for (int col = 0; col < CrisisGame.SIZE; col++) {
+                final int r = row;
+                final int c = col;
+                Button tile = button("", () -> clickCrisis(r, c));
+                tile.setMinSize(54, 54);
+                tile.setPrefSize(54, 54);
+                tile.setMaxSize(54, 54);
+                crisisCells[row][col] = tile;
+                board.add(tile, col, row);
+            }
+        }
+
+        crisisMessage = new Label();
+        crisisMessage.getStyleClass().add("game-message");
+        crisisMessage.setWrapText(true);
+        crisisScore = subtitle("");
+        crisisHumanLog = subtitle("");
+        crisisComputerLog = subtitle("");
+
+        crisisEndTurn = button("END ROUND", this::endCrisisTurn);
+        FlowPane controls = actions(
+                crisisEndTurn,
+                button("NEW GAME", this::startCrisis),
+                button("RULES", this::showCrisisRules),
+                button("GAMES", this::showGames));
+
+        VBox content = page(title("CRISIS PROTOCOL"),
+                subtitle("YOU: RESPONSE TEAMS / COMPUTER: CRISIS AGENT"),
+                crisisScore, crisisMessage, board,
+                subtitle("A & B = TEAMS / ! = INCIDENT / H = HOSPITAL / P = POWER / C = COMMS"),
+                crisisHumanLog, crisisComputerLog, controls,
+                subtitle("SELECT A TEAM, THEN A HIGHLIGHTED TILE TO MOVE OR CONTAIN."));
+        showScrollable(content);
+        refreshCrisis();
+    }
+
+    private void clickCrisis(int row, int col) {
+        if (currentView != View.CRISIS || crisisGame == null
+                || crisisGame.result() != CrisisGame.Result.PLAYING) return;
+        CrisisGame.Position target = new CrisisGame.Position(row, col);
+        for (int team = 0; team < 2; team++) {
+            if (crisisGame.team(team).equals(target)) {
+                crisisSelectedTeam = team;
+                refreshCrisis();
+                return;
+            }
+        }
+        if (crisisGame.act(crisisSelectedTeam, target)) {
+            sound.click();
+            refreshCrisis();
+        } else {
+            setStatus("CRISIS PROTOCOL / INVALID TARGET / SELECT A HIGHLIGHTED TILE");
+        }
+    }
+
+    private void endCrisisTurn() {
+        if (currentView == View.CRISIS && crisisGame != null && crisisGame.endTurn()) {
+            refreshCrisis();
+        }
+    }
+
+    private void refreshCrisis() {
+        Set<CrisisGame.Position> targets = Set.copyOf(
+                crisisGame.actionTargets(crisisSelectedTeam));
+        for (int row = 0; row < CrisisGame.SIZE; row++) {
+            for (int col = 0; col < CrisisGame.SIZE; col++) {
+                CrisisGame.Position position = new CrisisGame.Position(row, col);
+                Button tile = crisisCells[row][col];
+                tile.getStyleClass().setAll("crisis-cell",
+                        (row + col) % 2 == 0 ? "crisis-even" : "crisis-odd");
+                if (crisisGame.isSite(position)) tile.getStyleClass().add("crisis-site");
+                if (targets.contains(position)) tile.getStyleClass().add("crisis-target");
+
+                String label = "";
+                String description = "empty";
+                if (crisisGame.isSite(position)) {
+                    int number = crisisGame.sites().indexOf(position);
+                    label = switch (number) {
+                        case 0 -> "H";
+                        case 1 -> "P";
+                        default -> "C";
+                    };
+                    description = switch (number) {
+                        case 0 -> "hospital";
+                        case 1 -> "power station";
+                        default -> "communications";
+                    };
+                }
+                if (crisisGame.hasIncident(position)) {
+                    label = "!";
+                    description += " / crisis incident";
+                    tile.getStyleClass().add("crisis-incident");
+                }
+                for (int team = 0; team < 2; team++) {
+                    if (crisisGame.team(team).equals(position)) {
+                        label = team == 0 ? "A" : "B";
+                        description += " / response team " + label;
+                        tile.getStyleClass().add("crisis-team");
+                        if (team == crisisSelectedTeam) {
+                            tile.getStyleClass().add("crisis-selected");
+                        }
+                    }
+                }
+                tile.setText(label.isEmpty() && targets.contains(position) ? "·" : label);
+                tile.setAccessibleText(position.label() + " / " + description);
+            }
+        }
+        crisisScore.setText("ROUND " + crisisGame.round() + " / " + CrisisGame.MAX_ROUNDS
+                + "     ACTIONS LEFT " + crisisGame.actionsRemaining()
+                + "     ACTIVE INCIDENTS " + crisisGame.incidentCount()
+                + "     SITES SECURE " + (crisisGame.sites().size() - crisisGame.lostSites())
+                + "/" + crisisGame.sites().size());
+
+        crisisMessage.setText(switch (crisisGame.result()) {
+            case HUMAN_WINS -> "ALL INCIDENTS CONTAINED / YOU WIN";
+            case COMPUTER_WINS -> "CRITICAL RESPONSE FAILED / COMPUTER WINS";
+            case PLAYING -> "YOUR MOVE / TEAM " + (crisisSelectedTeam == 0 ? "A" : "B")
+                    + " SELECTED";
+        });
+        crisisHumanLog.setText("RESPONSE: " + crisisGame.lastHumanAction());
+        crisisComputerLog.setText("COMPUTER: " + crisisGame.lastComputerAction());
+        crisisEndTurn.setDisable(crisisGame.result() != CrisisGame.Result.PLAYING
+                || crisisGame.actionsRemaining() == 2);
+        setStatus("CRISIS PROTOCOL / MOVE 1–2 TILES STRAIGHT / CONTAIN ADJACENT INCIDENTS");
+    }
+
+    private void showCrisisRules() {
+        Alert dialog = new Alert(Alert.AlertType.INFORMATION);
+        dialog.setTitle("CRISIS PROTOCOL / RULES");
+        dialog.setHeaderText("Contain the crisis before it reaches critical services");
+        dialog.setContentText(
+                "You control two response teams, A and B. Click a team to select it. "
+                + "Each round you have two total actions: move one team up to two squares "
+                + "horizontally or vertically, or contain an incident in a directly "
+                + "adjacent square. Movement cannot cross incidents or another team.\n\n"
+                + "The computer then spreads the crisis to a neighboring square, "
+                + "prioritizing critical services or the shortest route toward them. "
+                + "Every fourth round the crisis spreads twice.\n\n"
+                + "Contain every incident to win. Lose if two facilities are compromised, "
+                + "12 squares become affected, or 18 rounds expire. Occupying a facility "
+                + "prevents the computer from spreading directly onto its square.\n\n"
+                + "This is a tactical puzzle with deterministic rule-based computer agents.");
         dialog.showAndWait();
     }
 

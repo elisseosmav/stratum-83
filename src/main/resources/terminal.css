@@ -288,3 +288,60 @@
     -fx-border-color: #f0f7ba;
     -fx-border-width: 2px;
 }
+
+
+.crisis-board {
+    -fx-background-color: #0a2417;
+    -fx-border-color: #477b56;
+    -fx-padding: 5px;
+    -fx-border-width: 2px;
+}
+.crisis-cell {
+    -fx-padding: 0;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Consolas", "Lucida Console", monospace;
+    -fx-background-radius: 2px;
+    -fx-border-width: 1px;
+    -fx-border-color: #325d41;
+    -fx-cursor: hand;
+}
+.crisis-even {
+    -fx-background-color: #11341f;
+    -fx-text-fill: #a0edbd;
+}
+.crisis-odd {
+    -fx-background-color: #1a432a;
+    -fx-text-fill: #a0edbd;
+}
+.crisis-site {
+    -fx-background-color: #27453f;
+    -fx-border-color: #b8c277;
+    -fx-text-fill: #f5e6aa;
+    -fx-border-width: 2px;
+}
+.crisis-target {
+    -fx-border-color: #91e2a3;
+    -fx-border-width: 2px;
+    -fx-text-fill: #cff5c9;
+}
+.crisis-incident {
+    -fx-background-color: #71302f;
+    -fx-border-color: #f0a096;
+    -fx-text-fill: #ffe6cb;
+}
+.crisis-team {
+    -fx-background-color: #c3af72;
+    -fx-border-color: #fff0aa;
+    -fx-text-fill: #193421;
+}
+.crisis-selected {
+    -fx-background-color: #f2d98a;
+    -fx-border-color: #f5ffc7;
+    -fx-border-width: 3px;
+    -fx-text-fill: #152e1d;
+}
+.crisis-cell:hover {
+    -fx-border-color: #e9fba5;
+    -fx-border-width: 3px;
+}
