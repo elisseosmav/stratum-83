@@ -24,6 +24,15 @@ It checks the branch, runs `mvn clean test` with the local Maven installation, l
 - `WorstCasePolicyTest` verifies that bounded retries win with the hypothetical cost matrix and that ties and invalid policies are handled.
 - Run the full test suite with `mvn clean test`; GitHub Actions should also run Maven tests on Linux and Windows when enabled.
 
+### Beginner-friendly explanation regression
+
+- Open Grid Zero TRACE after the computer plays. The title **WHY DID THE COMPUTER CHOOSE THIS MOVE?** and a short explanation must be visible immediately; the title must no longer be clipped.
+- Confirm a clear 3×3 board shows recorded search states, with an explicit warning that the intermediate boards are **hypothetical**.
+- Candidate scores and search statistics must be hidden by default and shown only by selecting **COMPARE POSSIBLE MOVES** or **SHOW SEARCH STATISTICS**.
+- In EXPLAIN, verify the three simple steps **IMAGINE → PREDICT → DECIDE**; advanced terminology is hidden under **SHOW TECHNICAL DETAILS**.
+- In APPLY, verify the two choices are clear before the user answers, then show the correct explanation (worst cost 9 for A, 4 for B) and optional application notes.
+- Verify Grid Zero returns to the same game and its X/O marks remain visible.
+
 ### Manual Windows/JavaFX validation
 
 1. Open **Grid Zero**; confirm you can still play X and see computer O marks correctly after a move.
