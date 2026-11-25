@@ -10,7 +10,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
-$expectedBranch = 'feature/retro-ai-game-catalog'
+$expectedBranch = 'feature/clean-games-algorithm-library'
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     throw 'Git is required to verify the tested commit.'
@@ -78,16 +78,16 @@ if (-not $SkipGui) {
 }
 
 $checks = @(
-    [pscustomobject]@{ Key = 'Main menu'; Question = 'Six AI game catalog entries, only two playable, planned games disabled and commands work' },
-    [pscustomobject]@{ Key = 'Grid Zero Play'; Question = 'X/O remain visible and normal Minimax gameplay works' },
-    [pscustomobject]@{ Key = 'Grid Zero History'; Question = 'HISTORY lists actual moves; selecting human move 3 explains computer move 4' },
-    [pscustomobject]@{ Key = 'Grid Zero Lesson'; Question = 'EXPLAIN shows real board, hypothetical outcomes, actual computer decision; APPLY remains available' },
-    [pscustomobject]@{ Key = 'Labyrinth Play'; Question = 'Human navigation, move count, retry and goal results work' },
-    [pscustomobject]@{ Key = 'Labyrinth Trace'; Question = 'BFS/Dijkstra/A* show current, frontier, explored and final path' },
-    [pscustomobject]@{ Key = 'Labyrinth Explain/Apply'; Question = 'EXPLAIN works; APPLY picks weighted two-hop cost 4' },
-    [pscustomobject]@{ Key = 'Preserved game state'; Question = 'Returning from TRACE/EXPLAIN/APPLY preserves maze position and moves' },
-    [pscustomobject]@{ Key = 'Research Lab'; Question = 'Reproducible Minimax and maze benchmark reports work' },
-    [pscustomobject]@{ Key = 'Responsive layout'; Question = 'At 680x600, screens scroll and remain readable; F1/F2/Esc work' }
+    [pscustomobject]@{ Key = 'Two main views'; Question = 'GAMES and ALGORITHMS tabs work; no Research Lab, duel, or trace screens in navigation' },
+    [pscustomobject]@{ Key = 'Catalog'; Question = 'Six named games, only Grid Zero and Labyrinth enabled; others clearly disabled' },
+    [pscustomobject]@{ Key = 'Grid Zero human vs computer'; Question = 'Human plays X, computer automatically replies O using Minimax' },
+    [pscustomobject]@{ Key = 'Grid Zero rendering'; Question = 'X/O marks remain visible, the game ends correctly, and NEW GAME resets it' },
+    [pscustomobject]@{ Key = 'Labyrinth arrows'; Question = 'Arrow keys move P; clicking maze cells does not move the human' },
+    [pscustomobject]@{ Key = 'Fog and sight'; Question = 'Most maze initially dark; nearby walls visible; corridors beyond walls hidden' },
+    [pscustomobject]@{ Key = 'Exploration memory'; Question = 'New corridors reveal while walking; explored areas stay dim; hidden exit stays concealed' },
+    [pscustomobject]@{ Key = 'Human vs A* result'; Question = 'After reaching G, the app shows human steps and A* shortest steps; only then allows showing the A* route' },
+    [pscustomobject]@{ Key = 'Algorithms view'; Question = 'Short plain-language entries cover Minimax, alpha-beta, DFS, BFS, Dijkstra, A* and fog-of-war visibility' },
+    [pscustomobject]@{ Key = 'Navigation and layout'; Question = '680x600 window remains usable; ESC opens games, F2 toggles sound; retry/new maze work' }
 )
 
 $answers = @()
