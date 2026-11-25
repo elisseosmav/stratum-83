@@ -206,3 +206,43 @@
     -fx-font-size: 18px;
     -fx-font-weight: bold;
 }
+
+
+.blackjack-panel {
+    -fx-background-color: #0b2b1a;
+    -fx-border-color: #41694b;
+    -fx-border-width: 1px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-padding: 14px;
+    -fx-min-width: 500px;
+}
+.blackjack-card {
+    -fx-background-color: #e9f2e5;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-border-color: #8caa92;
+    -fx-border-width: 2px;
+}
+.blackjack-card-face {
+    -fx-font-size: 23px;
+    -fx-font-weight: bold;
+}
+.blackjack-card-red .blackjack-card-face {
+    -fx-text-fill: #bc3d45;
+}
+.blackjack-card-black .blackjack-card-face {
+    -fx-text-fill: #173224;
+}
+.blackjack-card-back {
+    -fx-background-color: #244e37;
+    -fx-border-color: #a0c29e;
+    -fx-border-width: 3px;
+}
+.blackjack-card-back .blackjack-card-face {
+    -fx-text-fill: #d6ffe2;
+}
+.action-button:disabled {
+    -fx-opacity: 0.46;
+    -fx-cursor: default;
+}

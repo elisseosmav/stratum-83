@@ -23,7 +23,8 @@ class GameCatalogTest {
         assertTrue(GameCatalog.find(1).orElseThrow().playable());
         assertTrue(GameCatalog.find(2).orElseThrow().playable());
         assertTrue(GameCatalog.find(3).orElseThrow().playable());
-        for (int i = 4; i <= 6; i++) {
+        assertTrue(GameCatalog.find(4).orElseThrow().playable());
+        for (int i = 5; i <= 6; i++) {
             assertFalse(GameCatalog.find(i).orElseThrow().playable());
         }
     }

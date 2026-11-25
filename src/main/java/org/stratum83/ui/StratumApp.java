@@ -2,6 +2,8 @@ package org.stratum83.ui;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 import java.util.Set;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -25,6 +27,8 @@ import javafx.stage.Stage;
 import org.stratum83.game.AlgorithmCatalog;
 import org.stratum83.game.CheckersAI;
 import org.stratum83.game.CheckersGame;
+import org.stratum83.game.BlackjackGame;
+import org.stratum83.game.BlackjackOdds;
 import org.stratum83.game.GameCatalog;
 import org.stratum83.game.GameResult;
 import org.stratum83.game.GridZeroGame;
@@ -40,7 +44,7 @@ import org.stratum83.labyrinth.Position;
 
 public final class StratumApp extends Application {
 
-    private enum View { GAMES, ALGORITHMS, GRID_ZERO, LABYRINTH, CHECKERS }
+    private enum View { GAMES, ALGORITHMS, GRID_ZERO, LABYRINTH, CHECKERS, BLACKJACK }
 
     private final SoundPlayer sound = new SoundPlayer();
     private final MinimaxPlayer minimax = new MinimaxPlayer();
@@ -77,6 +81,23 @@ public final class StratumApp extends Application {
     private Label checkersScore;
     private List<CheckersGame.Square> checkersSelection = List.of();
     private CheckersGame.Turn checkersLastMove;
+
+    private BlackjackGame blackjackGame;
+    private final Random blackjackRandom = new Random();
+    private FlowPane blackjackPlayerCards;
+    private FlowPane blackjackDealerCards;
+    private Label blackjackMessage;
+    private Label blackjackPlayerValue;
+    private Label blackjackDealerValue;
+    private Label blackjackOdds;
+    private Label blackjackScore;
+    private Button blackjackHit;
+    private Button blackjackStand;
+    private Button blackjackNewHand;
+    private int blackjackWins;
+    private int blackjackLosses;
+    private int blackjackPushes;
+    private boolean blackjackCounted;
 
     @Override
     public void start(Stage stage) {
@@ -180,6 +201,7 @@ public final class StratumApp extends Application {
             case 1 -> startGridZero();
             case 2 -> startMaze();
             case 3 -> startCheckers();
+            case 4 -> startBlackjack();
             default -> throw new IllegalStateException("No game for catalog entry " + number);
         }
     }
@@ -588,6 +610,162 @@ public final class StratumApp extends Application {
             }
         }
         setStatus("CHECKERS / MINIMAX DEPTH 4 / ESC = GAMES");
+    }
+
+
+    private void startBlackjack() {
+        currentView = View.BLACKJACK;
+        blackjackWins = 0;
+        blackjackLosses = 0;
+        blackjackPushes = 0;
+
+        blackjackScore = subtitle("");
+        blackjackDealerValue = subtitle("");
+        blackjackPlayerValue = subtitle("");
+        blackjackMessage = new Label();
+        blackjackMessage.getStyleClass().add("game-message");
+        blackjackMessage.setWrapText(true);
+        blackjackOdds = subtitle("");
+        blackjackOdds.setWrapText(true);
+
+        blackjackDealerCards = new FlowPane(8, 8);
+        blackjackDealerCards.setAlignment(Pos.CENTER);
+        blackjackPlayerCards = new FlowPane(8, 8);
+        blackjackPlayerCards.setAlignment(Pos.CENTER);
+
+        blackjackHit = button("HIT / DRAW CARD", this::hitBlackjack);
+        blackjackStand = button("STAND", this::standBlackjack);
+        blackjackNewHand = button("NEW HAND", this::dealBlackjack);
+        FlowPane controls = actions(blackjackHit, blackjackStand, blackjackNewHand,
+                button("RULES", this::showBlackjackRules),
+                button("GAMES", this::showGames));
+
+        VBox dealerPanel = new VBox(7, subtitle("COMPUTER DEALER"),
+                blackjackDealerCards, blackjackDealerValue);
+        dealerPanel.setAlignment(Pos.CENTER);
+        dealerPanel.getStyleClass().add("blackjack-panel");
+
+        VBox playerPanel = new VBox(7, subtitle("YOUR HAND"),
+                blackjackPlayerCards, blackjackPlayerValue);
+        playerPanel.setAlignment(Pos.CENTER);
+        playerPanel.getStyleClass().add("blackjack-panel");
+
+        VBox content = page(title("BLACKJACK"),
+                subtitle("YOU VS COMPUTER DEALER / 52-CARD DECK / STANDS ON ALL 17"),
+                blackjackScore, dealerPanel, playerPanel, blackjackMessage,
+                blackjackOdds, controls,
+                subtitle("NO BETTING / MONTE CARLO ESTIMATES ARE APPROXIMATE"));
+        showScrollable(content);
+        dealBlackjack();
+    }
+
+    private void dealBlackjack() {
+        blackjackGame = new BlackjackGame(blackjackRandom);
+        blackjackCounted = false;
+        refreshBlackjack();
+    }
+
+    private void hitBlackjack() {
+        if (currentView == View.BLACKJACK && blackjackGame.hit()) {
+            sound.click();
+            refreshBlackjack();
+        }
+    }
+
+    private void standBlackjack() {
+        if (currentView == View.BLACKJACK && blackjackGame.stand()) {
+            sound.click();
+            refreshBlackjack();
+        }
+    }
+
+    private void refreshBlackjack() {
+        BlackjackGame.Outcome outcome = blackjackGame.outcome();
+        boolean playing = outcome == BlackjackGame.Outcome.IN_PROGRESS;
+        if (!playing && !blackjackCounted) {
+            switch (outcome) {
+                case PLAYER_WIN -> blackjackWins++;
+                case DEALER_WIN -> blackjackLosses++;
+                case PUSH -> blackjackPushes++;
+                default -> { }
+            }
+            blackjackCounted = true;
+        }
+
+        blackjackDealerCards.getChildren().clear();
+        for (BlackjackGame.Card card : blackjackGame.visibleDealerCards()) {
+            blackjackDealerCards.getChildren().add(blackjackCard(card));
+        }
+        if (playing) {
+            blackjackDealerCards.getChildren().add(blackjackCardBack());
+        }
+        blackjackPlayerCards.getChildren().clear();
+        for (BlackjackGame.Card card : blackjackGame.playerCards()) {
+            blackjackPlayerCards.getChildren().add(blackjackCard(card));
+        }
+
+        blackjackPlayerValue.setText("HAND TOTAL: " + blackjackGame.playerValue()
+                + (BlackjackGame.isSoft(blackjackGame.playerCards()) ? " / SOFT" : ""));
+        blackjackDealerValue.setText(playing
+                ? "VISIBLE: " + blackjackGame.dealerValue() + " / ONE CARD HIDDEN"
+                : "HAND TOTAL: " + blackjackGame.dealerValue());
+        blackjackMessage.setText(blackjackGame.message());
+        blackjackScore.setText("WINS: " + blackjackWins + "   LOSSES: "
+                + blackjackLosses + "   PUSHES: " + blackjackPushes);
+
+        if (playing) {
+            BlackjackOdds.Estimate odds = BlackjackOdds.estimate(
+                    blackjackGame, 3000, blackjackRandom);
+            blackjackOdds.setText(String.format(Locale.ROOT,
+                    "MONTE CARLO (%d TRIALS)  /  NEXT HIT BUST RISK: %.1f%%  /  WIN IF STAND: %.1f%%",
+                    odds.simulations(), odds.hitBustRisk() * 100,
+                    odds.standWinChance() * 100));
+        } else {
+            blackjackOdds.setText("HAND COMPLETE / PRESS NEW HAND TO CONTINUE");
+        }
+        blackjackHit.setDisable(!playing);
+        blackjackStand.setDisable(!playing);
+        blackjackNewHand.setDisable(playing);
+        setStatus("BLACKJACK / COMPUTER DEALER STANDS ON 17 / ESC = GAMES");
+    }
+
+    private static StackPane blackjackCard(BlackjackGame.Card card) {
+        Label face = new Label(card.label());
+        face.getStyleClass().add("blackjack-card-face");
+        StackPane tile = new StackPane(face);
+        tile.getStyleClass().addAll("blackjack-card",
+                card.red() ? "blackjack-card-red" : "blackjack-card-black");
+        tile.setMinSize(64, 86);
+        tile.setPrefSize(64, 86);
+        tile.setMaxSize(64, 86);
+        return tile;
+    }
+
+    private static StackPane blackjackCardBack() {
+        Label face = new Label("?");
+        face.getStyleClass().add("blackjack-card-face");
+        StackPane tile = new StackPane(face);
+        tile.getStyleClass().addAll("blackjack-card", "blackjack-card-back");
+        tile.setMinSize(64, 86);
+        tile.setPrefSize(64, 86);
+        tile.setMaxSize(64, 86);
+        return tile;
+    }
+
+    private void showBlackjackRules() {
+        Alert dialog = new Alert(Alert.AlertType.INFORMATION);
+        dialog.setTitle("BLACKJACK / RULES");
+        dialog.setHeaderText("Beat the computer dealer without exceeding 21");
+        dialog.setContentText(
+                "You receive two cards; one of the dealer's cards stays hidden. "
+                + "HIT draws another card. STAND ends your turn. "
+                + "Aces count as 1 or 11, whichever is better without busting.\n\n"
+                + "The computer draws until reaching 17 and stands on all 17, "
+                + "including soft 17. A natural two-card blackjack wins unless "
+                + "both sides have one. Equal totals are a push.\n\n"
+                + "No bets or payouts. The displayed Monte Carlo estimates "
+                + "sample possible unseen cards and are not guaranteed results.");
+        dialog.showAndWait();
     }
 
     private void toggleSound() {
