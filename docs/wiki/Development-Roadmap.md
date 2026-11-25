@@ -8,10 +8,10 @@ STRATUM-83 is now designed as a **clean retro game collection**, with two main v
 | --- | --- | --- |
 | Grid Zero | Minimax / alpha-beta pruning | Playable |
 | Labyrinth | A* shortest-path benchmark / fog of war | Playable on development branch |
-| Crisis Protocol | Rule-based agents | Planned |
 | Checkers | Minimax / heuristics | Proposed |
 | Blackjack | Probability / Monte Carlo | Proposed |
 | Chess | Search / heuristics | Proposed |
+| Crisis Protocol | Rule-based agents | Planned |
 
 ### New Labyrinth
 
