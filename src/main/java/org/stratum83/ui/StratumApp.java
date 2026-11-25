@@ -1,961 +1,456 @@
 package org.stratum83.ui;
 
+import java.util.HashSet;
+import java.util.Set;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.stratum83.game.AlgorithmCatalog;
+import org.stratum83.game.GameCatalog;
 import org.stratum83.game.GameResult;
 import org.stratum83.game.GridZeroGame;
-import org.stratum83.game.GameCatalog;
 import org.stratum83.game.MinimaxPlayer;
-import org.stratum83.game.MinimaxAnalysis;
-import org.stratum83.game.GridZeroHistory;
-import org.stratum83.game.GridZeroMoveLesson;
 import org.stratum83.game.Move;
+import org.stratum83.labyrinth.ChallengeMazeGenerator;
 import org.stratum83.labyrinth.Maze;
 import org.stratum83.labyrinth.MazeChallenge;
-import org.stratum83.labyrinth.MazeGenerator;
+import org.stratum83.labyrinth.MazeFogOfWar;
 import org.stratum83.labyrinth.MazeSolver;
+import org.stratum83.labyrinth.PathResult;
 import org.stratum83.labyrinth.Position;
-import java.util.Locale;
-import java.util.HashSet;
-import java.util.Set;
-import org.stratum83.research.ExperimentResult;
-import org.stratum83.research.ExperimentRunner;
-import org.stratum83.research.MazeBenchmarkResult;
-import org.stratum83.research.MazeBenchmarkRunner;
 
-/** STRATUM-83 desktop UI. The game rules live in the game package. */
-public class StratumApp extends Application {
+/**
+ * STRATUM-83: two simple views, Games and Algorithms.
+ * Playable games always pit one human against a computer algorithm.
+ */
+public final class StratumApp extends Application {
+
+    private enum View { GAMES, ALGORITHMS, GRID_ZERO, LABYRINTH }
 
     private final SoundPlayer sound = new SoundPlayer();
-    private final MinimaxPlayer computer = new MinimaxPlayer();
+    private final MinimaxPlayer minimax = new MinimaxPlayer();
+    private final ChallengeMazeGenerator generator = new ChallengeMazeGenerator();
+    private final MazeSolver solver = new MazeSolver();
 
-    private Stage stage;
+    private View currentView;
     private StackPane screen;
-    private Label consoleMessage;
-    private TextField commandInput;
+    private Label status;
     private Button soundButton;
 
-    private GridZeroGame game;
-    private Button[][] squares;
-    private Label[][] marks;
-    private Label gameMessage;
-    private VBox gridGameScreen;
-    private MinimaxAnalysis lastDecision;
-    private GridZeroHistory gridHistory;
+    private GridZeroGame gridGame;
+    private Button[][] gridButtons;
+    private Label[][] gridMarks;
+    private Label gridMessage;
 
+    private long mazeSeed = 1983L;
     private Maze maze;
-    private MazeChallenge mazeChallenge;
-    private ScrollPane mazeGameScreen;
-    private MazeSolver.Algorithm mazeTraceAlgorithm = MazeSolver.Algorithm.BFS;
+    private MazeChallenge player;
+    private MazeFogOfWar fog;
+    private PathResult computerRoute;
     private Label[][] mazeCells;
     private Label mazeMessage;
-    private Text mazeResults;
-    private HBox mazePathButtons;
-    private boolean showMyRoute;
-    private boolean showOptimalRoute;
-    private long mazeSeed = 1983;
-    private boolean vsComputer;
-    private boolean researchMenuOpen;
+    private Button routeButton;
+    private ScrollPane mazeScroll;
+    private boolean routeRevealed;
 
     @Override
-    public void start(Stage primaryStage) {
-        stage = primaryStage;
+    public void start(Stage stage) {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("app-root");
-        root.setTop(buildHeader());
-
+        root.setTop(header());
         screen = new StackPane();
-        screen.setPadding(new Insets(24));
+        screen.setPadding(new Insets(12));
         root.setCenter(screen);
-        root.setBottom(buildConsole());
+
+        status = new Label("READY / SELECT A GAME");
+        status.getStyleClass().add("footer-status");
+        status.setWrapText(true);
+        HBox footer = new HBox(14, status);
+        footer.getStyleClass().add("footer");
+        footer.setPadding(new Insets(12, 20, 12, 20));
+        root.setBottom(footer);
 
         Scene scene = new Scene(root, 940, 710);
         scene.getStylesheets().add(getClass().getResource("/terminal.css").toExternalForm());
-        scene.setOnKeyPressed(event -> {
+        scene.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.ESCAPE) {
-                showMenu();
-            } else if (event.getCode() == KeyCode.F1) {
-                showHelp();
-            } else if (event.getCode() == KeyCode.F2) {
-                toggleSound();
-            } else if (maze != null && mazeGameScreen != null
-                    && screen.getChildren().contains(mazeGameScreen)
-                    && !(scene.getFocusOwner() instanceof TextField)) {
-                int rowStep = 0;
-                int colStep = 0;
-                switch (event.getCode()) {
-                    case UP -> rowStep = -1;
-                    case DOWN -> rowStep = 1;
-                    case LEFT -> colStep = -1;
-                    case RIGHT -> colStep = 1;
-                    default -> { return; }
-                }
-                moveMaze(new Position(mazeChallenge.playerPosition().row() + rowStep,
-                        mazeChallenge.playerPosition().column() + colStep));
+                showGames();
                 event.consume();
+                return;
             }
+            if (event.getCode() == KeyCode.F2) {
+                toggleSound();
+                event.consume();
+                return;
+            }
+            if (currentView != View.LABYRINTH || player == null) return;
+            int dr = 0;
+            int dc = 0;
+            switch (event.getCode()) {
+                case UP -> dr = -1;
+                case DOWN -> dr = 1;
+                case LEFT -> dc = -1;
+                case RIGHT -> dc = 1;
+                default -> { return; }
+            }
+            movePlayer(dr, dc);
+            event.consume();
         });
 
-        stage.setTitle("STRATUM-83 | Local Research Terminal");
+        stage.setTitle("STRATUM-83 | Classic AI Games");
         stage.setMinWidth(680);
         stage.setMinHeight(600);
         stage.setScene(scene);
-        showMenu();
+        showGames();
         stage.show();
     }
 
-    private HBox buildHeader() {
-        Label identity = new Label("STRATUM-83  /  RESEARCH TERMINAL");
-        identity.getStyleClass().add("header-title");
+    private HBox header() {
+        Label brand = new Label("STRATUM-83  /  CLASSIC AI GAMES");
+        brand.getStyleClass().add("header-title");
 
-        Label offline = new Label("● OFFLINE");
-        offline.getStyleClass().add("offline-label");
+        Button games = button("GAMES", this::showGames);
+        Button algorithms = button("ALGORITHMS", this::showAlgorithms);
+        soundButton = button("SOUND OFF", this::toggleSound);
+        soundButton.getStyleClass().add("small-button");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        soundButton = new Button("SOUND: OFF");
-        soundButton.getStyleClass().add("small-button");
-        soundButton.setOnAction(event -> toggleSound());
-
-        HBox header = new HBox(18, identity, spacer, offline, soundButton);
-        header.setPadding(new Insets(17, 22, 17, 22));
-        header.setAlignment(Pos.CENTER_LEFT);
-        header.getStyleClass().add("header");
-        return header;
+        HBox row = new HBox(12, brand, spacer, games, algorithms, soundButton);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.setPadding(new Insets(15, 18, 15, 18));
+        row.getStyleClass().add("header");
+        return row;
     }
 
-    private VBox buildConsole() {
-        Label instructions = new Label("COMMANDS: 1 GRID ZERO | 2 LABYRINTH | RESEARCH | HELP | MENU | EXIT     F1 HELP / F2 SOUND / ESC MENU");
-        instructions.getStyleClass().add("hint");
-        instructions.setWrapText(true);
+    private void showGames() {
+        currentView = View.GAMES;
+        Label title = title("SELECT GAME");
+        Label intro = subtitle("HUMAN VS COMPUTER / RETRO GAMES / OFFLINE JAVA 21");
 
-        Label prompt = new Label(">");
-        prompt.getStyleClass().add("prompt");
-        commandInput = new TextField();
-        commandInput.setPromptText("Enter a command...");
-        commandInput.getStyleClass().add("command-input");
-        commandInput.setOnAction(event -> {
-            String command = commandInput.getText();
-            commandInput.clear();
-            runCommand(command);
-        });
-        HBox.setHgrow(commandInput, Priority.ALWAYS);
-        HBox commandRow = new HBox(12, prompt, commandInput);
-        commandRow.setAlignment(Pos.CENTER_LEFT);
-
-        consoleMessage = new Label("READY. ALL EXPERIMENTS RUN ON THIS COMPUTER.");
-        consoleMessage.getStyleClass().add("console-message");
-        consoleMessage.setWrapText(true);
-
-        VBox console = new VBox(10, instructions, commandRow, consoleMessage);
-        console.setPadding(new Insets(14, 22, 18, 22));
-        console.getStyleClass().add("console");
-        return console;
-    }
-
-    private void showMenu() {
-        game = null;
-        maze = null;
-        researchMenuOpen = false;
-
-        Label heading = makeTitle("SELECT GAME");
-        Label introduction = makeDescription(
-                "CLASSIC GAMES / FUNDAMENTAL AI ALGORITHMS / NO NETWORK REQUIRED");
-        Label legend = makeDescription(
-                "PLAYABLE = READY NOW    PLANNED / PROPOSED = FUTURE GAME");
-
-        VBox menu = new VBox(7);
-        menu.setMaxWidth(700);
+        VBox catalog = new VBox(8);
+        catalog.setMaxWidth(720);
         for (GameCatalog.Entry entry : GameCatalog.entries()) {
-            Button button = menuButton(String.format(Locale.ROOT,
-                    "%02d  %-16s  %-27s  %s",
-                    entry.number(), entry.title(), entry.algorithm(), entry.status()),
-                    () -> selectGame(entry.number()));
-            button.getStyleClass().add("catalog-game");
-            button.setWrapText(true);
-            button.setDisable(!entry.playable());
-            menu.getChildren().add(button);
+            String label = String.format("%02d  %-16s  %s  [%s]",
+                    entry.number(), entry.title(), entry.algorithm(), entry.status());
+            Button gameButton = button(label, () -> openGame(entry.number()));
+            gameButton.getStyleClass().add("catalog-game");
+            gameButton.setMaxWidth(Double.MAX_VALUE);
+            gameButton.setDisable(!entry.playable());
+            catalog.getChildren().add(gameButton);
         }
-
-        Label note = makeDescription(
-                "ONLY THE FIRST TWO GAMES ARE PLAYABLE. "
-                + "TYPE RESEARCH FOR EXISTING ALGORITHM EXPERIMENTS.");
-        VBox content = new VBox(14, heading, introduction, legend, menu, note);
-        content.setAlignment(Pos.TOP_CENTER);
-        content.setMaxWidth(750);
-
-        VBox wrapper = new VBox(content);
-        wrapper.setAlignment(Pos.TOP_CENTER);
-        wrapper.setPadding(new Insets(18, 8, 18, 8));
-        ScrollPane scroll = new ScrollPane(wrapper);
-        scroll.setFitToWidth(true);
-        scroll.getStyleClass().add("maze-scroll");
-        screen.getChildren().setAll(scroll);
-        consoleMessage.setText("SELECT A PLAYABLE GAME. FUTURE TITLES ARE SHOWN AS PROPOSED.");
+        VBox page = page(title, intro, catalog,
+                subtitle("THE FIRST TWO GAMES ARE READY; OTHER TITLES ARE FUTURE IDEAS."));
+        showScrollable(page);
+        setStatus("CHOOSE GRID ZERO OR LABYRINTH.  ESC = MAIN MENU");
     }
 
-    private void selectGame(int number) {
-        var selected = GameCatalog.find(number);
-        if (selected.isEmpty()) {
-            consoleMessage.setText("UNKNOWN GAME NUMBER: " + number);
-            return;
-        }
-        GameCatalog.Entry entry = selected.get();
-        if (!entry.playable()) {
-            consoleMessage.setText(entry.title() + " IS " + entry.status()
-                    + " AND NOT PLAYABLE YET.");
+    private void openGame(int number) {
+        GameCatalog.Entry entry = GameCatalog.find(number).orElse(null);
+        if (entry == null || !entry.playable()) {
+            setStatus("THIS GAME IS NOT AVAILABLE YET.");
             return;
         }
         switch (number) {
-            case 1 -> startGame(true);
-            case 2 -> showMaze();
-            default -> throw new IllegalStateException("Playable game has no launcher: " + number);
+            case 1 -> startGridZero();
+            case 2 -> startMaze();
+            default -> throw new IllegalStateException("No game for catalog entry " + number);
         }
     }
 
-    private void showResearchMenu() {
-        game = null;
-        maze = null;
-        researchMenuOpen = true;
-
-        Label heading = makeTitle("RESEARCH LAB");
-        Label introduction = makeDescription(
-                "REPRODUCIBLE EXPERIMENTS / CONFIGURE PARAMETERS / COMPARE RESULTS");
-        VBox menu = new VBox(11,
-                menuButton("01  GRID ZERO       MINIMAX VS RANDOM", this::showExperiment),
-                menuButton("02  PATHFINDING     BFS / DIJKSTRA / A*", this::showMazeBenchmark));
-        menu.setMaxWidth(570);
-
-        Label note = makeDescription("TYPE BACK OR PRESS ESC TO RETURN TO MAIN MENU");
-        VBox content = new VBox(24, heading, introduction, menu, note,
-                actionButton("BACK TO MAIN MENU", this::showMenu));
-        content.setAlignment(Pos.CENTER_LEFT);
-        content.setMaxWidth(600);
-        screen.getChildren().setAll(content);
-        consoleMessage.setText("SELECT AN EXPERIMENT OR TYPE A NUMBER.");
+    private void showAlgorithms() {
+        currentView = View.ALGORITHMS;
+        VBox cards = new VBox(10);
+        cards.setMaxWidth(740);
+        for (AlgorithmCatalog.Entry entry : AlgorithmCatalog.entries()) {
+            Label name = new Label(entry.name() + "  /  " + entry.game());
+            name.getStyleClass().add("algorithm-name");
+            Label explanation = subtitle(entry.explanation());
+            Label practical = subtitle("USEFUL FOR: " + entry.usefulFor());
+            VBox card = new VBox(6, name, explanation, practical);
+            card.getStyleClass().add("algorithm-card");
+            cards.getChildren().add(card);
+        }
+        VBox content = page(title("ALGORITHMS"),
+                subtitle("SHORT EXPLANATIONS OF THE METHODS USED IN OUR GAMES"),
+                cards, button("BACK TO GAMES", this::showGames));
+        showScrollable(content);
+        setStatus("ALGORITHM LIBRARY / SHORT EXPLANATIONS / ESC = GAMES");
     }
 
-    private void startGame(boolean againstComputer) {
-        maze = null;
-        researchMenuOpen = false;
-        game = new GridZeroGame();
-        lastDecision = null;
-        gridHistory = new GridZeroHistory();
-        vsComputer = againstComputer;
-        squares = new Button[3][3];
-        marks = new Label[3][3];
-
-        Label title = makeTitle("GRID ZERO");
-        Label description = makeDescription(againstComputer
-                ? "YOU ARE X  /  COMPUTER IS O  /  COMPUTER USES MINIMAX"
-                : "LOCAL TWO-PLAYER MODE  /  X MOVES FIRST");
-        gameMessage = new Label();
-        gameMessage.getStyleClass().add("game-message");
-        gameMessage.setWrapText(true);
+    private void startGridZero() {
+        currentView = View.GRID_ZERO;
+        gridGame = new GridZeroGame();
+        gridButtons = new Button[3][3];
+        gridMarks = new Label[3][3];
 
         GridPane board = new GridPane();
-        board.setHgap(10);
-        board.setVgap(10);
+        board.setHgap(8);
+        board.setVgap(8);
         board.setAlignment(Pos.CENTER);
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 3; column++) {
-                final int selectedRow = row;
-                final int selectedColumn = column;
-                Button square = new Button();
-                square.getStyleClass().add("board-square");
-                square.setPrefSize(118, 118);
-                square.setMinSize(95, 95);
-                square.setOnAction(event -> playAt(selectedRow, selectedColumn));
-
-                // The mark sits above the button, avoiding button-skin text rendering problems.
-                Label markLabel = new Label();
-                markLabel.getStyleClass().add("board-mark");
-                markLabel.setMouseTransparent(true);
-                StackPane cell = new StackPane(square, markLabel);
-                board.add(cell, column, row);
-                squares[row][column] = square;
-                marks[row][column] = markLabel;
+                int r = row;
+                int c = column;
+                Button cell = button("", () -> makeGridMove(r, c));
+                cell.getStyleClass().add("board-square");
+                cell.setPrefSize(105, 105);
+                cell.setMinSize(85, 85);
+                Label mark = new Label();
+                mark.getStyleClass().add("board-mark");
+                mark.setMouseTransparent(true);
+                board.add(new StackPane(cell, mark), column, row);
+                gridButtons[row][column] = cell;
+                gridMarks[row][column] = mark;
             }
         }
 
-        FlowPane buttons = new FlowPane(12, 10);
-        buttons.setAlignment(Pos.CENTER);
-        buttons.getChildren().addAll(
-                actionButton("NEW GAME", () -> startGame(vsComputer)),
-                actionButton("GAME HISTORY", this::showGridHistory),
-                actionButton("EXPLAIN MOVE", this::showGridExplanation),
-                actionButton("APPLY", this::showEngineeringApplication),
-                actionButton("MAIN MENU", this::showMenu));
-
-        gridGameScreen = new VBox(16, title, description, gameMessage, board, buttons);
-        gridGameScreen.setAlignment(Pos.CENTER);
-        screen.getChildren().setAll(gridGameScreen);
-        refreshBoard();
-        consoleMessage.setText("GAME STARTED. CLICK AN EMPTY SQUARE.");
+        gridMessage = new Label();
+        gridMessage.getStyleClass().add("game-message");
+        FlowPane controls = actions(
+                button("NEW GAME", this::startGridZero),
+                button("GAMES", this::showGames));
+        VBox content = page(title("GRID ZERO"),
+                subtitle("YOU ARE X / COMPUTER IS O / MINIMAX WITH ALPHA-BETA"),
+                gridMessage, board, controls);
+        showScrollable(content);
+        refreshGrid();
+        setStatus("GRID ZERO / CLICK AN EMPTY SQUARE / COMPUTER USES MINIMAX");
     }
 
-    private void playAt(int row, int column) {
-        if (game == null || game.getResult() != GameResult.PLAYING) {
-            return;
-        }
+    private void makeGridMove(int row, int column) {
+        if (currentView != View.GRID_ZERO || gridGame == null
+                || gridGame.getResult() != GameResult.PLAYING) return;
         Move humanMove = new Move(row, column);
-        if (!game.play(humanMove)) {
-            consoleMessage.setText("THAT SQUARE IS ALREADY OCCUPIED.");
-            return;
-        }
-        gridHistory.record(humanMove, game, null);
+        if (!gridGame.play(humanMove)) return;
         sound.click();
-
-        if (vsComputer && game.getResult() == GameResult.PLAYING) {
-            lastDecision = computer.analyzeMove(game);
-            Move computerMove = lastDecision.chosenMove();
-            game.play(computerMove);
-            gridHistory.record(computerMove, game, lastDecision);
+        if (gridGame.getResult() == GameResult.PLAYING) {
+            gridGame.play(minimax.chooseMove(gridGame));
         }
-        refreshBoard();
+        refreshGrid();
     }
 
-    private void refreshBoard() {
+    private void refreshGrid() {
         for (int row = 0; row < 3; row++) {
-            for (int column = 0; column < 3; column++) {
-                char mark = game.getCell(row, column);
-                Button square = squares[row][column];
-                marks[row][column].setText(
-                        mark == GridZeroGame.EMPTY ? "" : String.valueOf(mark));
-                boolean occupied = mark != GridZeroGame.EMPTY;
-                boolean canPlay = !occupied && game.getResult() == GameResult.PLAYING;
-                square.setMouseTransparent(!canPlay);
-                square.setFocusTraversable(canPlay);
-                if (occupied && !square.getStyleClass().contains("filled")) {
-                    square.getStyleClass().add("filled");
-                }
-                square.setAccessibleText("Row " + (row + 1) + ", column " + (column + 1)
-                        + (mark == GridZeroGame.EMPTY ? ", empty" : ", " + mark));
+            for (int col = 0; col < 3; col++) {
+                char mark = gridGame.getCell(row, col);
+                gridMarks[row][col].setText(mark == GridZeroGame.EMPTY
+                        ? "" : String.valueOf(mark));
+                boolean canMove = mark == GridZeroGame.EMPTY
+                        && gridGame.getResult() == GameResult.PLAYING;
+                gridButtons[row][col].setDisable(!canMove);
+                gridButtons[row][col].setAccessibleText(
+                        "Row " + (row + 1) + ", column " + (col + 1)
+                                + (mark == GridZeroGame.EMPTY ? ", empty" : ", " + mark));
             }
         }
-
-        switch (game.getResult()) {
-            case PLAYING -> gameMessage.setText("CURRENT PLAYER: " + game.getCurrentPlayer());
-            case X_WINS -> gameMessage.setText(vsComputer ? "YOU WIN." : "PLAYER X WINS.");
-            case O_WINS -> gameMessage.setText(vsComputer ? "COMPUTER WINS." : "PLAYER O WINS.");
-            case DRAW -> gameMessage.setText("DRAW. NO MORE LEGAL MOVES.");
+        switch (gridGame.getResult()) {
+            case PLAYING -> gridMessage.setText("YOUR TURN / PLACE X");
+            case X_WINS -> gridMessage.setText("YOU WIN!");
+            case O_WINS -> gridMessage.setText("COMPUTER WINS!");
+            case DRAW -> gridMessage.setText("DRAW / WELL PLAYED");
         }
     }
 
-    private void backToGrid() {
-        if (game != null && gridGameScreen != null) {
-            screen.getChildren().setAll(gridGameScreen);
-        } else {
-            showMenu();
-        }
-    }
-
-    private void showGridHistory() {
-        if (game == null || gridHistory == null) {
-            consoleMessage.setText("START GRID ZERO FIRST. HISTORY SHOWS MOVES YOU ACTUALLY PLAYED.");
-            return;
-        }
-        showLearningScreen(GridZeroHistoryScreens.history(
-                gridHistory, this::showGridMoveLesson, this::backToGrid));
-        consoleMessage.setText("SELECT A MOVE TO EXPLAIN THE NEXT COMPUTER DECISION.");
-    }
-
-    private void showGridMoveLesson(int afterHumanMove) {
-        if (game == null || gridHistory == null) {
-            consoleMessage.setText("START A GRID ZERO GAME FIRST.");
-            return;
-        }
-        GridZeroMoveLesson lesson = new GridZeroMoveLesson(
-                gridHistory, afterHumanMove, computer);
-        showLearningScreen(GridZeroHistoryScreens.lesson(lesson,
-                this::showGridHistory, this::backToGrid, this::showGridTrace));
-        consoleMessage.setText("FOLLOW AN ACTUAL GAME MOVE, THEN EXPLORE POSSIBLE FUTURES.");
-    }
-
-    /** EXPLAIN always follows the most recent real computer move. */
-    private void showGridExplanation() {
-        if (game == null || gridHistory == null
-                || gridHistory.explainableMoves().isEmpty()) {
-            consoleMessage.setText("PLAY GRID ZERO AGAINST THE COMPUTER FIRST, THEN EXPLAIN A MOVE.");
-            return;
-        }
-        var explainable = gridHistory.explainableMoves();
-        showGridMoveLesson(explainable.get(explainable.size() - 1));
-    }
-
-    /** Raw search events are retained for learners who want advanced detail. */
-    private void showGridTrace() {
-        if (game == null || lastDecision == null) {
-            consoleMessage.setText("PLAY GRID ZERO AGAINST MINIMAX FIRST, THEN TYPE ADVANCED.");
-            return;
-        }
-        showLearningScreen(GridZeroLearningScreens.trace(lastDecision,
-                this::backToGrid, this::showGridBasics, this::showEngineeringApplication));
-        consoleMessage.setText("ADVANCED SEARCH EVENTS / OPTIONAL TECHNICAL VIEW.");
-    }
-
-    private void showGridBasics() {
-        showLearningScreen(GridZeroLearningScreens.explain(lastDecision,
-                this::showGridTrace, this::backToGrid, this::showEngineeringApplication));
-        consoleMessage.setText("MINIMAX BASICS / IMAGINE, PREDICT, DECIDE.");
-    }
-
-    private void showEngineeringApplication() {
-        showLearningScreen(GridZeroLearningScreens.apply(this::showGridBasics,
-                this::backToGrid));
-        consoleMessage.setText("ENGINEERING EXERCISE: MINIMIZE THE WORST-CASE COST.");
-    }
-
-    private void showLearningScreen(VBox content) {
-        ScrollPane scrolling = new ScrollPane(content);
-        scrolling.setFitToWidth(true);
-        scrolling.setFitToHeight(false);
-        scrolling.setVvalue(0.0);
-        scrolling.getStyleClass().add("maze-scroll");
-        screen.getChildren().setAll(scrolling);
-        // Keep the lesson heading visible when its content is taller than the window.
-        Platform.runLater(() -> scrolling.setVvalue(0.0));
-    }
-
-    private void showExperiment() {
-        game = null;
-        maze = null;
-        researchMenuOpen = false;
-
-        Label title = makeTitle("MINIMAX VS RANDOM");
-        Label description = makeDescription(
-                "THE SEED CONTROLS THE RANDOM OPPONENT / MINIMAX NEVER LEARNS");
-
-        TextField seedField = researchField("1983");
-        TextField countField = researchField("200");
-        HBox settings = new HBox(20,
-                new VBox(6, makeDescription("RANDOM SEED"), seedField),
-                new VBox(6, makeDescription("NUMBER OF GAMES (1-2000)"), countField));
-        settings.setAlignment(Pos.CENTER);
-
-        Text report = new Text("CHOOSE PARAMETERS AND RUN THE EXPERIMENT.");
-        report.getStyleClass().add("research-result");
-
-        Button runButton = new Button("RUN EXPERIMENT");
-        runButton.getStyleClass().add("action-button");
-        runButton.setOnAction(event -> {
-            Long seed = readSeed(seedField, report);
-            Integer games = readCount(countField, 2000, "GAME COUNT", report);
-            if (seed == null || games == null) return;
-
-            sound.click();
-            runButton.setDisable(true);
-            report.setText("CALCULATING " + games + " GAMES...");
-
-            Task<ExperimentResult> task = new Task<>() {
-                @Override
-                protected ExperimentResult call() {
-                    return new ExperimentRunner().run(games, seed);
-                }
-            };
-            task.setOnSucceeded(done -> {
-                ExperimentResult result = task.getValue();
-                report.setText("GAMES: " + result.games()
-                        + "\nMINIMAX WINS: " + result.computerWins()
-                        + "\nDRAWS: " + result.draws()
-                        + "\nMINIMAX LOSSES: " + result.computerLosses()
-                        + "\nSEED: " + result.seed()
-                        + "\n\nREPEAT WITH THE SAME SEED TO VERIFY THESE RESULTS.");
-                runButton.setDisable(false);
-                consoleMessage.setText("MINIMAX EXPERIMENT FINISHED.");
-            });
-            task.setOnFailed(done -> {
-                report.setText("EXPERIMENT FAILED: " + task.getException().getMessage());
-                runButton.setDisable(false);
-            });
-            Thread worker = new Thread(task, "minimax-experiment");
-            worker.setDaemon(true);
-            worker.start();
-        });
-
-        HBox buttons = new HBox(12, runButton,
-                actionButton("RESEARCH LAB", this::showResearchMenu),
-                actionButton("MAIN MENU", this::showMenu));
-        buttons.setAlignment(Pos.CENTER);
-
-        VBox content = new VBox(22, title, description, settings, buttons, report);
-        content.setAlignment(Pos.CENTER);
-        ScrollPane scrolling = new ScrollPane(content);
-        scrolling.setFitToWidth(true);
-        scrolling.getStyleClass().add("maze-scroll");
-        screen.getChildren().setAll(scrolling);
-        consoleMessage.setText("READY TO RUN A REPRODUCIBLE MINIMAX EXPERIMENT.");
-    }
-
-    private void showHelp() {
-        game = null;
-        maze = null;
-        researchMenuOpen = false;
-        Label title = makeTitle("HELP / SYSTEM GUIDE");
-        Label description = makeDescription("STRATUM-83 IS A LOCAL, OFFLINE JAVA EXPERIMENT.");
-        Label help = new Label(
-                "PLAY         Start Grid Zero against perfect Minimax.\n"
-                + "DUEL         Start local two-player Grid Zero.\n"
-                + "HISTORY      Review moves from your actual Grid Zero game.\n"
-                + "EXPLAIN      Learn how Minimax chose the latest O move.\n"
-                + "TRACE        Choose an actual move to explain (Grid Zero).\n"
-                + "ADVANCED     Show raw Minimax search events.\n"
-                + "APPLY        Try an engineering worst-case exercise.\n"
-                + "MAZE         Play Labyrinth using arrow keys or mouse.\n"
-                + "MTRACE       Step through BFS/Dijkstra/A* maze search.\n"
-                + "MEXPLAIN     Explain graph traversal and pathfinding.\n"
-                + "MAPPLY       Practice weighted software service routing.\n"
-                + "BFS/DIJKSTRA/ASTAR   Switch the maze trace algorithm.\n"
-                + "RESEARCH     Open the Research Lab menu.\n"
-                + "EXPERIMENT   Configure Minimax versus random results.\n"
-                + "BENCHMARK    Compare maze solvers without playing.\n"
-                + "BACK / MENU  Return to the main menu.\n"
-                + "SOUND ON     Enable generated click sounds.\n"
-                + "SOUND OFF    Disable sounds (default).\n"
-                + "EXIT         Close the terminal.\n\n"
-                + "F1 Help   F2 Toggle sound   ESC Main menu\n\n"
-                + "Main menu lists 6 AI game concepts: 2 playable, 1 planned, 3 proposed.\n"
-                + "Only Grid Zero and Labyrinth are currently playable.\n"
-                + "Type RESEARCH to open the separate experiment menu.\n"
-                + "All games and experiments run locally on your computer.");
-        help.getStyleClass().add("help-text");
-        help.setWrapText(true);
-        VBox content = new VBox(24, title, description, help,
-                actionButton("MAIN MENU", this::showMenu));
-        content.setAlignment(Pos.CENTER_LEFT);
-        content.setMaxWidth(720);
-        screen.getChildren().setAll(content);
-        consoleMessage.setText("HELP DISPLAYED.");
-    }
-
-    private void runCommand(String rawCommand) {
-        String command = rawCommand.trim().toUpperCase(Locale.ROOT);
-        sound.click();
-
-        if (researchMenuOpen) {
-            switch (command) {
-                case "1" -> { showExperiment(); return; }
-                case "2" -> { showMazeBenchmark(); return; }
-                default -> { } // Named commands still work.
-            }
-        }
-
-        switch (command) {
-            case "PLAY", "SOLO" -> startGame(true);
-            case "1", "2", "3", "4", "5", "6" -> selectGame(Integer.parseInt(command));
-            case "DUEL" -> startGame(false);
-            case "TRACE" -> {
-                if (maze != null) showMazeTrace();
-                else showGridHistory();
-            }
-            case "EXPLAIN" -> {
-                if (maze != null) showMazeExplanation();
-                else showGridExplanation();
-            }
-            case "APPLY" -> {
-                if (maze != null) showMazeApplication();
-                else showEngineeringApplication();
-            }
-            case "HISTORY" -> showGridHistory();
-            case "ADVANCED" -> showGridTrace();
-            case "BASICS" -> showGridBasics();
-            case "MTRACE" -> showMazeTrace();
-            case "MEXPLAIN" -> showMazeExplanation();
-            case "MAPPLY" -> showMazeApplication();
-            case "BFS" -> selectMazeAlgorithm(MazeSolver.Algorithm.BFS);
-            case "DIJKSTRA" -> selectMazeAlgorithm(MazeSolver.Algorithm.DIJKSTRA);
-            case "ASTAR", "A*" -> selectMazeAlgorithm(MazeSolver.Algorithm.A_STAR);
-            case "MAZE", "LABYRINTH" -> showMaze();
-            case "RESEARCH", "LAB" -> showResearchMenu();
-            case "EXPERIMENT" -> showExperiment();
-            case "BENCHMARK", "PATHFINDING" -> showMazeBenchmark();
-            case "HELP" -> showHelp();
-            case "BACK", "MENU", "HOME" -> showMenu();
-            case "EXIT", "QUIT" -> stage.close();
-            case "SOUND ON" -> setSound(true);
-            case "SOUND OFF" -> setSound(false);
-            case "" -> { }
-            default -> consoleMessage.setText("UNKNOWN COMMAND: " + command + ". TYPE HELP.");
-        }
-    }
-
-    private void showMaze() {
-        game = null;
-        researchMenuOpen = false;
-        maze = new MazeGenerator().generate(11, 15, mazeSeed);
-        mazeChallenge = new MazeChallenge(maze);
-        showMyRoute = false;
-        showOptimalRoute = false;
+    private void startMaze() {
+        currentView = View.LABYRINTH;
+        maze = generator.generate(mazeSeed);
+        player = new MazeChallenge(maze);
+        fog = new MazeFogOfWar(maze, 3);
+        computerRoute = solver.solve(maze, MazeSolver.Algorithm.A_STAR);
+        if (!computerRoute.found()) throw new IllegalStateException("Generated maze is unreachable");
+        routeRevealed = false;
         mazeCells = new Label[maze.rows()][maze.columns()];
 
-        Label title = makeTitle("LABYRINTH / GRAPH SEARCH");
-        Label instructions = makeDescription(
-                "PLAY THE MAZE / TRACE THE SEARCH / EXPLAIN THE ALGORITHMS / APPLY TO SOFTWARE");
-        mazeMessage = new Label();
-        mazeMessage.getStyleClass().add("game-message");
-
         GridPane board = new GridPane();
-        board.setHgap(2);
-        board.setVgap(2);
+        board.setHgap(1);
+        board.setVgap(1);
         board.setAlignment(Pos.CENTER);
-        board.setFocusTraversable(true);
         for (int row = 0; row < maze.rows(); row++) {
-            for (int column = 0; column < maze.columns(); column++) {
-                int selectedRow = row;
-                int selectedColumn = column;
+            for (int col = 0; col < maze.columns(); col++) {
                 Label cell = new Label();
                 cell.getStyleClass().add("maze-cell");
-                cell.setPrefSize(27, 27);
-                cell.setMinSize(27, 27);
+                cell.setMinSize(18, 18);
+                cell.setPrefSize(18, 18);
+                cell.setMaxSize(18, 18);
                 cell.setAlignment(Pos.CENTER);
-                cell.setOnMouseClicked(event -> moveMaze(new Position(selectedRow, selectedColumn)));
-                board.add(cell, column, row);
-                mazeCells[row][column] = cell;
+                board.add(cell, col, row);
+                mazeCells[row][col] = cell;
             }
         }
 
-        FlowPane buttons = new FlowPane(10, 8);
-        buttons.setAlignment(Pos.CENTER);
-        buttons.getChildren().addAll(
-                actionButton("RETRY SAME MAZE", this::showMaze),
-                actionButton("NEW MAZE", () -> { mazeSeed++; showMaze(); }),
-                actionButton("TRACE", this::showMazeTrace),
-                actionButton("EXPLAIN", this::showMazeExplanation),
-                actionButton("APPLY", this::showMazeApplication),
-                actionButton("MAIN MENU", this::showMenu));
-
-        mazePathButtons = new HBox(10,
-                actionButton("SHOW MY VISITED CELLS", () -> {
-                    showMyRoute = true;
-                    showOptimalRoute = false;
-                    refreshMaze();
-                }),
-                actionButton("SHOW OPTIMAL PATH", () -> {
-                    showMyRoute = false;
-                    showOptimalRoute = true;
-                    refreshMaze();
-                }),
-                actionButton("HIDE PATH", () -> {
-                    showMyRoute = false;
-                    showOptimalRoute = false;
-                    refreshMaze();
-                }));
-        mazePathButtons.setAlignment(Pos.CENTER);
-        mazePathButtons.setVisible(false);
-        mazePathButtons.setManaged(false);
-
-        mazeResults = new Text();
-        mazeResults.getStyleClass().add("challenge-results");
-        mazeResults.setVisible(false);
-        mazeResults.setManaged(false);
-
-        Label seedNote = makeDescription("MAZE SEED: " + mazeSeed
-                + " / THE BFS REFERENCE ROUTE IS REVEALED AFTER FINISHING");
-
-        VBox content = new VBox(14, title, instructions, mazeMessage, board,
-                buttons, mazeResults, mazePathButtons, seedNote);
-        content.setAlignment(Pos.CENTER);
-        ScrollPane scrolling = new ScrollPane(content);
-        scrolling.setFitToWidth(true);
-        scrolling.getStyleClass().add("maze-scroll");
-        mazeGameScreen = scrolling;
-        screen.getChildren().setAll(scrolling);
+        mazeMessage = new Label();
+        mazeMessage.getStyleClass().add("game-message");
+        mazeMessage.setWrapText(true);
+        routeButton = button("SHOW COMPUTER ROUTE", this::toggleRoute);
+        routeButton.setVisible(false);
+        routeButton.setManaged(false);
+        FlowPane controls = actions(
+                button("RETRY", this::startMaze),
+                button("NEW MAZE", () -> { mazeSeed++; startMaze(); }),
+                routeButton,
+                button("GAMES", this::showGames));
+        VBox content = page(title("LABYRINTH / FOG OF WAR"),
+                subtitle("YOU: ARROW KEYS TO MOVE / FIND THE HIDDEN EXIT G"),
+                mazeMessage, board, controls,
+                subtitle("DARK = UNSEEN / DIM = EXPLORED / BRIGHT = VISIBLE / WALLS BLOCK SIGHT"),
+                subtitle("COMPUTER A* ROUTE IS HIDDEN UNTIL YOU REACH THE GOAL."));
+        mazeScroll = showScrollable(content);
         refreshMaze();
-        consoleMessage.setText("LABYRINTH CHALLENGE STARTED. REACH G WITH AS FEW MOVES AS POSSIBLE.");
-        Platform.runLater(board::requestFocus);
+        setStatus("LABYRINTH / USE ARROW KEYS / SEED " + mazeSeed + " / ESC = GAMES");
     }
 
-    private void moveMaze(Position destination) {
-        if (maze == null || !mazeChallenge.moveTo(destination)) {
-            return;
-        }
+    private void movePlayer(int rowChange, int colChange) {
+        if (currentView != View.LABYRINTH || player == null || player.finished()) return;
+        Position current = player.playerPosition();
+        Position destination = new Position(current.row() + rowChange,
+                current.column() + colChange);
+        if (!player.moveTo(destination)) return;
         sound.click();
+        fog.revealFrom(destination);
+        if (player.finished()) {
+            routeButton.setVisible(true);
+            routeButton.setManaged(true);
+        }
         refreshMaze();
-        if (mazeChallenge.finished()) {
-            showChallengeResults();
+        // Follow the player when the map is taller than the available viewport.
+        if (mazeScroll != null) {
+            mazeScroll.setVvalue((double) destination.row() / (maze.rows() - 1));
         }
     }
 
-    private void showChallengeResults() {
-        String efficiency = String.format(Locale.ROOT, "%.1f", mazeChallenge.efficiencyPercent());
-        String verdict = mazeChallenge.extraMoves() == 0
-                ? "PERFECT! YOUR ROUTE IS OPTIMAL."
-                : "YOU CAN DO BETTER. TRY THE SAME MAZE AGAIN.";
-        mazeResults.setText("YOUR MOVES:       " + mazeChallenge.moves()
-                + "\nBFS OPTIMAL:      " + mazeChallenge.optimalMoves()
-                + "\nEXTRA MOVES:      +" + mazeChallenge.extraMoves()
-                + "\nEFFICIENCY:       " + efficiency + "%"
-                + "\n\n" + verdict
-                + "\nCOMPARE VISITED CELLS WITH THE SHORTEST PATH.");
-        mazeResults.setVisible(true);
-        mazeResults.setManaged(true);
-        mazePathButtons.setVisible(true);
-        mazePathButtons.setManaged(true);
-        consoleMessage.setText("CHALLENGE COMPLETE. COMPARE YOUR ROUTE OR RETRY THE SAME SEED.");
+    private void toggleRoute() {
+        if (!player.finished()) return;
+        routeRevealed = !routeRevealed;
+        routeButton.setText(routeRevealed ? "HIDE COMPUTER ROUTE" : "SHOW COMPUTER ROUTE");
+        refreshMaze();
     }
 
     private void refreshMaze() {
-        Set<Position> humanVisited = showMyRoute
-                ? new HashSet<>(mazeChallenge.playerRoute()) : Set.of();
-        Set<Position> optimalCells = showOptimalRoute
-                ? new HashSet<>(mazeChallenge.optimalRoute()) : Set.of();
-
+        Set<Position> optimal = routeRevealed
+                ? new HashSet<>(computerRoute.path()) : Set.of();
         for (int row = 0; row < maze.rows(); row++) {
-            for (int column = 0; column < maze.columns(); column++) {
-                Position place = new Position(row, column);
-                Label cell = mazeCells[row][column];
-                cell.getStyleClass().removeAll(
-                        "maze-wall", "maze-open", "maze-player", "maze-goal",
-                        "maze-human-route", "maze-optimal-route");
-                if (!maze.isOpen(place)) {
-                    cell.getStyleClass().add("maze-wall");
-                    cell.setText("");
-                } else if (place.equals(maze.goal()) && mazeChallenge.finished()) {
-                    cell.getStyleClass().add("maze-goal");
-                    cell.setText("G");
-                } else if (place.equals(mazeChallenge.playerPosition())) {
+            for (int col = 0; col < maze.columns(); col++) {
+                Position position = new Position(row, col);
+                Label cell = mazeCells[row][col];
+                cell.getStyleClass().setAll("maze-cell");
+                cell.setText("");
+
+                if (position.equals(player.playerPosition())) {
                     cell.getStyleClass().add("maze-player");
                     cell.setText("P");
-                } else if (place.equals(maze.goal())) {
-                    cell.getStyleClass().add("maze-goal");
-                    cell.setText("G");
-                } else if (optimalCells.contains(place)) {
+                } else if (!fog.wasDiscovered(position) && !routeRevealed) {
+                    cell.getStyleClass().add("fog-hidden");
+                } else if (optimal.contains(position)) {
                     cell.getStyleClass().add("maze-optimal-route");
-                    cell.setText("·");
-                } else if (humanVisited.contains(place)) {
-                    cell.getStyleClass().add("maze-human-route");
-                    cell.setText("·");
+                    cell.setText("*");
+                } else if (!fog.isVisible(position)) {
+                    cell.getStyleClass().add(maze.isOpen(position)
+                            ? "fog-memory-floor" : "fog-memory-wall");
+                } else if (!maze.isOpen(position)) {
+                    cell.getStyleClass().add("maze-wall");
                 } else {
                     cell.getStyleClass().add("maze-open");
-                    cell.setText("");
                 }
-                cell.setAccessibleText("Row " + (row + 1) + ", column " + (column + 1)
-                        + (maze.isOpen(place) ? ", open" : ", wall"));
+
+                if (fog.wasDiscovered(position) || routeRevealed) {
+                    if (position.equals(maze.goal())) {
+                        cell.getStyleClass().removeAll("maze-optimal-route",
+                                "maze-open", "fog-memory-floor");
+                        cell.getStyleClass().add("maze-goal");
+                        cell.setText("G");
+                    }
+                }
+                cell.setAccessibleText(fog.wasDiscovered(position) || routeRevealed
+                        ? (maze.isOpen(position) ? "Open cell" : "Wall")
+                        : "Unexplored");
             }
         }
-
-        if (mazeChallenge.finished()) {
-            mazeMessage.setText("GOAL REACHED / " + mazeChallenge.moves()
-                    + " MOVES / BFS BEST: " + mazeChallenge.optimalMoves());
+        if (player.finished()) {
+            double efficiency = 100.0 * computerRoute.steps() / player.moves();
+            mazeMessage.setText(String.format(java.util.Locale.ROOT,
+                    "YOU FOUND THE EXIT!  YOUR MOVES: %d  /  COMPUTER A*: %d  /  EFFICIENCY: %.1f%%",
+                    player.moves(), computerRoute.steps(), efficiency));
+            setStatus("MAZE COMPLETE / COMPARE YOUR ROUTE WITH A* / SEED " + mazeSeed);
         } else {
-            mazeMessage.setText("MOVES: " + mazeChallenge.moves() + " / GOAL: G / PLAYER: P");
+            mazeMessage.setText("YOUR MOVES: " + player.moves()
+                    + "  /  REVEALED CELLS: " + fog.discoveredCells()
+                    + "  /  EXIT: UNKNOWN");
         }
-    }
-
-    /** Return to the same maze and the same player progress without regenerating it. */
-    private void backToMaze() {
-        if (maze != null && mazeGameScreen != null) {
-            screen.getChildren().setAll(mazeGameScreen);
-            consoleMessage.setText("LABYRINTH READY. PLAY, TRACE, EXPLAIN OR APPLY.");
-        } else {
-            showMenu();
-        }
-    }
-
-    private void selectMazeAlgorithm(MazeSolver.Algorithm algorithm) {
-        mazeTraceAlgorithm = algorithm;
-        showMazeTrace();
-    }
-
-    private void showMazeTrace() {
-        if (maze == null) {
-            consoleMessage.setText("OPEN LABYRINTH WITH MAZE FIRST, THEN TYPE TRACE.");
-            return;
-        }
-        showLearningScreen(MazeLearningScreens.trace(maze, mazeTraceAlgorithm,
-                this::selectMazeAlgorithm, this::showMazeExplanation,
-                this::showMazeApplication, this::backToMaze));
-        consoleMessage.setText("TRACE " + mazeTraceAlgorithm
-                + ": PREVIOUS / NEXT STEP / FINAL RESULT. ORIGINAL MAZE PRESERVED.");
-    }
-
-    private void showMazeExplanation() {
-        showLearningScreen(MazeLearningScreens.explain(this::showMazeTrace,
-                this::showMazeApplication, this::backToMaze));
-        consoleMessage.setText("BFS, DIJKSTRA AND A*: GRAPH SEARCH EXPLAINED.");
-    }
-
-    private void showMazeApplication() {
-        showLearningScreen(MazeLearningScreens.apply(this::showMazeTrace,
-                this::showMazeExplanation, this::backToMaze));
-        consoleMessage.setText("SOFTWARE EXERCISE: FEWEST HOPS VERSUS LOWEST COST.");
-    }
-
-    private void showMazeBenchmark() {
-        game = null;
-        maze = null;
-        researchMenuOpen = false;
-
-        Label title = makeTitle("PATHFINDING BENCHMARK");
-        Label description = makeDescription(
-                "BFS / DIJKSTRA / A*  -  SAME MAZES AND SEEDS FOR EVERY ALGORITHM");
-        TextField seedField = researchField("1983");
-        TextField sampleField = researchField("1");
-        HBox settings = new HBox(20,
-                new VBox(6, makeDescription("FIRST MAZE SEED"), seedField),
-                new VBox(6, makeDescription("MAZE SAMPLES (1-100)"), sampleField));
-        settings.setAlignment(Pos.CENTER);
-
-        Text report = new Text(
-                "CHOOSE PARAMETERS AND RUN THE BENCHMARK.\n"
-                + "A SINGLE SEED EXAMINES ONE MAZE; MORE SAMPLES COMPARE AVERAGES.");
-        report.getStyleClass().add("research-result");
-
-        Button runButton = new Button("RUN BENCHMARK");
-        runButton.getStyleClass().add("action-button");
-        runButton.setOnAction(event -> {
-            Long seed = readSeed(seedField, report);
-            Integer count = readCount(sampleField, 100, "MAZE COUNT", report);
-            if (seed == null || count == null) return;
-
-            sound.click();
-            runButton.setDisable(true);
-            report.setText("ANALYZING " + count + " MAZE(S)...");
-
-            Task<MazeBenchmarkResult> task = new Task<>() {
-                @Override
-                protected MazeBenchmarkResult call() {
-                    return new MazeBenchmarkRunner().run(seed, count);
-                }
-            };
-            task.setOnSucceeded(done -> {
-                MazeBenchmarkResult result = task.getValue();
-                StringBuilder text = new StringBuilder();
-                text.append("FIRST SEED: ").append(result.firstSeed())
-                        .append("\nMAZE SAMPLES: ").append(result.mazeCount())
-                        .append("\nGRID SIZE: 11 x 15 / STEP COST: 1\n\n")
-                        .append("ALGORITHM       AVG STEPS     AVG EXPLORED\n");
-                for (MazeBenchmarkResult.AlgorithmResult item : result.algorithms()) {
-                    text.append(String.format(Locale.ROOT, "%-13s %10.2f %16.2f\n",
-                            item.algorithm(), item.averageSteps(), item.averageExplored()));
-                }
-                text.append("\nALL SOLVERS FOUND EQUAL SHORTEST PATHS.\n")
-                        .append("SAME SEED AND SAMPLE COUNT = SAME RESULTS.");
-                report.setText(text.toString());
-                runButton.setDisable(false);
-                consoleMessage.setText("PATHFINDING BENCHMARK FINISHED.");
-            });
-            task.setOnFailed(done -> {
-                report.setText("BENCHMARK FAILED: " + task.getException().getMessage());
-                runButton.setDisable(false);
-            });
-            Thread worker = new Thread(task, "maze-benchmark");
-            worker.setDaemon(true);
-            worker.start();
-        });
-
-        HBox buttons = new HBox(12, runButton,
-                actionButton("RESEARCH LAB", this::showResearchMenu),
-                actionButton("MAIN MENU", this::showMenu));
-        buttons.setAlignment(Pos.CENTER);
-
-        VBox content = new VBox(22, title, description, settings, buttons, report);
-        content.setAlignment(Pos.CENTER);
-        ScrollPane scrolling = new ScrollPane(content);
-        scrolling.setFitToWidth(true);
-        scrolling.getStyleClass().add("maze-scroll");
-        screen.getChildren().setAll(scrolling);
-        consoleMessage.setText("READY TO RUN A REPRODUCIBLE PATHFINDING BENCHMARK.");
-    }
-
-    private TextField researchField(String defaultValue) {
-        TextField field = new TextField(defaultValue);
-        field.getStyleClass().add("research-input");
-        field.setPrefColumnCount(12);
-        return field;
-    }
-
-    private Long readSeed(TextField field, Text report) {
-        try {
-            return Long.parseLong(field.getText().trim());
-        } catch (NumberFormatException exception) {
-            report.setText("ENTER A VALID INTEGER SEED (64-BIT NUMBER).");
-            return null;
-        }
-    }
-
-    private Integer readCount(TextField field, int maximum, String name, Text report) {
-        try {
-            int count = Integer.parseInt(field.getText().trim());
-            if (count >= 1 && count <= maximum) return count;
-        } catch (NumberFormatException exception) {
-            // Display the same instruction for invalid text and out-of-range values.
-        }
-        report.setText(name + " MUST BE BETWEEN 1 AND " + maximum + ".");
-        return null;
     }
 
     private void toggleSound() {
-        setSound(!sound.isEnabled());
+        sound.setEnabled(!sound.isEnabled());
+        soundButton.setText(sound.isEnabled() ? "SOUND ON" : "SOUND OFF");
     }
 
-    private void setSound(boolean enabled) {
-        sound.setEnabled(enabled);
-        soundButton.setText(enabled ? "SOUND: ON" : "SOUND: OFF");
-        consoleMessage.setText(enabled ? "SOUND ENABLED." : "SOUND DISABLED.");
-        sound.click();
+    private void setStatus(String value) {
+        if (status != null) status.setText(value);
     }
 
-    private Button menuButton(String text, Runnable action) {
-        Button button = new Button(text);
-        button.getStyleClass().add("menu-button");
-        button.setMaxWidth(Double.MAX_VALUE);
-        button.setOnAction(event -> {
-            sound.click();
-            action.run();
-        });
-        return button;
+    private ScrollPane showScrollable(VBox content) {
+        ScrollPane scroll = new ScrollPane(content);
+        scroll.setFitToWidth(true);
+        scroll.getStyleClass().add("game-scroll");
+        screen.getChildren().setAll(scroll);
+        scroll.setVvalue(0.0);
+        return scroll;
     }
 
-    private Button actionButton(String text, Runnable action) {
-        Button button = new Button(text);
-        button.getStyleClass().add("action-button");
-        button.setOnAction(event -> {
-            sound.click();
-            action.run();
-        });
-        return button;
+    private static VBox page(javafx.scene.Node... children) {
+        VBox page = new VBox(12, children);
+        page.setAlignment(Pos.TOP_CENTER);
+        page.setPadding(new Insets(16));
+        page.setMaxWidth(780);
+        return page;
     }
 
-    private Label makeTitle(String text) {
-        Label label = new Label(text);
+    private static FlowPane actions(Button... controls) {
+        FlowPane row = new FlowPane(10, 8);
+        row.setAlignment(Pos.CENTER);
+        row.getChildren().addAll(controls);
+        return row;
+    }
+
+    private static Label title(String value) {
+        Label label = new Label(value);
         label.getStyleClass().add("screen-title");
-        return label;
-    }
-
-    private Label makeDescription(String text) {
-        Label label = new Label(text);
-        label.getStyleClass().add("screen-subtitle");
         label.setWrapText(true);
         return label;
+    }
+
+    private static Label subtitle(String value) {
+        Label label = new Label(value);
+        label.getStyleClass().add("screen-subtitle");
+        label.setWrapText(true);
+        label.setMaxWidth(730);
+        return label;
+    }
+
+    private static Button button(String label, Runnable action) {
+        Button control = new Button(label);
+        control.getStyleClass().add("action-button");
+        control.setWrapText(true);
+        control.setOnAction(event -> action.run());
+        return control;
     }
 
     @Override
     public void stop() {
         sound.close();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }
