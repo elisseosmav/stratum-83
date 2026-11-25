@@ -2,54 +2,99 @@
 
 **Classic Games. Real Algorithms.**
 
-An offline Java desktop application where you play against the computer and explore the algorithms behind each challenge.
+STRATUM-83 is an offline Java desktop collection of seven human-versus-computer games. Its black-and-green interface takes inspiration from 1980s DOS terminals, with a blinking cursor, a command prompt, and an optional Algorithms view that explains how each opponent or challenge works.
+
+## Play on Windows
+
+**You do not need to install Java or Maven to use the portable Windows application.**
+
+1. Open the [Windows desktop executable builds](https://github.com/elisseosmav/stratum-83/actions/workflows/windows-app.yml).
+2. Select the latest **successful** run on the **main** branch.
+3. Under **Artifacts**, download **STRATUM-83-Windows-Portable** (GitHub sign-in may be required).
+4. Extract the downloaded artifact ZIP. It contains a second file, `STRATUM-83-Windows-Portable.zip`; extract that too.
+5. Open the resulting `STRATUM-83` folder and double-click **`STRATUM-83.exe`**. Keep the other files and the `runtime` folder alongside the executable.
+6. For easy access, create a desktop shortcut to `STRATUM-83.exe`.
+
+The application is a **portable Windows app image**, not a signed installer or a single-file executable. GitHub builds it with a bundled Java 21 runtime and JavaFX dependencies. Windows may display an unrecognized-publisher warning because it is not code-signed. Verify that the package came from this repository before running it.
+
+The [Windows packaging workflow](https://github.com/elisseosmav/stratum-83/blob/main/.github/workflows/windows-app.yml) has successfully generated the EXE and ZIP. **Hands-on startup and gameplay on a clean Windows PC have not yet been verified**; see [Windows QA #2](https://github.com/elisseosmav/stratum-83/issues/2).
 
 ## Games
 
-- **Grid Zero** — Play X against a Minimax computer using alpha-beta pruning.
-- **Labyrinth** — Navigate a challenging maze with the arrow keys. Fog of war hides unexplored areas; reach the exit to compare your path with the computer's A* route.
-- **Checkers** — Play American checkers against a Minimax opponent. Captures are mandatory, kings move in both directions, and multiple jumps are supported.
-- **Blackjack** — Play against a computer dealer using Hit and Stand, with a hidden dealer card, soft aces, automatic dealer play, round scores, and Monte Carlo odds estimates. No real-money betting.
-- **Chess** — Play White against a computer using Minimax with alpha-beta pruning. Includes legal move highlighting, check and checkmate, castling, en passant, four promotion choices, and common draw rules.
-- **Crisis Protocol** — Command two response teams against a deterministic crisis agent. Contain spreading incidents, defend critical sites, and manage two actions per round.
+| No. | Game | What you play against | Algorithms |
+| --- | --- | --- | --- |
+| 01 | **Grid Zero** | Computer in a 3×3 X/O game | Minimax, alpha-beta pruning |
+| 02 | **Labyrinth** | A fog-of-war maze; compare your route with the computer | A* search, maze generation, visibility |
+| 03 | **Checkers** | Computer in American checkers | Minimax, heuristic evaluation |
+| 04 | **Blackjack** | Computer dealer; no real-money betting | Card probability, Monte Carlo simulation |
+| 05 | **Chess** | Computer playing Black | Minimax, alpha-beta pruning, legal move search |
+| 06 | **Crisis Protocol** | Rule-based crisis agent while you direct response teams | Greedy target selection, rule-based agents |
+| 07 | **Naval Command** | Computer fleet in a Battleship-style match | Random search, hunt-and-target, probability density |
 
-## Algorithms
+All seven entries are playable in **GAMES**. The separate **ALGORITHMS** view provides short explanations of the techniques used. These are casual challenges, not competitive-grade game engines.
 
-The Algorithms view explains Minimax, alpha-beta pruning, heuristic evaluation, legal move search, rule-based agents, greedy target selection, card probability, Monte Carlo simulation, maze generation, A* search, breadth-first search, Dijkstra's algorithm, and fog of war.
+### Naval Command
 
-## Terminal interface
+Deploy five ships on a 10×10 board, manually or with **AUTO DEPLOY**, then fire at enemy coordinates. Choose **Easy** (random targeting), **Normal** (hunt-and-target), or **Hard** (probability-density analysis). The computer uses observed shots rather than reading your hidden fleet positions. The game also provides an end-of-match AI analysis view.
 
-STRATUM-83 uses a black-and-green DOS-style interface with a blinking cursor and a working command prompt. Click the menu entries or type a command followed by Enter:
+## DOS-style controls
 
-- `DIR` or `GAMES` — show the game directory.
-- `1` through `6`, `RUN 1`, or `PLAY 1` — start a game.
-- `ALG` — show the algorithms.
-- `HELP` — show all commands.
-- `SOUND` — toggle audio.
-- `CLS` or `MENU` — return to the game directory.
-- `EXIT` — close the application.
+The main menu accepts both mouse input and typed commands. Click the command prompt, type a command, and press **Enter**. The prompt uses a blinking cursor.
 
-`Esc` returns to the game directory; `F2` toggles audio. Gameplay still supports the original mouse and arrow-key controls.
+| Command | Action |
+| --- | --- |
+| `DIR`, `GAMES`, `MENU` | Show all games |
+| `1` … `7` | Launch a game |
+| `RUN 7`, `PLAY 7` | Launch a game by number |
+| `ALG`, `ALGORITHMS` | Open the Algorithms view |
+| `HELP`, `?` | Show available commands |
+| `SOUND` | Toggle audio |
+| `CLS`, `CLEAR` | Return to the Games menu |
+| `EXIT`, `QUIT` | Close the application |
 
-## Windows desktop EXE (no Java or Maven installation)
+**Esc** returns to GAMES and **F2** toggles audio. Labyrinth uses the **arrow keys** for movement; board games also support mouse selection.
 
-The [Windows desktop executable workflow](https://github.com/elisseosmav/stratum-83/actions/workflows/windows-app.yml) produces a portable Windows application with a bundled Java runtime.
+While in **Naval Command**, the prompt accepts additional commands:
 
-1. Open the latest successful workflow run and download its **STRATUM-83-Windows-Portable** artifact.
-2. Extract `STRATUM-83-Windows-Portable.zip` (keep the whole `STRATUM-83` folder).
-3. Double-click `STRATUM-83.exe` inside the extracted folder.
+| Command | Action |
+| --- | --- |
+| `AUTO` | Finish deploying your fleet automatically |
+| `PLACE CARRIER B2 H` | Place the next ship, starting at B2, horizontally (`H` or `V`) |
+| `FIRE D7` | Fire at D7 |
+| `STATUS` | Show current fleet counts |
+| `RADAR` | Refresh the naval view |
+| `NEW` | Restart Naval Command at the current difficulty |
+| `HELP` | Show Naval Command rules |
+| `EXIT` | Return to GAMES |
 
-You can create a desktop shortcut to `STRATUM-83.exe`. The app is not code-signed; Windows may warn about an unfamiliar publisher. Only run a package you downloaded from your own verified GitHub repository.
+Ships must be deployed in fleet order: Carrier, Battleship, Cruiser, Submarine, Destroyer.
 
-## Run
+## Build from source
 
-Requires Java 21 and Maven.
+Development requires **JDK 21** and **Apache Maven**.
+
+Run the tests:
 
 ```powershell
 mvn clean test
+```
+
+Run the JavaFX desktop app:
+
+```powershell
 mvn javafx:run
 ```
 
-On Windows, you can also use `run-windows.cmd` and `test-windows.cmd`.
+On Windows, you can use `run-windows.cmd` and `test-windows.cmd` instead if Maven is available. The portable Windows build above is the simpler option for ordinary players.
 
-For additional information, see the [Wiki](https://github.com/elisseosmav/stratum-83/wiki).
+The [Java CI workflow](https://github.com/elisseosmav/stratum-83/actions/workflows/java-ci.yml) runs Maven tests on Windows and Ubuntu. The [Windows packaging workflow](https://github.com/elisseosmav/stratum-83/actions/workflows/windows-app.yml) creates the downloadable app with `jpackage`.
+
+## Development status
+
+The seven games and the portable Windows build are included on `main`. Automated builds pass on Windows and Ubuntu. Remaining issues are tracked on GitHub:
+
+- [#2 — Manual Windows QA](https://github.com/elisseosmav/stratum-83/issues/2): test the interface, all seven games, and prompt interaction on a Windows desktop.
+- [#4 — Windows packaging polish](https://github.com/elisseosmav/stratum-83/issues/4): confirm clean-PC launch and add an original app icon.
+- [#6 — Local settings](https://github.com/elisseosmav/stratum-83/issues/6): remember sound and other preferences across restarts.
+
+Project documentation is kept concise here and, where published, in the [GitHub Wiki](https://github.com/elisseosmav/stratum-83/wiki).
