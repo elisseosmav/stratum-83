@@ -16,7 +16,7 @@ class TerminalCommandsTest {
 
     @Test
     void selectsAllSixGamesFromCommandLine() {
-        for (int n = 1; n <= 6; n++) {
+        for (int n = 1; n <= 7; n++) {
             assertEquals(n, TerminalCommands.parse("0" + n).gameNumber());
             assertEquals(n, TerminalCommands.parse("run " + n).gameNumber());
             assertEquals(n, TerminalCommands.parse("pLaY " + n).gameNumber());
@@ -27,7 +27,7 @@ class TerminalCommandsTest {
 
     @Test
     void rejectsUnknownAndUnsafeInputs() {
-        for (String input : new String[]{"", " ", "RM -RF", "DEL", "07", "RUN 9", "PLAY 1; EXIT"}) {
+        for (String input : new String[]{"", " ", "RM -RF", "DEL", "08", "RUN 9", "PLAY 1; EXIT"}) {
             assertEquals(TerminalCommands.Action.INVALID, TerminalCommands.parse(input).action());
         }
         assertEquals(TerminalCommands.Action.INVALID, TerminalCommands.parse(null).action());

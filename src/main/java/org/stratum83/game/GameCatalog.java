@@ -14,7 +14,8 @@ public final class GameCatalog {
             new Entry(3, "CHECKERS", "MINIMAX / HEURISTICS", true),
             new Entry(4, "BLACKJACK", "PROBABILITY / MONTE CARLO", true),
             new Entry(5, "CHESS", "MINIMAX / ALPHA-BETA", true),
-            new Entry(6, "CRISIS PROTOCOL", "RULE-BASED AGENTS", true)
+            new Entry(6, "CRISIS PROTOCOL", "RULE-BASED AGENTS", true),
+            new Entry(7, "NAVAL COMMAND", "PROBABILITY / HUNT-TARGET", true)
     );
 
     private GameCatalog() {

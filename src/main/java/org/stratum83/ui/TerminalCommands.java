@@ -34,7 +34,7 @@ public final class TerminalCommands {
         String number = command;
         if (number.startsWith("PLAY ")) number = number.substring(5);
         else if (number.startsWith("RUN ")) number = number.substring(4);
-        if (number.matches("0?[1-6]")) {
+        if (number.matches("0?[1-7]")) {
             return new Command(Action.OPEN_GAME, Integer.parseInt(number));
         }
         return new Command(Action.INVALID, 0);

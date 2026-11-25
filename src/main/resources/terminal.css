@@ -403,3 +403,39 @@
     -fx-border-color: #e9fba5;
     -fx-border-width: 3px;
 }
+
+
+.naval-board {
+    -fx-background-color: #06110b;
+    -fx-border-color: #386c47;
+    -fx-border-width: 1px;
+    -fx-padding: 4px;
+}
+.naval-axis {
+    -fx-text-fill: #81be8f;
+    -fx-font-size: 10px;
+}
+.naval-cell {
+    -fx-padding: 0px;
+    -fx-font-family: "Consolas", monospace;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-background-color: #092114;
+    -fx-border-color: #1e5031;
+    -fx-border-width: 1px;
+    -fx-text-fill: #a0f6a8;
+}
+.naval-cell:disabled { -fx-opacity: 1; }
+.naval-cell:hover {
+    -fx-background-color: #163a21;
+    -fx-border-color: #c5ffc1;
+}
+.naval-unknown { -fx-background-color: #092114; }
+.naval-ship { -fx-background-color: #1d4b30; -fx-text-fill: #80ef9f; }
+.naval-miss { -fx-background-color: #0a1910; -fx-text-fill: #426f50; }
+.naval-hit { -fx-background-color: #55251f; -fx-text-fill: #ffb48c; }
+.naval-sunk { -fx-background-color: #6d251d; -fx-text-fill: #ffd2a4; }
+.naval-risk-medium { -fx-background-color: #3a3820; }
+.naval-risk-high { -fx-background-color: #60451b; -fx-text-fill: #ffdc83; }

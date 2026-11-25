@@ -31,6 +31,16 @@ STRATUM-83 uses a black-and-green DOS-style interface with a blinking cursor and
 
 `Esc` returns to the game directory; `F2` toggles audio. Gameplay still supports the original mouse and arrow-key controls.
 
+## Windows desktop EXE (no Java or Maven installation)
+
+The [Windows desktop executable workflow](https://github.com/elisseosmav/stratum-83/actions/workflows/windows-app.yml) produces a portable Windows application with a bundled Java runtime.
+
+1. Open the latest successful workflow run and download its **STRATUM-83-Windows-Portable** artifact.
+2. Extract `STRATUM-83-Windows-Portable.zip` (keep the whole `STRATUM-83` folder).
+3. Double-click `STRATUM-83.exe` inside the extracted folder.
+
+You can create a desktop shortcut to `STRATUM-83.exe`. The app is not code-signed; Windows may warn about an unfamiliar publisher. Only run a package you downloaded from your own verified GitHub repository.
+
 ## Run
 
 Requires Java 21 and Maven.

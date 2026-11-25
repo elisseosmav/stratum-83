@@ -54,7 +54,7 @@ import org.stratum83.labyrinth.Position;
 
 public final class StratumApp extends Application {
 
-    private enum View { GAMES, ALGORITHMS, GRID_ZERO, LABYRINTH, CHECKERS, BLACKJACK, CHESS, CRISIS, HELP }
+    private enum View { GAMES, ALGORITHMS, GRID_ZERO, LABYRINTH, CHECKERS, BLACKJACK, CHESS, CRISIS, NAVAL, HELP }
 
     private final SoundPlayer sound = new SoundPlayer();
     private final MinimaxPlayer minimax = new MinimaxPlayer();
@@ -131,6 +131,8 @@ public final class StratumApp extends Application {
     private Label crisisHumanLog;
     private Label crisisComputerLog;
     private Button crisisEndTurn;
+
+    private NavalScreen navalScreen;
 
     @Override
     public void start(Stage stage) {
@@ -253,7 +255,8 @@ public final class StratumApp extends Application {
     private void showGames() {
         currentView = View.GAMES;
         Label title = title("C:\\STRATUM83> DIR");
-        Label intro = subtitle("VOLUME IN DRIVE C IS STRATUM83  /  6 PROGRAMS");
+        Label intro = subtitle("VOLUME IN DRIVE C IS STRATUM83  /  "
+                + GameCatalog.entries().size() + " PROGRAMS");
 
         VBox catalog = new VBox(4);
         catalog.setMaxWidth(720);
@@ -268,11 +271,11 @@ public final class StratumApp extends Application {
             catalog.getChildren().add(gameButton);
         }
         VBox page = page(title, intro, catalog,
-                subtitle("TYPE 1-6 AND PRESS ENTER TO RUN A GAME"));
+                subtitle("TYPE 1-7 AND PRESS ENTER TO RUN A GAME"));
         page.getStyleClass().add("terminal-menu");
         page.setAlignment(Pos.TOP_LEFT);
         showScrollable(page);
-        setStatus("6 FILE(S) / TYPE HELP FOR COMMANDS");
+        setStatus(GameCatalog.entries().size() + " FILE(S) / TYPE HELP FOR COMMANDS");
     }
 
     private void openGame(int number) {
@@ -288,6 +291,7 @@ public final class StratumApp extends Application {
             case 4 -> startBlackjack();
             case 5 -> startChess();
             case 6 -> startCrisis();
+            case 7 -> startNaval();
             default -> throw new IllegalStateException("No game for catalog entry " + number);
         }
     }
@@ -1236,9 +1240,20 @@ public final class StratumApp extends Application {
     }
 
 
+    private void startNaval() {
+        currentView = View.NAVAL;
+        navalScreen = new NavalScreen(this::showGames, this::setStatus, sound::click);
+        showScrollable(navalScreen);
+    }
+
     private void runTerminalCommand() {
         String commandText = terminalInput.getText();
         terminalInput.clear();
+        if (currentView == View.NAVAL && navalScreen != null
+                && navalScreen.execute(commandText)) {
+            terminalInput.requestFocus();
+            return;
+        }
         TerminalCommands.Command command = TerminalCommands.parse(commandText);
         switch (command.action()) {
             case OPEN_GAME -> openGame(command.gameNumber());
@@ -1260,7 +1275,7 @@ public final class StratumApp extends Application {
         currentView = View.HELP;
         Label commands = new Label(
                 "DIR / GAMES         LIST AVAILABLE GAMES\n"
-                + "1-6                 LAUNCH GAME BY NUMBER\n"
+                + "1-7                 LAUNCH GAME BY NUMBER\n"
                 + "RUN 1 / PLAY 1      LAUNCH GAME BY COMMAND\n"
                 + "ALG / ALGORITHMS    VIEW ALGORITHM LIBRARY\n"
                 + "HELP / ?            DISPLAY COMMAND HELP\n"
@@ -1295,6 +1310,7 @@ public final class StratumApp extends Application {
                 case BLACKJACK -> "\\BLACKJACK";
                 case CHESS -> "\\CHESS";
                 case CRISIS -> "\\CRISIS";
+                case NAVAL -> "\\NAVAL";
                 case ALGORITHMS -> "\\ALGORITHMS";
                 case HELP -> "\\HELP";
             };

@@ -1,0 +1,60 @@
+name: Windows desktop executable
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-app:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build application and copy Windows dependencies
+        shell: pwsh
+        run: |
+          mvn --batch-mode --no-transfer-progress clean package dependency:copy-dependencies "-DincludeScope=runtime" "-DoutputDirectory=target/windows-input"
+          if ($LASTEXITCODE -ne 0) { throw "Maven build failed" }
+          Copy-Item "target/stratum-83-1.0.0.jar" "target/windows-input/stratum-83-1.0.0.jar"
+
+      - name: Create portable Windows EXE with bundled Java
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          $arguments = @(
+            "--type", "app-image",
+            "--name", "STRATUM-83",
+            "--app-version", "1.0.0",
+            "--input", "target/windows-input",
+            "--dest", "dist",
+            "--main-jar", "stratum-83-1.0.0.jar",
+            "--main-class", "org.stratum83.ui.DesktopLauncher",
+            "--description", "Retro human-versus-computer games",
+            "--add-modules", "java.base,java.desktop,java.logging,java.xml,jdk.unsupported",
+            "--java-options", "-Dfile.encoding=UTF-8"
+          )
+          & jpackage @arguments
+          if ($LASTEXITCODE -ne 0) { throw "jpackage failed" }
+          if (!(Test-Path "dist/STRATUM-83/STRATUM-83.exe")) {
+            throw "STRATUM-83.exe missing from packaged application"
+          }
+          Compress-Archive -Path "dist/STRATUM-83" -DestinationPath "dist/STRATUM-83-Windows-Portable.zip" -Force
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: STRATUM-83-Windows-Portable
+          path: dist/STRATUM-83-Windows-Portable.zip
+          if-no-files-found: error
+          retention-days: 90
