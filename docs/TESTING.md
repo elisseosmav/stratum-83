@@ -1,10 +1,10 @@
 # Test and Acceptance Checklist
 
-**Candidate:** STRATUM-83 v0.3.0-beta.2 on `feature/labyrinth-learning-lab`
+**Candidate:** STRATUM-83 v0.3.0-beta.2 on `feature/grid-zero-game-history-lessons`
 
 ## Guided Windows acceptance run
 
-Use the [Windows beta validation helper](../scripts/verify-beta2-windows.ps1) from a checkout of `feature/labyrinth-learning-lab`:
+Use the [Windows beta validation helper](../scripts/verify-beta2-windows.ps1) from a checkout of `feature/grid-zero-game-history-lessons`:
 
 ```powershell
 git pull --ff-only
@@ -14,6 +14,19 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\verify-beta2-w
 It checks the branch, runs `mvn clean test` with the local Maven installation, launches `mvn javafx:run`, and after you close the window asks you to **personally confirm** ten areas as PASS, FAIL or SKIP. It creates `reports/BETA2-WINDOWS-ACCEPTANCE.md`, ignored by Git. The helper cannot automatically judge whether the visual trace is correct; it records your direct observations.
 
 **Acceptance gate:** every area must be PASS, automated tests must pass, and the JavaFX launch must complete successfully. Any FAIL/SKIP remains a release blocker until examined. No release is published automatically.
+
+## Guided Game History and Explain Move acceptance
+
+1. Start Grid Zero against Minimax and play at least two X turns, allowing O to reply each time. This creates a recorded four-move history.
+2. Open **GAME HISTORY**. Confirm all four **actual** moves are listed with player, row and column. Click the entry for **MOVE 3 (X)** to explain how Minimax chose **MOVE 4 (O)**.
+3. Confirm STEP 1 shows the real board after move 3, not a hardcoded example.
+4. At STEP 2, choose a hypothetical O move. The game must remain unchanged. Follow the computer's and human player's predicted future moves in order, clearly identified as **possible**, not historical.
+5. Continue until the predicted Win/Draw/Loss is shown. Try a different O candidate, then reveal the computer's **actual recorded O move**. The actual choice and predicted continuation must be distinguishable.
+6. Return to **GAME HISTORY**, select move 1 and explain O's move 2. Return to the game and verify all X/O positions match the original match and the next legal move still works.
+7. Verify `EXPLAIN` opens the most recent explainable move; `HISTORY` and `TRACE` open game history; `ADVANCED` still opens the optional technical trace.
+8. Start a new game. The previous game's moves must not appear. In two-player DUEL mode, the interface must not pretend an AI decision exists.
+9. At the 680×600 minimum window size, verify lesson navigation buttons and text remain visible or reachable by scrolling.
+10. Run JUnit tests for `GridZeroHistoryTest` and `GridZeroMoveLessonTest` plus the entire Maven suite.
 
 ## Grid Zero educational acceptance — Play / Trace / Explain / Apply
 
