@@ -4,6 +4,14 @@
 
 STRATUM-83 is an independent, non-commercial, offline Java 21 learning terminal. Classic games are accessible examples for teaching software engineers how algorithms work, how to inspect their decisions and when they are useful in real projects.
 
+## Product experience — games first
+
+The top-level user experience is a **catalog of retro games**, each showing the fundamental AI algorithm associated with it. The application should not force learners through long explanations, search traces or engineering examples just to play.
+
+Only existing games should be enabled; future ideas remain visible with honest **PLANNED** or **PROPOSED** labels. Experimentation and detailed explanations can remain available as optional tools once the user chooses to explore them.
+
+This catalog-first direction supersedes the earlier recommendation to make Play → Trace → Explain → Apply the main navigation structure. The project's educational purpose remains: **Classic Games. Real Algorithms. Practical Engineering.**
+
 ## Four stages of every lesson
 
 1. **PLAY** — Interact with a small original game and encounter the problem.
