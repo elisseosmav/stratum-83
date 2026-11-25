@@ -3,7 +3,6 @@ package org.stratum83.game;
 import java.util.ArrayList;
 import java.util.List;
 
-/** The rules of Grid Zero (classic 3x3 tic-tac-toe). No UI dependencies. */
 public class GridZeroGame {
 
     public static final char EMPTY = ' ';
@@ -71,7 +70,7 @@ public class GridZeroGame {
         return moves;
     }
 
-    /** Returns false if the selected square is already occupied. */
+    
     public boolean play(Move move) {
         if (move == null) {
             throw new IllegalArgumentException("Move cannot be null");

@@ -2,7 +2,6 @@ package org.stratum83.labyrinth;
 
 import java.util.List;
 
-/** A path includes the start and goal. An empty path means the goal was unreachable. */
 public record PathResult(List<Position> path, int exploredNodes) {
 
     public PathResult {

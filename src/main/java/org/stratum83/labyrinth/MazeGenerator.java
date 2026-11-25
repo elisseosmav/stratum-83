@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-/** Creates a connected maze by carving passages with randomized depth-first search. */
 public class MazeGenerator {
 
     public Maze generate(int rows, int columns, long seed) {

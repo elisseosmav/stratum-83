@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * A human maze attempt measured against a BFS shortest path.
- * This class has no JavaFX dependencies and can be tested independently.
- */
 public class MazeChallenge {
 
     private final Maze maze;
@@ -27,7 +23,7 @@ public class MazeChallenge {
         return playerRoute.get(playerRoute.size() - 1);
     }
 
-    /** Returns false if the move crosses a wall, skips a cell or follows a finished game. */
+    
     public boolean moveTo(Position destination) {
         if (destination == null || finished() || !maze.isOpen(destination)) {
             return false;
@@ -57,10 +53,7 @@ public class MazeChallenge {
         return moves() - optimalMoves();
     }
 
-    /**
-     * 100% means the shortest possible route. Includes all human backtracking.
-     * A start that is already the goal scores 100% with zero moves.
-     */
+    
     public double efficiencyPercent() {
         if (!finished()) {
             return 0.0;

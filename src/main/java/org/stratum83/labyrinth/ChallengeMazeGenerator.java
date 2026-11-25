@@ -3,11 +3,6 @@ package org.stratum83.labyrinth;
 import java.util.ArrayDeque;
 import java.util.Random;
 
-/**
- * A deliberately larger, looped maze for human exploration.
- * The base maze is connected; extra passages create alternative routes.
- * The exit is placed at the most distant reachable cell.
- */
 public final class ChallengeMazeGenerator {
     public static final int ROWS = 23;
     public static final int COLUMNS = 31;

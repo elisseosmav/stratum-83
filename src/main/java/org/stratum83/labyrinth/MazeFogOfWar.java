@@ -2,11 +2,6 @@ package org.stratum83.labyrinth;
 
 import java.util.Objects;
 
-/**
- * Fog of war for a grid maze. A cell is currently visible only when it is
- * within the player's vision radius and not hidden behind an intervening wall.
- * Previously discovered cells remain known after the player moves away.
- */
 public final class MazeFogOfWar {
     private final Maze maze;
     private final int radius;
@@ -46,7 +41,7 @@ public final class MazeFogOfWar {
         }
     }
 
-    /** Bresenham ray: walls are visible, but cells beyond a wall are hidden. */
+    
     private boolean hasLineOfSight(Position source, Position target) {
         int x0 = source.column();
         int y0 = source.row();

@@ -3,7 +3,6 @@ package org.stratum83.labyrinth;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A rectangular maze. True cells are walls; false cells are open. */
 public class Maze {
 
     private final boolean[][] walls;
@@ -70,7 +69,7 @@ public class Maze {
         return result;
     }
 
-    /** Helpful for algorithm tests and small examples: # = wall, . = open, S/G = endpoints, B = both. */
+    
     public static Maze fromAscii(String... lines) {
         if (lines == null || lines.length == 0 || lines[0] == null || lines[0].isEmpty()) {
             throw new IllegalArgumentException("Provide at least one nonempty maze row");

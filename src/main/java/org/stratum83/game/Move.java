@@ -1,6 +1,5 @@
 package org.stratum83.game;
 
-/** A square on the 3x3 Grid Zero board, using zero-based coordinates. */
 public record Move(int row, int column) {
 
     public Move {

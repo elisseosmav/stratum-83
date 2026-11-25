@@ -2,10 +2,6 @@ package org.stratum83.game;
 
 import java.util.List;
 
-/**
- * Short, plain-language descriptions for algorithms already present in the
- * playable games. Algorithms and games live in separate user-interface views.
- */
 public final class AlgorithmCatalog {
     public record Entry(String name, String game, String explanation, String usefulFor) {
     }
