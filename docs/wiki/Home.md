@@ -6,7 +6,7 @@ Welcome to **STRATUM-83**, an independent, non-commercial, offline Java research
 
 ## Play
 
-- **Grid Zero** — play classic tic-tac-toe against Minimax, inspect the computer's real search trace, learn alpha-beta pruning and apply worst-case decision rules to an engineering example. Two players can use `DUEL`.
+- **Grid Zero** — play classic tic-tac-toe, choose a move from your actual game history, discover how Minimax chose its reply, and explore real-world worst-case decisions. Two players can use `DUEL`.
 - **Labyrinth** — play a seeded maze, visualize actual BFS/Dijkstra/A* graph search, understand their differences and solve a weighted software-routing exercise.
 
 ## Research Lab
@@ -24,6 +24,6 @@ Welcome to **STRATUM-83**, an independent, non-commercial, offline Java research
 
 ## Get the source
 
-[STRATUM-83 GitHub repository](https://github.com/elisseosmav/stratum-83) · [Installation instructions](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-learning-lab/README.md) · [Community discussions](https://github.com/elisseosmav/stratum-83/discussions)
+[STRATUM-83 GitHub repository](https://github.com/elisseosmav/stratum-83) · [Installation instructions](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-game-history-lessons/README.md) · [Community discussions](https://github.com/elisseosmav/stratum-83/discussions)
 
 *Note: the revised Play / Research interface is a **development candidate** until a new release is tested and published. The current beta 1 release is an earlier snapshot.*
