@@ -1,10 +1,21 @@
 # Test and Acceptance Checklist
 
-**Candidate:** STRATUM-83 v0.3.0-beta.2 on `feature/grid-zero-game-history-lessons`
+**Candidate:** STRATUM-83 v0.3.0-beta.2 on `feature/retro-ai-game-catalog`
+
+## Game catalog acceptance
+
+- Main menu title is **SELECT GAME**, with six numbered entries in roadmap order: Grid Zero, Labyrinth, Crisis Protocol, Checkers, Blackjack, Chess.
+- Every entry displays the associated AI technique and a readable availability label: 2 **PLAYABLE**, 1 **PLANNED**, 3 **PROPOSED**.
+- Only games 01 and 02 are clickable. Planned/proposed entries are visibly disabled and must never launch placeholder games.
+- Terminal commands `1` and `2` launch Grid Zero and Labyrinth respectively. Commands `3` through `6` show a clear not-yet-playable status.
+- The **Research Lab is not shown as a game**. Typing `RESEARCH` opens the existing experiments; its internal `1` / `2` selections must continue to work.
+- At the minimum window size of 680×600, the catalog and all status labels remain readable and reachable by scrolling.
+- Switching between a game, the Research Lab and main menu should not change core gameplay behavior.
+- Run `GameCatalogTest` and the full Java 21 Maven suite.
 
 ## Guided Windows acceptance run
 
-Use the [Windows beta validation helper](../scripts/verify-beta2-windows.ps1) from a checkout of `feature/grid-zero-game-history-lessons`:
+Use the [Windows beta validation helper](../scripts/verify-beta2-windows.ps1) from a checkout of `feature/retro-ai-game-catalog`:
 
 ```powershell
 git pull --ff-only
