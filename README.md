@@ -6,15 +6,17 @@
 
 STRATUM-83 combines two playable games with a separate Research Lab for repeatable classical-AI experiments. It is an independent, non-commercial educational project; no account, cloud service, telemetry or LLM subscription is needed.
 
-**Release status:** These changes live on the [Labyrinth Learning Lab development branch](https://github.com/elisseosmav/stratum-83/tree/feature/labyrinth-learning-lab), **not on `main`**. The [existing published beta](https://github.com/elisseosmav/stratum-83/releases/tag/v0.3.0-beta.1) is a prior snapshot. This candidate is not an official release until the maintainer publishes a new tag.
+**Release status:** These changes live on the [Labyrinth Learning Lab development branch](https://github.com/elisseosmav/stratum-83/tree/feature/grid-zero-game-history-lessons), **not on `main`**. The [existing published beta](https://github.com/elisseosmav/stratum-83/releases/tag/v0.3.0-beta.1) is a prior snapshot. This candidate is not an official release until the maintainer publishes a new tag.
 
 ## The educational experience: Play → Trace → Explain → Apply
 
 Games introduce a problem, but **learning how the algorithm works and when it applies to software engineering is the main purpose**.
 
 - **PLAY:** Play Grid Zero against Minimax using the same AI that generates the trace.
-- **TRACE:** Starts with a plain-language explanation of the computer's chosen move. Step through a clear 3×3 board showing possible futures, then optionally reveal alternative move scores and search statistics. See exact candidate move scores, evaluated positions and cutoffs. The UI samples at most 159 early search events plus the final selection and tells you when the trace is truncated.
-- **EXPLAIN:** Learn three basic steps—imagine, predict and decide—before optionally showing scores and pruning details.
+- **GAME HISTORY:** After a Grid Zero match begins, revisit **any real X move followed by the computer's O reply**. Choose move 3, for example, to examine why Minimax selected move 4.
+- **EXPLAIN MOVE:** Start with the recorded board, imagine alternative O moves, follow plausible futures under optimal play, then see the actual O choice. Predictions are always labeled as hypothetical; the original game never changes.
+- **ADVANCED TRACE:** The previous step-by-step recursive search view is still available for learners who want the internal MAX/MIN/pruning events, but it is no longer the default introduction. See exact candidate move scores, evaluated positions and cutoffs. The UI samples at most 159 early search events plus the final selection and tells you when the trace is truncated.
+- **EXPLAIN:** In Grid Zero, explain the latest real computer move. Use **GAME HISTORY** to select an earlier move. In Labyrinth, EXPLAIN describes BFS, Dijkstra and A*.
 - **APPLY:** Choose between two retry policies, then reveal the worst-case reasoning. All numbers are fictional and used only for teaching.
 
 The `TRACE`, `EXPLAIN`, and `APPLY` commands work **contextually in Grid Zero and Labyrinth**, and the same actions are clickable inside each game. `DUEL` remains a human-versus-human mode. All lessons are local and do not require an LLM.
@@ -81,7 +83,7 @@ Proposed future games include Checkers, Blackjack and Chess. These are **researc
 
 The Java 21 Maven/JUnit build has passed in GitHub Actions, but a release still requires a **real interactive Windows JavaFX check**. A PowerShell helper now runs the local tests, launches the application, walks through the acceptance questions and writes a local Markdown report. It **never publishes or merges code**.
 
-After checking out the [Labyrinth Learning Lab branch](https://github.com/elisseosmav/stratum-83/tree/feature/labyrinth-learning-lab), run:
+After checking out the [Labyrinth Learning Lab branch](https://github.com/elisseosmav/stratum-83/tree/feature/grid-zero-game-history-lessons), run:
 
 ```powershell
 git pull --ff-only
@@ -131,11 +133,11 @@ Option A: clone with Git (requires Git installed):
 
 ```powershell
 cd "$HOME\Projects"
-git clone --branch feature/labyrinth-learning-lab https://github.com/elisseosmav/stratum-83.git stratum-83-lab
+git clone --branch feature/grid-zero-game-history-lessons https://github.com/elisseosmav/stratum-83.git stratum-83-lab
 cd .\stratum-83-lab
 ```
 
-Option B: open [STRATUM-83 on GitHub](https://github.com/elisseosmav/stratum-83), select the **feature/labyrinth-learning-lab** branch and choose **Code → Download ZIP**, extract it, and open PowerShell **inside the extracted source directory**.
+Option B: open [STRATUM-83 on GitHub](https://github.com/elisseosmav/stratum-83), select the **feature/grid-zero-game-history-lessons** branch and choose **Code → Download ZIP**, extract it, and open PowerShell **inside the extracted source directory**.
 
 You **must** run Maven from the directory that contains `pom.xml`, not the Maven `bin` directory. Verify:
 
@@ -206,8 +208,11 @@ Use JDK 21 and Maven 3.9+, then run `mvn test` and `mvn javafx:run`. A desktop e
 | Command | Action |
 | --- | --- |
 | `PLAY` | Grid Zero against Minimax |
-| `TRACE` | Step through Grid Zero Minimax or active Labyrinth search |
-| `EXPLAIN` | Learn the live move's reasoning and Minimax rules |
+| `HISTORY` | Open the recorded Grid Zero game history |
+| `TRACE` | Grid Zero: open game history; Labyrinth: step through graph search |
+| `ADVANCED` | Open optional raw Minimax search events |
+| `BASICS` | Show optional Minimax definitions |
+| `EXPLAIN` | Grid Zero: guided explanation of the most recent computer move; Labyrinth: graph-search explanation |
 | `APPLY` | Try a contextual software engineering exercise (worst-case policy or weighted service routing) |
 | `MTRACE`, `MEXPLAIN`, `MAPPLY` | Open Labyrinth educational views directly |
 | `BFS`, `DIJKSTRA`, `ASTAR` | Select the Labyrinth trace algorithm |
