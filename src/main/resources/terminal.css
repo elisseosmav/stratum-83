@@ -240,3 +240,44 @@
     -fx-border-color: #d9ff88;
     -fx-text-fill: #ffffff;
 }
+
+
+/* Grid Zero teaching screen: first explain the decision, then show search details. */
+.learning-title {
+    -fx-text-fill: #e2ffe9;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+.learning-conclusion {
+    -fx-background-color: #12341f;
+    -fx-border-color: #77af86;
+    -fx-border-width: 1px;
+    -fx-padding: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e2ffe9;
+    -fx-font-size: 14px;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+.learning-choice {
+    -fx-text-fill: #a9efbb;
+}
+.learning-choice-selected {
+    -fx-text-fill: #e2ffe9;
+    -fx-font-weight: bold;
+}
+.trace-square {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-background-color: #102a19;
+    -fx-border-color: #397651;
+    -fx-border-width: 1px;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e1ffeb;
+    -fx-alignment: center;
+}
+.trace-x { -fx-text-fill: #ffe1b8; }
+.trace-o { -fx-text-fill: #a8ffcc; }
+.trace-empty { -fx-background-color: #07140c; }
