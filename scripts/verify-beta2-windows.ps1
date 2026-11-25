@@ -65,7 +65,7 @@ if (-not $SkipTests) {
 $guiStatus = 'SKIPPED'
 if (-not $SkipGui) {
     Write-Host ''
-    Write-Host 'The JavaFX window will open. Check the features listed in docs/TESTING.md.'
+    Write-Host 'The JavaFX window will open. Try the games and Algorithms view; answer the checks below after closing it.'
     Write-Host 'Close the STRATUM-83 window to return here and record your results.'
     Push-Location $root
     try {
