@@ -31,8 +31,7 @@ public final class GridZeroLearningScreens {
         conclusion.getStyleClass().add("learning-conclusion");
         content.getChildren().add(conclusion);
 
-        Label choicesTitle = note("THE COMPUTER COMPARED THESE POSSIBLE MOVES:");
-        content.getChildren().add(choicesTitle);
+        Label choicesTitle = note("POSSIBLE MOVES THE COMPUTER EVALUATED:");
         VBox alternatives = new VBox(5);
         alternatives.setAlignment(Pos.CENTER);
         for (MinimaxAnalysis.Candidate candidate : analysis.candidates()) {
@@ -46,9 +45,20 @@ public final class GridZeroLearningScreens {
             option.getStyleClass().add(chosen ? "learning-choice-selected" : "learning-choice");
             alternatives.getChildren().add(option);
         }
-        content.getChildren().add(alternatives);
-        content.getChildren().add(note(
-                "SCORES ARE FROM THE COMPUTER'S VIEW: POSITIVE = WIN, 0 = DRAW, NEGATIVE = LOSS."));
+
+        VBox comparisons = new VBox(7, choicesTitle, alternatives,
+                note("POSITIVE SCORE = WIN, ZERO = DRAW, NEGATIVE SCORE = LOSS."));
+        comparisons.setAlignment(Pos.CENTER);
+        comparisons.setVisible(false);
+        comparisons.setManaged(false);
+        Button compare = button("COMPARE POSSIBLE MOVES", () -> {});
+        compare.setOnAction(event -> {
+            boolean open = !comparisons.isVisible();
+            comparisons.setVisible(open);
+            comparisons.setManaged(open);
+            compare.setText(open ? "HIDE MOVE COMPARISON" : "COMPARE POSSIBLE MOVES");
+        });
+        content.getChildren().addAll(compare, comparisons);
 
         content.getChildren().add(note("NOW EXPLORE HOW IT REACHED THAT DECISION"));
         Label stepTitle = note("");
@@ -96,15 +106,27 @@ public final class GridZeroLearningScreens {
         });
         redraw.run();
 
+        Label diagnostics = note("THIS SEARCH EVALUATED " + analysis.evaluatedNodes()
+                + " POSITIONS AND MADE " + analysis.alphaBetaCutoffs() + " SAFE CUTS.");
+        Label sampling = note(analysis.truncated()
+                ? "ONLY THE FIRST SEARCH STEPS AND THE FINAL DECISION ARE SHOWN."
+                : "ALL SEARCH EVENTS WERE RECORDED.");
+        VBox technical = new VBox(7, diagnostics, sampling);
+        technical.setAlignment(Pos.CENTER);
+        technical.setVisible(false);
+        technical.setManaged(false);
+        Button technicalButton = button("SHOW SEARCH STATISTICS", () -> {});
+        technicalButton.setOnAction(event -> {
+            boolean open = !technical.isVisible();
+            technical.setVisible(open);
+            technical.setManaged(open);
+            technicalButton.setText(open ? "HIDE SEARCH STATISTICS" : "SHOW SEARCH STATISTICS");
+        });
+
         content.getChildren().addAll(stepTitle, board, stepExplanation,
-                note("BEFORE THE FINAL STEP, EACH BOARD IS A POSSIBLE FUTURE — NOT AN ACTUAL MOVE."),
+                note("THESE BOARDS SHOW WHAT MIGHT HAPPEN. ONLY THE FINAL STEP IS THE REAL MOVE."),
                 actions(previous, next, showDecision),
-                note("OPTIONAL SEARCH DETAILS: " + analysis.evaluatedNodes()
-                        + " POSITIONS EVALUATED / " + analysis.alphaBetaCutoffs()
-                        + " ALPHA-BETA CUTOFFS."),
-                note(analysis.truncated()
-                        ? "LONG SEARCH: FIRST RECORDED STEPS AND FINAL DECISION ARE SHOWN."
-                        : "SHORT SEARCH: ALL RECORDED STEPS ARE SHOWN."),
+                technicalButton, technical,
                 actions(button("EXPLAIN", explain), button("APPLY", apply),
                         button("BACK TO GAME", back)));
         return content;
