@@ -1,336 +1,152 @@
+/* STRATUM-83 / Original green-phosphor-inspired retro game interface. */
 .root {
     -fx-font-family: "Consolas", "Lucida Console", "Courier New", monospace;
     -fx-font-size: 13px;
     -fx-background-color: #07140c;
-    -fx-text-fill: #a9efbb;
 }
-
 .app-root {
-    -fx-background-color: linear-gradient(to bottom, #07140c, #0a1a10);
+    -fx-background-color: linear-gradient(to bottom, #07140c, #0b1e12);
 }
-
 .label {
-    -fx-text-fill: #a9efbb;
+    -fx-text-fill: #b8f1ca;
 }
-
 .header {
-    -fx-background-color: #0b2414;
-    -fx-border-color: #285638;
-    -fx-border-width: 0 0 1 0;
+    -fx-background-color: #0a2515;
+    -fx-border-color: #315940;
+    -fx-border-width: 0 0 1px 0;
 }
-
 .header-title {
-    -fx-text-fill: #d2ffe0;
-    -fx-font-size: 16px;
+    -fx-text-fill: #d6ffdf;
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
 }
-
-.offline-label {
-    -fx-text-fill: #80c99b;
+.footer {
+    -fx-background-color: #061109;
+    -fx-border-color: #315940;
+    -fx-border-width: 1px 0 0 0;
+}
+.footer-status {
+    -fx-text-fill: #87be9a;
     -fx-font-size: 12px;
 }
-
 .screen-title {
-    -fx-font-size: 31px;
+    -fx-font-size: 29px;
     -fx-font-weight: bold;
-    -fx-text-fill: #d2ffe0;
-}
-
-.screen-subtitle {
-    -fx-text-fill: #88c79d;
-    -fx-font-size: 13px;
+    -fx-text-fill: #dbffe7;
     -fx-text-alignment: center;
 }
-
-.menu-button, .action-button, .small-button {
-    -fx-background-color: #112c1a;
-    -fx-text-fill: #a9efbb;
-    -fx-border-color: #397651;
+.screen-subtitle {
+    -fx-text-fill: #91cfa4;
+    -fx-text-alignment: center;
+    -fx-font-size: 13px;
+}
+.game-message {
+    -fx-text-fill: #e0ffe8;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
+}
+.action-button {
+    -fx-background-color: #10321d;
+    -fx-text-fill: #c6ffd6;
+    -fx-border-color: #47865b;
     -fx-border-width: 1px;
     -fx-background-radius: 3px;
     -fx-border-radius: 3px;
+    -fx-padding: 9px 14px;
+    -fx-font-size: 13px;
     -fx-cursor: hand;
 }
-
-.menu-button {
-    -fx-alignment: center-left;
-    -fx-font-size: 15px;
-    -fx-padding: 13px 16px;
+.action-button:hover, .action-button:focused {
+    -fx-background-color: #1a472a;
+    -fx-border-color: #b0eebf;
 }
-
-.action-button {
-    -fx-padding: 11px 18px;
-}
-
-.small-button {
-    -fx-padding: 8px 12px;
-}
-
-.menu-button:hover, .action-button:hover, .small-button:hover,
-.menu-button:focused, .action-button:focused, .small-button:focused {
-    -fx-background-color: #1c472a;
-    -fx-border-color: #a9efbb;
-    -fx-text-fill: #e4ffe9;
-}
-
-.board-square {
-    -fx-background-color: #0d2717;
-    -fx-border-color: #4f9265;
-    -fx-border-width: 2px;
-    -fx-background-radius: 2px;
-    -fx-border-radius: 2px;
-    -fx-text-fill: #c1ffd2;
-    -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-font-size: 61px;
-    -fx-font-weight: bold;
-    -fx-cursor: hand;
-}
-
-.board-square:hover, .board-square:focused {
-    -fx-background-color: #1b4728;
-    -fx-border-color: #b7facc;
-}
-
-.game-message {
-    -fx-text-fill: #d3ffe0;
-    -fx-font-size: 17px;
-    -fx-font-weight: bold;
-}
-
-.report, .help-text {
-    -fx-background-color: #102a19;
-    -fx-border-color: #285638;
-    -fx-padding: 23px;
-    -fx-text-fill: #b9efd0;
-    -fx-line-spacing: 6px;
-}
-
-.report {
-    -fx-font-size: 17px;
-}
-
-.help-text {
-    -fx-font-size: 14px;
-}
-
-.console {
-    -fx-background-color: #07110a;
-    -fx-border-color: #285638;
-    -fx-border-width: 1 0 0 0;
-}
-
-.hint {
-    -fx-text-fill: #79b48a;
-    -fx-font-size: 11px;
-}
-
-.prompt {
-    -fx-font-size: 22px;
-    -fx-font-weight: bold;
-}
-
-.command-input {
-    -fx-background-color: transparent;
-    -fx-background-radius: 0;
-    -fx-border-color: transparent;
-    -fx-text-fill: #e2ffe9;
-    -fx-prompt-text-fill: #688f73;
-    -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-font-size: 15px;
-    -fx-padding: 4px;
-}
-
-.console-message {
-    -fx-text-fill: #7fac8b;
-    -fx-font-size: 12px;
-}
-
-/* Labyrinth uses labels rather than buttons, so player and goal text stay visible. */
-.maze-cell {
-    -fx-background-color: #10251a;
-    -fx-border-color: #296342;
-    -fx-border-width: 1px;
-    -fx-text-fill: #b6ffd0;
-    -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-    -fx-alignment: center;
-}
-.maze-wall { -fx-background-color: #2d563f; -fx-border-color: #2d563f; }
-.maze-open { -fx-background-color: #04130b; -fx-border-color: #346d4a; }
-.maze-player { -fx-background-color: #145c37; -fx-border-color: #8cddac; -fx-text-fill: #ffffff; }
-.maze-goal { -fx-background-color: #4a4e20; -fx-border-color: #ebdb83; -fx-text-fill: #ffe899; }
-.maze-human-route { -fx-background-color: #173a42; -fx-border-color: #4798b0; -fx-text-fill: #97e8ff; }
-.maze-optimal-route { -fx-background-color: #26482b; -fx-border-color: #a6e86d; -fx-text-fill: #e2ffb2; }
-
-/* Only shown after a human reaches the maze goal. */
-.challenge-results {
-    -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-font-size: 14px;
-    -fx-fill: #d2ffe0;
-    -fx-text-alignment: center;
-}
-/* Grid Zero X/O marks are drawn in labels above the buttons. */
-.board-mark {
-    -fx-text-fill: #d2ffe0;
-    -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-font-size: 61px;
-    -fx-font-weight: bold;
-    -fx-alignment: center;
-}
-.board-square.filled { -fx-background-color: #12341f; -fx-cursor: default; }
-
-.maze-scroll, .maze-scroll > .viewport {
-    -fx-background-color: transparent;
-    -fx-background: transparent;
-}
-
-/* Research results use Text, so multiline output does not truncate. */
-.research-result {
-    -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-fill: #c1ffd2;
-    -fx-font-size: 13px;
-}
-
-.research-input {
-    -fx-background-color: #102a19;
-    -fx-border-color: #397651;
-    -fx-text-fill: #d2ffe0;
-    -fx-prompt-text-fill: #80c99b;
-    -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-font-size: 15px;
-    -fx-padding: 7px;
-}
-.research-input:focused {
-    -fx-border-color: #a9efbb;
-}
-
-/* Educational mode: readable text board and search explanations. */
-.learning-mono {
-    -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-font-size: 15px;
-    -fx-fill: #c7ffdb;
-    -fx-text-alignment: center;
-}
-.learning-note {
-    -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-font-size: 13px;
-    -fx-text-fill: #9cddb4;
-    -fx-text-alignment: center;
-}
-
-/* Actual search-frontier visualization for Labyrinth TRACE. */
-.maze-trace-current {
-    -fx-background-color: #5b7624;
-    -fx-border-color: #e6ff9d;
-    -fx-text-fill: #ffffff;
-}
-.maze-trace-frontier {
-    -fx-background-color: #164352;
-    -fx-border-color: #68ccf2;
-    -fx-text-fill: #e1faff;
-}
-.maze-trace-explored {
-    -fx-background-color: #15452b;
-    -fx-border-color: #397f55;
-    -fx-text-fill: #89cda3;
-}
-.maze-trace-path {
-    -fx-background-color: #507136;
-    -fx-border-color: #d9ff88;
-    -fx-text-fill: #ffffff;
-}
-
-
-/* Grid Zero teaching screen: first explain the decision, then show search details. */
-.learning-title {
-    -fx-text-fill: #e2ffe9;
-    -fx-font-size: 22px;
-    -fx-font-weight: bold;
-    -fx-alignment: center;
-    -fx-text-alignment: center;
-}
-.learning-conclusion {
-    -fx-background-color: #12341f;
-    -fx-border-color: #77af86;
-    -fx-border-width: 1px;
-    -fx-padding: 12px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #e2ffe9;
-    -fx-font-size: 14px;
-    -fx-alignment: center;
-    -fx-text-alignment: center;
-}
-.learning-choice {
-    -fx-text-fill: #a9efbb;
-}
-.learning-choice-selected {
-    -fx-text-fill: #e2ffe9;
-    -fx-font-weight: bold;
-}
-.trace-square {
-    -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-background-color: #102a19;
-    -fx-border-color: #397651;
-    -fx-border-width: 1px;
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #e1ffeb;
-    -fx-alignment: center;
-}
-.trace-x { -fx-text-fill: #ffe1b8; }
-.trace-o { -fx-text-fill: #a8ffcc; }
-.trace-empty { -fx-background-color: #07140c; }
-
-
-/* Plain-language educational cards and progressive details. */
-.learning-step {
-    -fx-background-color: #0c2516;
-    -fx-border-color: #315c3e;
-    -fx-border-width: 1px;
-    -fx-padding: 11px;
-}
-.learning-step-heading {
-    -fx-text-fill: #e2ffe9;
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-}
-.learning-feedback {
-    -fx-text-fill: #e2ffe9;
-    -fx-background-color: #173a24;
-    -fx-padding: 12px;
-    -fx-border-color: #477d53;
-    -fx-text-alignment: center;
-}
-
-/* Game-history Minimax lessons. The board is deliberately large and simple. */
-.history-square {
-    -fx-background-color: #0e2a18;
-    -fx-border-color: #4b8c61;
-    -fx-border-width: 1px;
-    -fx-text-fill: #d9ffe3;
-    -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-font-weight: bold;
-    -fx-font-size: 24px;
-    -fx-alignment: center;
-}
-.history-highlight {
-    -fx-background-color: #244d2f;
-    -fx-border-color: #e2fb84;
-    -fx-border-width: 2px;
-    -fx-text-fill: #ffffff;
-}
-
-/* Retro AI game catalog: future titles are visible but clearly unavailable. */
+.small-button { -fx-font-size: 12px; }
 .catalog-game {
     -fx-font-family: "Consolas", "Courier New", monospace;
     -fx-font-size: 13px;
-    -fx-padding: 10px 14px;
+    -fx-alignment: center-left;
+    -fx-padding: 13px;
 }
 .catalog-game:disabled {
-    -fx-opacity: 0.72;
-    -fx-background-color: #0b1e12;
-    -fx-border-color: #294934;
-    -fx-text-fill: #779b83;
+    -fx-opacity: 0.63;
+    -fx-background-color: #09190e;
+    -fx-text-fill: #8fb09a;
     -fx-cursor: default;
+}
+.board-square {
+    -fx-background-color: #0f2819;
+    -fx-border-color: #4c9362;
+    -fx-border-width: 2px;
+    -fx-background-radius: 2px;
+    -fx-border-radius: 2px;
+}
+.board-square:hover, .board-square:focused {
+    -fx-background-color: #1b4628;
+    -fx-border-color: #b2e7bb;
+}
+.board-square:disabled {
+    -fx-opacity: 1;
+    -fx-background-color: #0c2115;
+    -fx-border-color: #386d4b;
+}
+.board-mark {
+    -fx-text-fill: #d6ffe1;
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 58px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
+.game-scroll, .game-scroll > .viewport {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+.algorithm-card {
+    -fx-background-color: #102b1a;
+    -fx-border-color: #376044;
+    -fx-border-width: 1px;
+    -fx-padding: 14px;
+    -fx-background-radius: 3px;
+}
+.algorithm-name {
+    -fx-text-fill: #d3ffde;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+}
+/* Maze tile visibility. Undiscovered squares are black and intentionally reveal nothing. */
+.maze-cell {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+}
+.fog-hidden {
+    -fx-background-color: #020805;
+    -fx-text-fill: transparent;
+}
+.fog-memory-floor {
+    -fx-background-color: #101e16;
+}
+.fog-memory-wall {
+    -fx-background-color: #23352a;
+}
+.maze-open {
+    -fx-background-color: #10381e;
+}
+.maze-wall {
+    -fx-background-color: #497554;
+}
+.maze-player {
+    -fx-background-color: #d9f8b5;
+    -fx-text-fill: #062214;
+}
+.maze-goal {
+    -fx-background-color: #a79b3e;
+    -fx-text-fill: #ffffff;
+}
+.maze-optimal-route {
+    -fx-background-color: #2a7f62;
+    -fx-text-fill: #ffffff;
 }
