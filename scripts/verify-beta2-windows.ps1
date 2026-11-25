@@ -10,7 +10,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
-$expectedBranch = 'feature/grid-zero-game-history-lessons'
+$expectedBranch = 'feature/retro-ai-game-catalog'
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     throw 'Git is required to verify the tested commit.'
@@ -78,7 +78,7 @@ if (-not $SkipGui) {
 }
 
 $checks = @(
-    [pscustomobject]@{ Key = 'Main menu'; Question = 'Three main menu entries, command help, and navigation work' },
+    [pscustomobject]@{ Key = 'Main menu'; Question = 'Six AI game catalog entries, only two playable, planned games disabled and commands work' },
     [pscustomobject]@{ Key = 'Grid Zero Play'; Question = 'X/O remain visible and normal Minimax gameplay works' },
     [pscustomobject]@{ Key = 'Grid Zero History'; Question = 'HISTORY lists actual moves; selecting human move 3 explains computer move 4' },
     [pscustomobject]@{ Key = 'Grid Zero Lesson'; Question = 'EXPLAIN shows real board, hypothetical outcomes, actual computer decision; APPLY remains available' },
