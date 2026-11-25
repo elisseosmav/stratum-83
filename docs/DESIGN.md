@@ -39,6 +39,14 @@ After the player reaches the goal, JavaFX displays **moves, optimal BFS moves, e
 
 A score of 100% means shortest route, not faster computation or a learning AI. The Research Lab keeps its pathfinding benchmark separate and uses the same solver classes.
 
+## Grid Zero game-history-first learning
+
+The primary teaching experience is now **Play → Game History → Explain Move**. During a real match, the controller records each accepted X and O move in `GridZeroHistory`. A computer O turn also stores the `MinimaxAnalysis` that actually produced it. The history can reconstruct a fresh copy of the board after any saved turn.
+
+The `GridZeroMoveLesson` class accepts a selected historical **human turn** (for instance move 3) and retrieves the **actual following O decision** (move 4). For each candidate move considered at that moment, it uses the existing `MinimaxPlayer` to calculate a hypothetical optimal continuation, one turn at a time. These futures are kept separate from actual saved turns and must always be labeled as such.
+
+`GridZeroHistoryScreens` teaches one real decision through the actual board, hypothetical candidate moves, their future consequences, and finally the real computer choice. Raw search-tree events are retained as an optional **ADVANCED** view. The teaching layer never mutates the live game or invents recorded match data.
+
 ## Grid Zero educational trace architecture
 
 `MinimaxPlayer.chooseMove()` and `MinimaxPlayer.analyzeMove()` call the **same minimax/alpha-beta search routine**. An immutable `MinimaxAnalysis` returns candidate scores, bounded search events, exact visited-state and cutoff counts, and the chosen move. When a player places X, the JavaFX controller invokes `analyzeMove()` and executes that decision's move; no duplicate AI rules exist.
