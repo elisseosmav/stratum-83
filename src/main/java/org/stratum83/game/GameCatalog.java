@@ -21,7 +21,7 @@ public final class GameCatalog {
 
     private static final List<Entry> ENTRIES = List.of(
             new Entry(1, "GRID ZERO", "MINIMAX / ALPHA-BETA", Status.PLAYABLE),
-            new Entry(2, "LABYRINTH", "BFS / DIJKSTRA / A*", Status.PLAYABLE),
+            new Entry(2, "LABYRINTH", "A* / FOG OF WAR", Status.PLAYABLE),
             new Entry(3, "CRISIS PROTOCOL", "RULE-BASED AGENTS", Status.PLANNED),
             new Entry(4, "CHECKERS", "MINIMAX / HEURISTICS", Status.PROPOSED),
             new Entry(5, "BLACKJACK", "PROBABILITY / MONTE CARLO", Status.PROPOSED),
