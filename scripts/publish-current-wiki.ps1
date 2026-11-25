@@ -1,57 +1,59 @@
-# Sync existing STRATUM-83 Wiki pages from the latest approved development docs.
-# PowerShell 5.1+; requires Git and the owner's GitHub Wiki write access.
-# This script only stages matching existing pages; it never creates new Wiki pages.
-# A complete staged diff and explicit PUBLISH confirmation are required.
+# Publish selected STRATUM-83 GitHub Wiki pages from a preserved source snapshot.
+# Personal project: review the diff yourself before publication.
+# Requires Git, Internet access, and write permission for the GitHub Wiki.
 [CmdletBinding()]
 param()
-
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-    throw 'Git is required to update the Wiki.'
+    throw 'Git is required to publish Wiki changes.'
 }
 
-$repo = 'https://github.com/elisseosmav/stratum-83.git'
+# Immutable commit made before redundant docs were removed from the repository.
+# This remains available through Git history even after file deletion.
+$snapshot = '648c7d0789f2f352bd6e283144988a32e338510e'
 $wikiRepo = 'https://github.com/elisseosmav/stratum-83.wiki.git'
-$branch = 'feature/clean-games-algorithm-library'
-$workspace = Join-Path ([System.IO.Path]::GetTempPath()) ('stratum83-wiki-sync-' + [Guid]::NewGuid().ToString('N'))
-$sourcePath = Join-Path $workspace 'source'
-$wikiPath = Join-Path $workspace 'wiki'
+$workingPath = Join-Path ([System.IO.Path]::GetTempPath()) (
+    'stratum83-wiki-' + [Guid]::NewGuid().ToString('N'))
+$wikiPath = Join-Path $workingPath 'wiki'
+New-Item -ItemType Directory -Force -Path $workingPath | Out-Null
 
-New-Item -ItemType Directory -Force -Path $workspace | Out-Null
-Write-Host 'Cloning the candidate source and the existing Wiki...'
-& git clone --quiet --depth 1 --branch $branch $repo $sourcePath
-if ($LASTEXITCODE -ne 0) { throw 'Could not clone the development branch.' }
+Write-Host 'Getting the existing GitHub Wiki...'
 & git clone --quiet $wikiRepo $wikiPath
-if ($LASTEXITCODE -ne 0) { throw 'Could not clone the Wiki. Check credentials and Wiki availability.' }
+if ($LASTEXITCODE -ne 0) {
+    throw 'Cannot clone the Wiki. Check GitHub Wiki access and credentials.'
+}
 
-$head = (& git -C $sourcePath rev-parse HEAD).Trim()
-if ($LASTEXITCODE -ne 0) { throw 'Cannot identify candidate commit.' }
-Write-Host ('Candidate commit: ' + $head)
-
+# Current gameplay and concise algorithm explanations only.
+# Historical Research Lab material is intentionally not republished.
 $pages = @(
     'Home.md',
     '2.-Development-Roadmap.md',
-    'Labyrinth.md',
     'Grid-Zero-AI-Experiment.md',
-    'Research-Lab.md'
+    'Labyrinth.md'
 )
-
-$updated = @()
+$matched = @()
 $missing = @()
+
 foreach ($page in $pages) {
-    $sourceFile = Join-Path (Join-Path $sourcePath 'docs\wiki') $page
-    $wikiFile = Join-Path $wikiPath $page
-    if (-not (Test-Path $sourceFile)) {
-        throw ('Missing source draft: ' + $sourceFile)
-    }
-    if (-not (Test-Path $wikiFile)) {
+    $existing = Join-Path $wikiPath $page
+    if (-not (Test-Path $existing)) {
         $missing += $page
         continue
     }
 
-    $body = [System.IO.File]::ReadAllText($sourceFile)
-    # Remove the repository-only publication disclaimers; keep the product/release warnings.
+    $url = 'https://raw.githubusercontent.com/elisseosmav/stratum-83/' +
+        $snapshot + '/docs/wiki/' + $page
+    $download = Join-Path $workingPath $page
+    try {
+        Invoke-WebRequest -Uri $url -OutFile $download -UseBasicParsing
+    } catch {
+        throw ('Unable to read the preserved source for ' + $page +
+            '. No Wiki changes have been pushed.')
+    }
+    $body = [System.IO.File]::ReadAllText($download)
+    # Remove historical notes referring to staged repository files.
     $body = [regex]::Replace($body,
         '(?m)^\*This is Wiki-ready Markdown in the repository\. Updating it does not automatically modify GitHub''s live Wiki\.\*\s*$',
         '')
@@ -61,53 +63,53 @@ foreach ($page in $pages) {
     $body = [regex]::Replace($body,
         '(?m)^\*This is a draft for the separate Wiki; it is not a live Wiki edit\.\*\s*$',
         '')
-    $body = $body.Replace('This is a Wiki-ready draft, not an automatically updated live page.', '')
-    [System.IO.File]::WriteAllText($wikiFile, $body,
+    $body = $body.Replace(
+        'This is a Wiki-ready draft, not an automatically updated live page.', '')
+
+    [System.IO.File]::WriteAllText($existing, $body,
         (New-Object System.Text.UTF8Encoding($false)))
     & git -C $wikiPath add -- $page
-    if ($LASTEXITCODE -ne 0) { throw ('Staging failed for ' + $page) }
-    $updated += $page
+    if ($LASTEXITCODE -ne 0) { throw ('Unable to stage ' + $page) }
+    $matched += $page
 }
 
-Write-Host ''
-Write-Host 'Pages checked for synchronization:'
-$updated | ForEach-Object { Write-Host ('  - ' + $_) }
+if ($matched.Count -eq 0) {
+    Write-Warning 'No matching existing Wiki pages found. Nothing was modified or published.'
+    Write-Host ('Wiki clone: ' + $wikiPath)
+    exit 0
+}
 if ($missing.Count -gt 0) {
-    Write-Host ''
-    Write-Warning 'The following Wiki page filenames do not exist, so no replacement was attempted:'
-    $missing | ForEach-Object { Write-Host ('  - ' + $_) }
+    Write-Warning 'These page filenames were absent and have NOT been created:'
+    $missing | ForEach-Object { Write-Host ('  ' + $_) }
 }
 
 & git -C $wikiPath diff --cached --check
-if ($LASTEXITCODE -ne 0) { throw 'Wiki change whitespace validation failed.' }
+if ($LASTEXITCODE -ne 0) { throw 'Invalid changes found in proposed Wiki update.' }
 & git -C $wikiPath diff --cached --quiet
 if ($LASTEXITCODE -eq 0) {
-    Write-Host 'No Wiki content differs at these known page paths.'
+    Write-Host 'The existing Wiki pages already match the preserved content.'
     exit 0
 }
-if ($LASTEXITCODE -ne 1) { throw 'Cannot inspect the Wiki staged changes.' }
+if ($LASTEXITCODE -ne 1) { throw 'Unable to compare Wiki changes.' }
 
 Write-Host ''
-Write-Host 'REVIEW THESE CHANGES CAREFULLY BEFORE PUBLISHING:'
+Write-Host 'Review ALL proposed Wiki edits below:'
 & git -C $wikiPath --no-pager diff --cached --stat
 & git -C $wikiPath --no-pager diff --cached
-if ($LASTEXITCODE -ne 0) { throw 'Could not display the Wiki diff.' }
+if ($LASTEXITCODE -ne 0) { throw 'Unable to display changes.' }
 
-Write-Host ''
-Write-Warning 'This will replace the CONTENTS of the listed existing Wiki pages.'
-Write-Warning 'Custom Wiki-only edits must be manually retained before publication.'
-Write-Host ('Wiki working checkout: ' + $wikiPath)
-$approval = Read-Host 'Type PUBLISH to commit and push the reviewed Wiki changes, or anything else to cancel'
+Write-Warning 'The existing page contents will be replaced. Keep any Wiki-only edits manually.'
+Write-Host ('Unpublished Wiki clone: ' + $wikiPath)
+$approval = Read-Host 'Type PUBLISH to apply these exact changes, or anything else to cancel'
 if ($approval -cne 'PUBLISH') {
-    Write-Host 'Cancelled. No Wiki push performed.'
+    Write-Host 'Cancelled; the live Wiki remains unchanged.'
     exit 0
 }
 
-& git -C $wikiPath commit -m 'docs(wiki): synchronize clean Games + Algorithms and fog-of-war status'
-if ($LASTEXITCODE -ne 0) { throw 'Wiki commit failed. Check git user.name and git user.email.' }
+& git -C $wikiPath commit -m 'wiki: concise current games and algorithms'
+if ($LASTEXITCODE -ne 0) { throw 'Wiki commit failed; verify git name/email.' }
 & git -C $wikiPath push
 if ($LASTEXITCODE -ne 0) {
-    throw ('Wiki push failed. Local checkout retained at: ' + $wikiPath)
+    throw ('Wiki push failed; your local clone is at: ' + $wikiPath)
 }
-Write-Host 'Wiki synchronization complete: https://github.com/elisseosmav/stratum-83/wiki'
-Write-Host ('Updated from candidate commit: ' + $head)
+Write-Host 'Wiki published: https://github.com/elisseosmav/stratum-83/wiki'
