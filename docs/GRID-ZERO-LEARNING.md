@@ -8,13 +8,32 @@ This lesson uses Tic-Tac-Toe to explain **Minimax** and **alpha-beta pruning** a
 
 Select **01 GRID ZERO** on the main menu or type `PLAY`. You play X and the computer plays O. The computer searches the game tree using Minimax. When you place X, the computer evaluates possible O moves and responds. Local two-player mode remains accessible with `DUEL`.
 
-After the first computer move, select **TRACE**, **EXPLAIN** or **APPLY** without resetting the current game.
+After the first computer move, select **TRACE**, **EXPLAIN** or **APPLY** without resetting the current game. **EXPLAIN** starts with three short ideas (imagine, predict, decide), while **APPLY** asks you to choose between two retry policies before revealing the reasoning.
+
+## A worked example: why the computer chooses a draw
+
+Imagine O's turn in this almost-finished game:
+
+```text
+O X X
+. O .
+X O X
+```
+
+The two legal choices are easy to compare:
+
+- **O chooses row 2, column 1:** X takes row 2, column 3 and completes the right column. **O loses** (score −8).
+- **O chooses row 2, column 3:** X fills the final square, and nobody wins. **Draw** (score 0).
+
+The computer picks **row 2, column 3** because **a draw is better than a loss**. This is Minimax in plain language: think about what the opponent might do, then choose the move with the best guaranteed result.
+
+The updated educational screen begins with that kind of explanation, not with search metrics. You can then step through hypothetical game boards in a larger 3×3 grid. **COMPARE POSSIBLE MOVES** reveals the individual scores, and **SHOW SEARCH STATISTICS** reveals the advanced counts only when requested.
 
 ## 2. TRACE — Watch a real decision
 
 Select **TRACE** or type `TRACE`. The trace is captured from the **same code that chose the computer's actual move**.
 
-- **PREVIOUS / NEXT** step through recorded search states. The text board uses `X`, `O`, and `.` for empty squares.
+- **PREVIOUS / NEXT** show the recorded hypothetical futures in a large 3×3 board. Empty cells appear blank; these boards do **not** represent actual gameplay moves, except for the final `CHOSEN` event.
 - **MAX** events show the computer's turn to maximize a score.
 - **MIN** events show the opponent's turn to minimize the computer's score.
 - **OUTCOME** records a completed branch: win, draw or loss.
