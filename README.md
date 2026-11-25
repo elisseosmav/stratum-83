@@ -62,6 +62,7 @@ Navigation: **GAMES** / **ALGORITHMS** in the header; **Esc** returns to Games; 
 - [Development roadmap](docs/DEVELOPMENT-ROADMAP.md)
 - [Beta 2 candidate release notes](docs/RELEASE-NOTES-v0.3.0-beta.2.md)
 - [Wiki-ready content](docs/wiki)
+- [Manual Wiki synchronization script](scripts/publish-current-wiki.ps1) — displays the diff and requires an explicit PUBLISH confirmation before pushing
 - [Source tests](src/test/java/org/stratum83)
 
 The older experimental and teaching classes are retained in the development source for now, but **no longer appear in the rebuilt application navigation**. Future cleanup can remove them after desktop acceptance.
