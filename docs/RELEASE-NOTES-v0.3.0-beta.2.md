@@ -1,9 +1,17 @@
 # STRATUM-83 v0.3.0 Beta 2 — Release Candidate
 
-> **Not yet published.** These notes describe the proposed `v0.3.0-beta.2` release, sourced from [feature/labyrinth-learning-lab](https://github.com/elisseosmav/stratum-83/tree/feature/labyrinth-learning-lab).  
+> **Not yet published.** These notes describe the proposed `v0.3.0-beta.2` release, sourced from [feature/grid-zero-game-history-lessons](https://github.com/elisseosmav/stratum-83/tree/feature/grid-zero-game-history-lessons).  
 > Do not rewrite or move the published `v0.3.0-beta.1` tag.
 
 STRATUM-83 is an offline, non-commercial Java research terminal with original retro styling, playable games and educational classical-AI experiments.
+
+## New: explain real game moves
+
+Grid Zero now records **every accepted move** and saves the Minimax analysis actually used for each computer reply. Choose **GAME HISTORY**, select the third human move (X), and the lesson reconstructs that exact board to show how the computer selected the fourth move (O).
+
+The learner can try alternative O placements and step through hypothetical best-play continuations before revealing O's **actual recorded choice**. Hypothetical and real gameplay are explicitly distinguished. `EXPLAIN` opens the latest recorded computer move, while `HISTORY` or `TRACE` opens the list of real moves. Raw search events remain available via `ADVANCED`.
+
+New pure-Java `GridZeroHistory` and `GridZeroMoveLesson` classes have JUnit tests validating replay, recorded decision integrity, legal alternative continuations and that lessons never alter the live game. Windows JavaFX visual acceptance remains pending.
 
 ## Educational direction: Play → Trace → Explain → Apply
 
@@ -52,7 +60,7 @@ Both modes are deterministic with identical inputs and code. All algorithms use 
 ## Build and run (source distribution)
 
 ```powershell
-git clone --branch feature/terminal-research-redesign https://github.com/elisseosmav/stratum-83.git stratum-83-research
+git clone --branch feature/grid-zero-game-history-lessons https://github.com/elisseosmav/stratum-83.git stratum-83-research
 cd stratum-83-research
 mvn clean test
 mvn javafx:run
@@ -73,11 +81,11 @@ The project includes a repeatable manual acceptance runner, [verify-beta2-window
 
 ## Documentation and feedback
 
-- [README and setup](https://github.com/elisseosmav/stratum-83/blob/feature/terminal-research-redesign/README.md)
-- [Technical design](https://github.com/elisseosmav/stratum-83/blob/feature/terminal-research-redesign/docs/DESIGN.md)
-- [Windows acceptance checks](https://github.com/elisseosmav/stratum-83/blob/feature/terminal-research-redesign/docs/TESTING.md)
-- [Development Roadmap](https://github.com/elisseosmav/stratum-83/blob/feature/terminal-research-redesign/docs/DEVELOPMENT-ROADMAP.md)
-- [Wiki-ready educational pages](https://github.com/elisseosmav/stratum-83/tree/feature/terminal-research-redesign/docs/wiki)
+- [README and setup](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-game-history-lessons/README.md)
+- [Technical design](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-game-history-lessons/docs/DESIGN.md)
+- [Windows acceptance checks](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-game-history-lessons/docs/TESTING.md)
+- [Development Roadmap](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-game-history-lessons/docs/DEVELOPMENT-ROADMAP.md)
+- [Wiki-ready educational pages](https://github.com/elisseosmav/stratum-83/tree/feature/grid-zero-game-history-lessons/docs/wiki)
 - [GitHub Discussions](https://github.com/elisseosmav/stratum-83/discussions)
 
 When Windows tests pass, the maintainer may create a **new prerelease** with tag `v0.3.0-beta.2` targeting the reviewed commit. Do **not** overwrite `v0.3.0-beta.1`.
