@@ -8,7 +8,7 @@ This lesson uses Tic-Tac-Toe to explain **Minimax** and **alpha-beta pruning** a
 
 Select **01 GRID ZERO** on the main menu or type `PLAY`. You play X and the computer plays O. The computer searches the game tree using Minimax. When you place X, the computer evaluates possible O moves and responds. Local two-player mode remains accessible with `DUEL`.
 
-After the first computer move, select **TRACE**, **EXPLAIN** or **APPLY** without resetting the current game. **EXPLAIN** starts with three short ideas (imagine, predict, decide), while **APPLY** asks you to choose between two retry policies before revealing the reasoning.
+After the first computer move, select **GAME HISTORY**, **EXPLAIN MOVE** or **APPLY** without resetting the current game. **EXPLAIN** starts with three short ideas (imagine, predict, decide), while **APPLY** asks you to choose between two retry policies before revealing the reasoning.
 
 ## A worked example: why the computer chooses a draw
 
@@ -29,21 +29,28 @@ The computer picks **row 2, column 3** because **a draw is better than a loss**.
 
 The updated educational screen begins with that kind of explanation, not with search metrics. You can then step through hypothetical game boards in a larger 3×3 grid. **COMPARE POSSIBLE MOVES** reveals the individual scores, and **SHOW SEARCH STATISTICS** reveals the advanced counts only when requested.
 
-## 2. TRACE — Watch a real decision
+## 2. GAME HISTORY — Choose a move from your actual match
 
-Select **TRACE** or type `TRACE`. The trace is captured from the **same code that chose the computer's actual move**.
+Once you have played against the computer, press **GAME HISTORY** (or type `HISTORY`). The application records every actual X and O move in order.
 
-- **PREVIOUS / NEXT** show the recorded hypothetical futures in a large 3×3 board. Empty cells appear blank; these boards do **not** represent actual gameplay moves, except for the final `CHOSEN` event.
-- **MAX** events show the computer's turn to maximize a score.
-- **MIN** events show the opponent's turn to minimize the computer's score.
-- **OUTCOME** records a completed branch: win, draw or loss.
-- **PRUNE** marks a real alpha-beta cutoff—an opportunity to stop checking siblings because they cannot improve the branch decision.
-- **CHOSEN** shows the computer's selected move after evaluation.
-- The screen also shows **exact root candidate scores**, total evaluated positions and cutoff count.
+Choose the **third move** (your second X), for example. The next move—move 4—is the computer's O reply. Selecting that historical turn opens **EXPLAIN COMPUTER MOVE 4**. The lesson reconstructs the exact board after your move 3; it does not use a fixed sample board.
 
-**Important:** Full Tic-Tac-Toe search can visit many states. The trace intentionally displays **up to 159 early events plus the final choice** to keep the UI readable; when some events are omitted it says so. The root candidate scores and evaluated-node/cutoff totals still describe the entire search. This is a *sample of a real tree traversal*, not a complete animated tree.
+**EXPLAIN MOVE** on the play screen opens the latest actual computer decision. Use `EXPLAIN` at the terminal for the same action.
 
-Root candidates are independently evaluated with open alpha/beta bounds so that their shown scores are exact. Row-major tie breaking means equally rated moves are resolved by board order.
+### A four-part lesson for that move
+
+1. **Look at the real position:** See the exact board after your X move.
+2. **Imagine a computer move:** Select any empty square where O could have played. Nothing changes in the saved game.
+3. **Follow a possible future:** Watch each player's best response, one move at a time. These continuations are computed by the same Minimax engine, but are **hypothetical**, not the moves you necessarily played afterward.
+4. **Compare with the real decision:** Reveal where O actually played and the best result it could guarantee against optimal play.
+
+For example, if the computer can choose between a move that leads to losing and one that guarantees drawing, Minimax chooses the draw.
+
+The saved move history and Minimax decision are never modified during these explanations. Retrying a new game starts a new history.
+
+### Optional deeper learning
+
+The original raw search-trace view remains available with the `ADVANCED` terminal command or **ADVANCED / SEE SEARCH EVENTS** at the end of the guided lesson. It shows MAX/MIN states, pruning and numerical scores, but is deliberately not the starting point for beginners.
 
 ## 3. EXPLAIN — Understand the search
 
@@ -84,6 +91,9 @@ Go to **03 RESEARCH LAB → 01 MINIMAX VS RANDOM** or enter `EXPERIMENT`. Set se
 
 ## 6. Explore the Java code
 
+- [GridZeroHistory.java](../src/main/java/org/stratum83/game/GridZeroHistory.java) — records and replays actual match moves
+- [GridZeroMoveLesson.java](../src/main/java/org/stratum83/game/GridZeroMoveLesson.java) — computes alternative futures from the saved decision
+- [GridZeroHistoryScreens.java](../src/main/java/org/stratum83/ui/GridZeroHistoryScreens.java) — guided Game History and Explain Move interface
 - [MinimaxPlayer.java](../src/main/java/org/stratum83/game/MinimaxPlayer.java) — shared gameplay search and optional event recording
 - [MinimaxAnalysis.java](../src/main/java/org/stratum83/game/MinimaxAnalysis.java) — immutable candidate scores and search events
 - [GridZeroLearningScreens.java](../src/main/java/org/stratum83/ui/GridZeroLearningScreens.java) — trace/explain/apply screens
