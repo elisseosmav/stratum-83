@@ -15,7 +15,19 @@ The interactive Grid Zero learning pilot adds the `TRACE`, `EXPLAIN`, and `APPLY
 
 **Key limitation:** Minimax fits modeled competitive/worst-case decisions, while expected value is often better for probabilistic problems.
 
-[Read the full Grid Zero learning guide](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-learning-lab/docs/GRID-ZERO-LEARNING.md) for source links, exercises and limitations.
+[Read the full Grid Zero learning guide](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-learning-lab/docs/GRID-ZERO-LEARNING.md) for source links, exercises and limitations.
+
+## New beginner-friendly learning view
+
+The TRACE, EXPLAIN and APPLY screens now teach the **answer first**, with optional technical detail.
+
+- **TRACE:** What move did the computer choose, and why? The first screen explains the decision in ordinary words. A larger game board shows possible future moves; the final step shows the move actually chosen. Only open **COMPARE POSSIBLE MOVES** or **SHOW SEARCH STATISTICS** if you want more detail.
+- **EXPLAIN:** Three steps: imagine a move, predict the opponent's best reply, and choose the safest outcome. Technical scores and alpha-beta pruning remain available behind **SHOW TECHNICAL DETAILS**.
+- **APPLY:** Choose between two retry policies for a fictional overloaded service. See their worst costs, then learn how a minimax-style worst-case decision works. The costs are imaginary; real reliability design may require probability and timeouts.
+
+**Worked example:** On board `OXX / .O. / XOX`, O chooses the last square in the middle row (row 2, column 3): that produces a draw (0), instead of choosing row 2, column 1 and eventually losing (−8).
+
+[Full Grid Zero learning chapter](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-learning-lab/docs/GRID-ZERO-LEARNING.md).
 
 ## Perfect Minimax
 
@@ -48,8 +60,8 @@ The seed controls the pseudorandom opponent, so repeating with the same seed and
 
 ## Java implementation
 
-- [GridZeroGame.java](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-learning-lab/src/main/java/org/stratum83/game/GridZeroGame.java)
-- [MinimaxPlayer.java](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-learning-lab/src/main/java/org/stratum83/game/MinimaxPlayer.java)
-- [ExperimentRunner.java](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-learning-lab/src/main/java/org/stratum83/research/ExperimentRunner.java)
+- [GridZeroGame.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-learning-lab/src/main/java/org/stratum83/game/GridZeroGame.java)
+- [MinimaxPlayer.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-learning-lab/src/main/java/org/stratum83/game/MinimaxPlayer.java)
+- [ExperimentRunner.java](https://github.com/elisseosmav/stratum-83/blob/feature/labyrinth-learning-lab/src/main/java/org/stratum83/research/ExperimentRunner.java)
 
 This experiment is classical, deterministic search against a seeded random baseline—not machine learning or an LLM evaluation.
