@@ -4,11 +4,28 @@
 
 **Classic Games. Real Algorithms. Practical Engineering.**
 
-STRATUM-83 combines two playable games with a separate Research Lab for repeatable classical-AI experiments. It is an independent, non-commercial educational project; no account, cloud service, telemetry or LLM subscription is needed.
+STRATUM-83 presents a retro catalog of classic games illustrating fundamental AI algorithms. Two games are currently playable, with future concepts clearly labeled. A separate Research Lab remains accessible by terminal command for repeatable classical-AI experiments. It is an independent, non-commercial educational project; no account, cloud service, telemetry or LLM subscription is needed.
 
-**Release status:** These changes live on the [Labyrinth Learning Lab development branch](https://github.com/elisseosmav/stratum-83/tree/feature/grid-zero-game-history-lessons), **not on `main`**. The [existing published beta](https://github.com/elisseosmav/stratum-83/releases/tag/v0.3.0-beta.1) is a prior snapshot. This candidate is not an official release until the maintainer publishes a new tag.
+**Release status:** These changes live on the [retro AI game catalog development branch](https://github.com/elisseosmav/stratum-83/tree/feature/retro-ai-game-catalog), **not on `main`**. The [existing published beta](https://github.com/elisseosmav/stratum-83/releases/tag/v0.3.0-beta.1) is a prior snapshot. This candidate is not an official release until the maintainer publishes a new tag.
 
-## The educational experience: Play → Trace → Explain → Apply
+## Main menu — Classic AI games
+
+STRATUM-83 now opens as a **six-game retro catalog**, not an educational dashboard. Each title names its underlying algorithm and makes the availability clear. Only Grid Zero and Labyrinth are playable; the remaining titles are **planned or proposed**, and their menu entries are disabled.
+
+| No. | Game | Fundamental AI techniques | Development status |
+| --- | --- | --- | --- |
+| 01 | **Grid Zero** | Minimax, alpha-beta pruning | **Playable** |
+| 02 | **Labyrinth** | BFS, Dijkstra, A* | **Playable** |
+| 03 | Crisis Protocol | Rule-based agents, decision trees | Planned simulation |
+| 04 | Checkers | Minimax, heuristic evaluation | Proposed |
+| 05 | Blackjack | Probability, Monte Carlo | Proposed |
+| 06 | Chess | Alpha-beta search, heuristics | Proposed |
+
+The catalog is backed by a small, testable [GameCatalog.java](src/main/java/org/stratum83/game/GameCatalog.java) so proposed games are not presented as finished software. `1` and `2` launch the existing games. `3` through `6` report that the selected title is not yet playable.
+
+**Research Lab remains available using the `RESEARCH` command**, but is no longer a numbered main-menu item. Previous gameplay, algorithm investigations and advanced lessons are retained rather than deleted.
+
+## Optional algorithm exploration (existing features)
 
 Games introduce a problem, but **learning how the algorithm works and when it applies to software engineering is the main purpose**.
 
@@ -83,7 +100,7 @@ Proposed future games include Checkers, Blackjack and Chess. These are **researc
 
 The Java 21 Maven/JUnit build has passed in GitHub Actions, but a release still requires a **real interactive Windows JavaFX check**. A PowerShell helper now runs the local tests, launches the application, walks through the acceptance questions and writes a local Markdown report. It **never publishes or merges code**.
 
-After checking out the [Labyrinth Learning Lab branch](https://github.com/elisseosmav/stratum-83/tree/feature/grid-zero-game-history-lessons), run:
+After checking out the [Labyrinth Learning Lab branch](https://github.com/elisseosmav/stratum-83/tree/feature/retro-ai-game-catalog), run:
 
 ```powershell
 git pull --ff-only
@@ -133,11 +150,11 @@ Option A: clone with Git (requires Git installed):
 
 ```powershell
 cd "$HOME\Projects"
-git clone --branch feature/grid-zero-game-history-lessons https://github.com/elisseosmav/stratum-83.git stratum-83-lab
+git clone --branch feature/retro-ai-game-catalog https://github.com/elisseosmav/stratum-83.git stratum-83-lab
 cd .\stratum-83-lab
 ```
 
-Option B: open [STRATUM-83 on GitHub](https://github.com/elisseosmav/stratum-83), select the **feature/grid-zero-game-history-lessons** branch and choose **Code → Download ZIP**, extract it, and open PowerShell **inside the extracted source directory**.
+Option B: open [STRATUM-83 on GitHub](https://github.com/elisseosmav/stratum-83), select the **feature/retro-ai-game-catalog** branch and choose **Code → Download ZIP**, extract it, and open PowerShell **inside the extracted source directory**.
 
 You **must** run Maven from the directory that contains `pom.xml`, not the Maven `bin` directory. Verify:
 
