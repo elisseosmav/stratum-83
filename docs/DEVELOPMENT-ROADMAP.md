@@ -8,6 +8,18 @@
 
 STRATUM-83 is an offline-first Java 21 / JavaFX terminal for playable games and reproducible experiments. Each game is an entry point to **PLAY → TRACE → EXPLAIN → APPLY** and a practical engineering transfer exercise. Each game should teach an algorithm or an engineering idea. Releases are deliberately small, independently testable and developed using straightforward, maintainable Java code.
 
+## Main menu strategy
+
+The initial product is a **retro game terminal** where users select classic games that use fundamental AI algorithms. The top-level menu is a **game catalog**, not a mandatory algorithm lesson.
+
+- **Playable:** Grid Zero (Minimax / alpha-beta) and Labyrinth (BFS / Dijkstra / A*).
+- **Planned:** Crisis Protocol (rule-based strategic simulation).
+- **Proposed, not scheduled:** Checkers (Minimax/heuristics), Blackjack (probability/Monte Carlo), Chess (alpha-beta/heuristic search).
+- **Research Lab:** remains implemented and accessible by terminal command, not as a game or top-level menu item.
+- **Advanced explanations:** kept in source for experimentation, but not required to play.
+
+Future titles are visible with disabled menu entries so their inclusion never implies that they are implemented.
+
 ## Release overview
 
 | Release | Focus | Deliverables | Status |
@@ -25,7 +37,7 @@ The proposed v0.5–v0.7 entries do **not** have approved milestones or implemen
 ## Current development preview
 
 - [v0.3.0-beta.1](https://github.com/elisseosmav/stratum-83/releases/tag/v0.3.0-beta.1) is a **published source-only prerelease**, with Grid Zero, Labyrinth and initial Research Lab.
-- **v0.3.0-beta.2** is an **unpublished educational candidate** on [feature/grid-zero-game-history-lessons](https://github.com/elisseosmav/stratum-83/tree/feature/grid-zero-game-history-lessons), based on prior Labyrinth and terminal work. Grid Zero now adds **game history and move-specific Minimax lessons** to the Play → Trace → Explain → Apply curriculum; Labyrinth retains its graph-search visualization. Labyrinth traces actual BFS, Dijkstra and A* search expansions, and its engineering exercise compares a shortest-hop route with a lower-cost weighted route. The separate Research Lab remains results-only. Its three-entry main menu separates playable Grid Zero and Labyrinth from results-only Research Lab. `DUEL`, `HELP` and `EXIT` are command-line actions.
+- **v0.3.0-beta.2** is an **unpublished educational candidate** on [feature/retro-ai-game-catalog](https://github.com/elisseosmav/stratum-83/tree/feature/retro-ai-game-catalog), based on prior Labyrinth and terminal work. Grid Zero now adds **game history and move-specific Minimax lessons** to the Play → Trace → Explain → Apply curriculum; Labyrinth retains its graph-search visualization. Labyrinth traces actual BFS, Dijkstra and A* search expansions, and its engineering exercise compares a shortest-hop route with a lower-cost weighted route. The separate Research Lab remains results-only. Its new six-entry game catalog shows two playable games and four explicitly unfinished concepts; Research Lab remains available through the `RESEARCH` command. `DUEL`, `HELP` and `EXIT` are command-line actions.
 - Experiments now accept configurable seeds. The maze benchmark compares BFS, Dijkstra and A* over 1–100 identically seeded mazes; Grid Zero compares Minimax against random over 1–2000 games.
 - The candidate needs Windows build and GUI acceptance testing before any new tag or release is announced. There is **no Windows installer**.
 
