@@ -16,11 +16,11 @@ The separate **Algorithms** view briefly explains the methods used by the games.
 
 Requires Java 21 and Maven.
 
-\`\`\`powershell
+```powershell
 mvn clean test
 mvn javafx:run
-\`\`\`
+```
 
-On Windows, \`run-windows.cmd\` and \`test-windows.cmd\` are also available.
+On Windows, `run-windows.cmd` and `test-windows.cmd` are also available.
 
 [Wiki](https://github.com/elisseosmav/stratum-83/wiki)

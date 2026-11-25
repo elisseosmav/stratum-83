@@ -1,4 +1,4 @@
-/* STRATUM-83 / Original green-phosphor-inspired retro game interface. */
+
 .root {
     -fx-font-family: "Consolas", "Lucida Console", "Courier New", monospace;
     -fx-font-size: 13px;
@@ -113,7 +113,7 @@
     -fx-font-weight: bold;
     -fx-font-size: 15px;
 }
-/* Maze tile visibility. Undiscovered squares are black and intentionally reveal nothing. */
+
 .maze-cell {
     -fx-font-family: "Consolas", "Courier New", monospace;
     -fx-font-size: 12px;

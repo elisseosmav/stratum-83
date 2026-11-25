@@ -33,10 +33,6 @@ import org.stratum83.labyrinth.MazeSolver;
 import org.stratum83.labyrinth.PathResult;
 import org.stratum83.labyrinth.Position;
 
-/**
- * STRATUM-83: two simple views, Games and Algorithms.
- * Playable games always pit one human against a computer algorithm.
- */
 public final class StratumApp extends Application {
 
     private enum View { GAMES, ALGORITHMS, GRID_ZERO, LABYRINTH }
@@ -326,7 +322,6 @@ public final class StratumApp extends Application {
             routeButton.setManaged(true);
         }
         refreshMaze();
-        // Follow the player when the map is taller than the available viewport.
         if (mazeScroll != null) {
             mazeScroll.setVvalue((double) destination.row() / (maze.rows() - 1));
         }

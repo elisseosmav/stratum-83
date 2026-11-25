@@ -7,7 +7,6 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
-/** Generates a short original UI tone. Sound is disabled until explicitly enabled. */
 public class SoundPlayer implements AutoCloseable {
 
     private final ExecutorService audioThread = Executors.newSingleThreadExecutor(r -> {
@@ -51,7 +50,6 @@ public class SoundPlayer implements AutoCloseable {
             line.write(samples, 0, samples.length);
             line.drain();
         } catch (LineUnavailableException | IllegalArgumentException ex) {
-            // Audio is optional. Missing audio devices must not interrupt the game.
             System.err.println("Sound unavailable: " + ex.getMessage());
         }
     }
