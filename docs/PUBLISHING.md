@@ -1,51 +1,27 @@
-# Publishing STRATUM-83 v0.3.0-beta.2
+# STRATUM-83 — Beta 2 Publishing Checklist
 
-**This document is a maintainer checklist. Publishing a release or modifying the GitHub Wiki requires the repository owner's own GitHub credentials. Neither action is performed by committing this document.**
+**The clean Games + Algorithms rebuild is an unpublished development candidate.** Publishing is a separate action the maintainer must explicitly approve after testing.
 
-## 1. Verify the candidate
+## 1. Test on Windows
 
-Use [TESTING.md](TESTING.md) to run the full Windows Maven/JUnit and JavaFX checks. Resolve failures before publication.
+Review [TESTING.md](TESTING.md). Run the full Java 21 Maven/JUnit suite and start the JavaFX app. Confirm that fog hides unexplored areas, walls block vision, arrow navigation works, and A* results are shown only at completion.
 
-## 2. Review the changes
+The guided script [verify-beta2-windows.ps1](../scripts/verify-beta2-windows.ps1) records a local manual acceptance report and never publishes anything.
 
-[Compare the candidate with main](https://github.com/elisseosmav/stratum-83/compare/main...feature/retro-ai-game-catalog)
+## 2. Review the candidate branch
 
-The candidate includes Grid Zero's actual-move-history and guided Minimax lessons, the X/O fix, full Labyrinth Play/Trace/Explain/Apply learning experience, Research Lab and documentation. `main` is not modified until the owner chooses to merge.
+[Compare main with feature/clean-games-algorithm-library](https://github.com/elisseosmav/stratum-83/compare/main...feature/clean-games-algorithm-library).
 
-## 3. Create a new GitHub prerelease
+This feature branch contains earlier unmerged work as well as the new rebuild. Examine the entire comparison before any merge.
 
-Open [New release](https://github.com/elisseosmav/stratum-83/releases/new), then:
+## 3. Prepare a separate prerelease
 
-- Tag: `v0.3.0-beta.2` (create new).
-- Target branch: `feature/retro-ai-game-catalog` (or an explicitly reviewed merge commit).
-- Title: `STRATUM-83 v0.3.0 Beta 2`.
-- Release label: **Pre-release**.
-- Release notes: paste [RELEASE-NOTES-v0.3.0-beta.2.md](RELEASE-NOTES-v0.3.0-beta.2.md).
-- Do not claim a compiled Windows `.exe` or attach an unverified installer.
+Only after approval, create a **new** prerelease `v0.3.0-beta.2`, targeted at the reviewed commit, with title **STRATUM-83 v0.3.0 Beta 2** and notes from [the release notes](RELEASE-NOTES-v0.3.0-beta.2.md). Never move or modify the old Beta 1 tag. Do not claim a Windows installer unless one has been built and verified.
 
-**Do not change the existing `v0.3.0-beta.1` tag or its historical release.** GitHub automatically attaches source ZIP/tarball archives.
+## 4. Publish Wiki changes separately
 
-Alternative for a maintainer with [GitHub CLI](https://cli.github.com/) installed and authenticated:
+The live Wiki is an independent Git repository. The drafts under [docs/wiki](wiki) must be reviewed, then copied/pushed separately by an authorized maintainer. Updating these source files is **not** a live Wiki publication.
 
-```powershell
-gh release create v0.3.0-beta.2 --repo elisseosmav/stratum-83 --target feature/retro-ai-game-catalog --prerelease --title "STRATUM-83 v0.3.0 Beta 2" --notes-file docs/RELEASE-NOTES-v0.3.0-beta.2.md
-```
+## 5. Governance
 
-Run that command **from the reviewed repository checkout after Windows testing**. Do not run it until release approval.
-
-## 4. Update the public GitHub Wiki
-
-The Wiki is a separate Git repository. Editing files in `docs/wiki/` does not update it automatically.
-
-1. Open [the Wiki](https://github.com/elisseosmav/stratum-83/wiki).
-2. Copy the corresponding Markdown from [docs/wiki](wiki) into the matching Wiki pages.
-3. Update **Home** and the existing **Grid Zero — Understanding the AI Experiment** article rather than creating duplicates.
-4. Create **Research Lab**, **Labyrinth**, and **Development Roadmap** pages if absent.
-5. Check the Wiki's actual page slugs and correct the Home navigation links.
-6. Announce the new prerelease in [Discussions](https://github.com/elisseosmav/stratum-83/discussions) if desired.
-
-## 5. Release status and code governance
-
-- Public viewing, downloading and commenting do not grant code-write access.
-- Official code merges and releases remain the maintainer's responsibility.
-- Keep v0.3.0-beta.2 marked prerelease until tests pass and stability is confirmed.
+The repository owner controls merges, tags, releases and Wiki changes. Visitors can inspect the source and offer feedback through Issues/Discussions.
