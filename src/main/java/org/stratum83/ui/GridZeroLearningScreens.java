@@ -175,69 +175,115 @@ public final class GridZeroLearningScreens {
 
     public static VBox explain(MinimaxAnalysis analysis, Runnable trace,
                                Runnable back, Runnable apply) {
-        VBox content = page("EXPLAIN / MINIMAX");
+        VBox content = page("HOW DOES THE COMPUTER THINK?");
         content.getChildren().add(note(
-                "MINIMAX MEANS: THINK AHEAD, ASSUME YOUR OPPONENT PLAYS WELL, "
-                + "THEN CHOOSE THE BEST GUARANTEED RESULT."));
-        content.getChildren().add(mono(
-                "1. Imagine every legal move the computer could make.\n"
-                + "2. For each move, imagine the opponent's best response.\n"
-                + "3. Repeat until someone wins or the game is drawn.\n"
-                + "4. Prefer WIN over DRAW, and DRAW over LOSS.\n"
-                + "5. Alpha-beta pruning safely skips unnecessary searches."));
-        content.getChildren().add(note(
-                "UNDER THE HOOD: WIN = 10 - DEPTH, DRAW = 0, LOSS = DEPTH - 10. "
-                + "EARLIER WINS AND LATER LOSSES ARE PREFERRED."));
+                "MINIMAX IS A WAY TO CHOOSE A MOVE BY THINKING ABOUT WHAT HAPPENS NEXT."));
+
+        content.getChildren().addAll(
+                lesson("1 / IMAGINE",
+                        "The computer looks at each empty square it could choose."),
+                lesson("2 / PREDICT",
+                        "For each choice, it imagines your strongest possible reply."),
+                lesson("3 / DECIDE",
+                        "It prefers a win. If it cannot win, it tries to draw rather than lose."));
+
         if (analysis != null) {
-            content.getChildren().add(note(decisionSummary(analysis)));
-            content.getChildren().add(note(
-                    "THE COMPUTER EXAMINED " + analysis.candidates().size()
-                    + " POSSIBLE FIRST MOVES BEFORE CHOOSING."));
+            Label actual = note(decisionSummary(analysis));
+            actual.getStyleClass().add("learning-conclusion");
+            content.getChildren().add(actual);
         } else {
             content.getChildren().add(note(
-                    "PLAY AGAINST MINIMAX TO INSPECT AN ACTUAL COMPUTER DECISION."));
+                    "PLAY AGAINST THE COMPUTER TO SEE WHY IT CHOSE A PARTICULAR SQUARE."));
         }
-        content.getChildren().add(actions(
-                button("TRACE", trace), button("APPLY", apply),
-                button("BACK TO GAME", back)));
+
+        Label details = note(
+                "TECHNICAL VIEW: A WIN GETS A POSITIVE SCORE, A DRAW GETS ZERO, "
+                + "AND A LOSS GETS A NEGATIVE SCORE. A WIN SOONER IS BETTER. "
+                + "ALPHA-BETA PRUNING SKIPS BRANCHES THAT CANNOT CHANGE THE ANSWER.");
+        details.setVisible(false);
+        details.setManaged(false);
+        Button technical = button("SHOW TECHNICAL DETAILS", () -> {});
+        technical.setOnAction(event -> {
+            boolean show = !details.isVisible();
+            details.setVisible(show);
+            details.setManaged(show);
+            technical.setText(show ? "HIDE TECHNICAL DETAILS" : "SHOW TECHNICAL DETAILS");
+        });
+        content.getChildren().addAll(technical, details,
+                actions(button("TRACE THE MOVE", trace),
+                        button("TRY AN EXAMPLE", apply),
+                        button("BACK TO GAME", back)));
         return content;
     }
 
     public static VBox apply(Runnable explain, Runnable back) {
-        VBox content = page("APPLY / WORST-CASE ENGINEERING");
+        VBox content = page("APPLY / CHOOSE A SAFER RETRY POLICY");
+        content.getChildren().add(note(
+                "YOUR SOFTWARE CALLS ANOTHER SERVICE. SOMETIMES THAT SERVICE BECOMES OVERLOADED."));
+        content.getChildren().add(note(
+                "YOU MUST CHOOSE HOW YOUR SOFTWARE RETRIES FAILED REQUESTS. "
+                + "EACH CHOICE HAS A COST IN TWO POSSIBLE SITUATIONS."));
+
         content.getChildren().addAll(
-                note("CHOOSE A RETRY POLICY FOR A SIMULATED SERVICE"),
-                mono("                      NORMAL   OVERLOADED\n"
-                        + "AGGRESSIVE RETRIES       1         9\n"
-                        + "BOUNDED RETRIES          3         4"),
-                note("THESE COSTS ARE INVENTED FOR TEACHING. LOWER IS BETTER."),
-                note("WHICH POLICY MINIMIZES THE WORST-CASE LOSS?"));
+                lesson("OPTION A / AGGRESSIVE RETRIES",
+                        "Normal situation: cost 1. Overloaded situation: cost 9."),
+                lesson("OPTION B / BOUNDED RETRIES",
+                        "Normal situation: cost 3. Overloaded situation: cost 4."));
+
+        content.getChildren().add(note(
+                "THE QUESTION: WHICH OPTION HAS THE SMALLER WORST POSSIBLE COST?"));
 
         WorstCasePolicy chooser = new WorstCasePolicy();
         List<WorstCasePolicy.Policy> policies = WorstCasePolicy.examplePolicies();
         WorstCasePolicy.Policy best = chooser.choose(policies);
-        Label feedback = note("MAKE YOUR CHOICE TO SEE THE WORST CASE.");
-        feedback.setWrapText(true);
-        Button aggressive = button("AGGRESSIVE RETRIES",
-                () -> reveal(feedback, policies.get(0), best));
-        Button bounded = button("BOUNDED RETRIES",
-                () -> reveal(feedback, policies.get(1), best));
-        content.getChildren().addAll(
-                actions(aggressive, bounded), feedback,
-                note("WHEN THE ENVIRONMENT IS ADVERSARIAL, MINIMAX CAN LIMIT LOSS."),
-                note("WHEN FAILURES ARE PROBABILISTIC, EXPECTED VALUE MAY BE BETTER."),
-                actions(button("EXPLAIN", explain), button("BACK TO GAME", back)));
+        Label feedback = note("CHOOSE A OR B. THEN THE COMPUTER WILL EXPLAIN ITS REASONING.");
+        feedback.getStyleClass().add("learning-feedback");
+
+        Button aggressive = button("CHOOSE A", () -> {});
+        Button bounded = button("CHOOSE B", () -> {});
+        aggressive.setOnAction(event -> reveal(feedback, policies.get(0), best));
+        bounded.setOnAction(event -> reveal(feedback, policies.get(1), best));
+        content.getChildren().add(actions(aggressive, bounded));
+
+        Label limitations = note(
+                "THIS IS A SMALL EXAMPLE OF WORST-CASE DECISION-MAKING. "
+                + "REAL SERVICE RELIABILITY MAY REQUIRE PROBABILITY, TIMEOUTS AND MORE TESTS. "
+                + "ALL COSTS HERE ARE INVENTED FOR TEACHING.");
+        limitations.setVisible(false);
+        limitations.setManaged(false);
+        Button more = button("WHERE IS THIS USEFUL?", () -> {});
+        more.setOnAction(event -> {
+            boolean show = !limitations.isVisible();
+            limitations.setVisible(show);
+            limitations.setManaged(show);
+            more.setText(show ? "HIDE APPLICATION NOTES" : "WHERE IS THIS USEFUL?");
+        });
+
+        content.getChildren().addAll(feedback, more, limitations,
+                actions(button("EXPLAIN MINIMAX", explain),
+                        button("BACK TO GAME", back)));
         return content;
+    }
+
+    private static VBox lesson(String heading, String description) {
+        Label title = note(heading);
+        title.getStyleClass().add("learning-step-heading");
+        Label body = note(description);
+        VBox group = new VBox(4, title, body);
+        group.setAlignment(Pos.CENTER);
+        group.setMaxWidth(620);
+        group.getStyleClass().add("learning-step");
+        return group;
     }
 
     private static void reveal(Label label, WorstCasePolicy.Policy choice,
                                WorstCasePolicy.Policy best) {
-        label.setText("YOUR POLICY: " + choice.name()
-                + " / WORST COST: " + choice.worstCost()
-                + "\nLOWEST WORST COST: " + best.worstCost()
-                + " (" + best.name() + ")"
-                + "\n" + (choice.equals(best) ? "CORRECT." : "THE OTHER POLICY IS SAFER IN THIS MODEL.")
-                + " MINIMAX SELECTS THE BEST WORST CASE.");
+        boolean correct = choice.equals(best);
+        label.setText((correct ? "GOOD CHOICE!" : "NOT QUITE — HERE IS WHY.")
+                + "\nOPTION A: WORST COST IS 9 (OVERLOADED)."
+                + "\nOPTION B: WORST COST IS 4 (OVERLOADED)."
+                + "\nTHE COMPUTER CHOOSES B BECAUSE 4 IS LESS THAN 9."
+                + "\nLIKE MINIMAX, IT COMPARES THE WORST POSSIBLE OUTCOME.");
     }
 
     private static String signed(int score) {
