@@ -2,6 +2,19 @@
 
 **Candidate:** STRATUM-83 v0.3.0-beta.2 on `feature/labyrinth-learning-lab`
 
+## Guided Windows acceptance run
+
+Use the [Windows beta validation helper](../scripts/verify-beta2-windows.ps1) from a checkout of `feature/labyrinth-learning-lab`:
+
+```powershell
+git pull --ff-only
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\verify-beta2-windows.ps1
+```
+
+It checks the branch, runs `mvn clean test` with the local Maven installation, launches `mvn javafx:run`, and after you close the window asks you to **personally confirm** ten areas as PASS, FAIL or SKIP. It creates `reports/BETA2-WINDOWS-ACCEPTANCE.md`, ignored by Git. The helper cannot automatically judge whether the visual trace is correct; it records your direct observations.
+
+**Acceptance gate:** every area must be PASS, automated tests must pass, and the JavaFX launch must complete successfully. Any FAIL/SKIP remains a release blocker until examined. No release is published automatically.
+
 ## Grid Zero educational acceptance — Play / Trace / Explain / Apply
 
 ### Automated test expectations
