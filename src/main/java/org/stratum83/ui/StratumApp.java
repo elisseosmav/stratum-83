@@ -349,8 +349,12 @@ public class StratumApp extends Application {
     private void showLearningScreen(VBox content) {
         ScrollPane scrolling = new ScrollPane(content);
         scrolling.setFitToWidth(true);
+        scrolling.setFitToHeight(false);
+        scrolling.setVvalue(0.0);
         scrolling.getStyleClass().add("maze-scroll");
         screen.getChildren().setAll(scrolling);
+        // Keep the lesson heading visible when its content is taller than the window.
+        Platform.runLater(() -> scrolling.setVvalue(0.0));
     }
 
     private void showExperiment() {
