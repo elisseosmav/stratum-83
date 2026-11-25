@@ -77,6 +77,23 @@ STRATUM-83 follows a **public, release-based roadmap** rather than fixed calenda
 
 Proposed future games include Checkers, Blackjack and Chess. These are **research ideas only** until reviewed and formally planned.
 
+## Validate the v0.3 Beta 2 candidate on Windows
+
+The Java 21 Maven/JUnit build has passed in GitHub Actions, but a release still requires a **real interactive Windows JavaFX check**. A PowerShell helper now runs the local tests, launches the application, walks through the acceptance questions and writes a local Markdown report. It **never publishes or merges code**.
+
+After checking out the [Labyrinth Learning Lab branch](https://github.com/elisseosmav/stratum-83/tree/feature/labyrinth-learning-lab), run:
+
+```powershell
+git pull --ff-only
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\verify-beta2-windows.ps1
+```
+
+Follow the on-screen instructions. Close the JavaFX window after checking Grid Zero, Labyrinth and Research Lab, then answer each PASS / FAIL / SKIP question. The report is saved as `reports/BETA2-WINDOWS-ACCEPTANCE.md` (excluded from Git) for review. If you already ran tests and only want to record manual checks, add `-SkipTests`; use `-SkipGui` only when the GUI has already been tested independently.
+
+- [Detailed acceptance checklist](docs/TESTING.md)
+- [Windows validation helper](scripts/verify-beta2-windows.ps1)
+- [Beta 2 release candidate notes](docs/RELEASE-NOTES-v0.3.0-beta.2.md)
+
 ## Windows setup (Java 21 and Maven)
 
 STRATUM-83 is currently distributed as a **source project**. Building and playing it locally requires **JDK 21** and **Apache Maven 3.9+**. JavaFX is downloaded by Maven, so you do not need to install JavaFX yourself.
