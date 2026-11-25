@@ -17,7 +17,7 @@ STRATUM-83 is an offline Java desktop collection of seven human-versus-computer 
 
 The application is a **portable Windows app image**, not a signed installer or a single-file executable. GitHub builds it with a bundled Java 21 runtime and JavaFX dependencies. Windows may display an unrecognized-publisher warning because it is not code-signed. Verify that the package came from this repository before running it.
 
-The [Windows packaging workflow](https://github.com/elisseosmav/stratum-83/blob/main/.github/workflows/windows-app.yml) has successfully generated the EXE and ZIP. **Hands-on startup and gameplay on a clean Windows PC have not yet been verified**; see [Windows QA #2](https://github.com/elisseosmav/stratum-83/issues/2).
+
 
 ## Games
 
@@ -89,12 +89,6 @@ On Windows, you can use `run-windows.cmd` and `test-windows.cmd` instead if Mave
 
 The [Java CI workflow](https://github.com/elisseosmav/stratum-83/actions/workflows/java-ci.yml) runs Maven tests on Windows and Ubuntu. The [Windows packaging workflow](https://github.com/elisseosmav/stratum-83/actions/workflows/windows-app.yml) creates the downloadable app with `jpackage`.
 
-## Development status
 
-The seven games and the portable Windows build are included on `main`. Automated builds pass on Windows and Ubuntu. Remaining issues are tracked on GitHub:
-
-- [#2 — Manual Windows QA](https://github.com/elisseosmav/stratum-83/issues/2): test the interface, all seven games, and prompt interaction on a Windows desktop.
-- [#4 — Windows packaging polish](https://github.com/elisseosmav/stratum-83/issues/4): confirm clean-PC launch and add an original app icon.
-- [#6 — Local settings](https://github.com/elisseosmav/stratum-83/issues/6): remember sound and other preferences across restarts.
 
 Project documentation is kept concise here and, where published, in the [GitHub Wiki](https://github.com/elisseosmav/stratum-83/wiki).
