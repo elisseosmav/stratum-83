@@ -17,6 +17,20 @@ An offline Java desktop application where you play against the computer and expl
 
 The Algorithms view explains Minimax, alpha-beta pruning, heuristic evaluation, legal move search, rule-based agents, greedy target selection, card probability, Monte Carlo simulation, maze generation, A* search, breadth-first search, Dijkstra's algorithm, and fog of war.
 
+## Terminal interface
+
+STRATUM-83 uses a black-and-green DOS-style interface with a blinking cursor and a working command prompt. Click the menu entries or type a command followed by Enter:
+
+- `DIR` or `GAMES` — show the game directory.
+- `1` through `6`, `RUN 1`, or `PLAY 1` — start a game.
+- `ALG` — show the algorithms.
+- `HELP` — show all commands.
+- `SOUND` — toggle audio.
+- `CLS` or `MENU` — return to the game directory.
+- `EXIT` — close the application.
+
+`Esc` returns to the game directory; `F2` toggles audio. Gameplay still supports the original mouse and arrow-key controls.
+
 ## Run
 
 Requires Java 21 and Maven.

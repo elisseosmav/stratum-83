@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import javafx.application.Platform;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import java.util.Set;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -13,6 +16,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -26,6 +30,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.stratum83.game.AlgorithmCatalog;
 import org.stratum83.game.CheckersAI;
 import org.stratum83.game.CheckersGame;
@@ -49,7 +54,7 @@ import org.stratum83.labyrinth.Position;
 
 public final class StratumApp extends Application {
 
-    private enum View { GAMES, ALGORITHMS, GRID_ZERO, LABYRINTH, CHECKERS, BLACKJACK, CHESS, CRISIS }
+    private enum View { GAMES, ALGORITHMS, GRID_ZERO, LABYRINTH, CHECKERS, BLACKJACK, CHESS, CRISIS, HELP }
 
     private final SoundPlayer sound = new SoundPlayer();
     private final MinimaxPlayer minimax = new MinimaxPlayer();
@@ -61,6 +66,10 @@ public final class StratumApp extends Application {
     private StackPane screen;
     private Label status;
     private Button soundButton;
+    private Label terminalPath;
+    private TextField terminalInput;
+    private Label terminalCursor;
+    private Timeline cursorBlink;
 
     private GridZeroGame gridGame;
     private Button[][] gridButtons;
@@ -132,13 +141,38 @@ public final class StratumApp extends Application {
         screen.setPadding(new Insets(12));
         root.setCenter(screen);
 
-        status = new Label("READY / SELECT A GAME");
+        status = new Label("SYSTEM READY / TYPE HELP FOR COMMANDS");
         status.getStyleClass().add("footer-status");
         status.setWrapText(true);
-        HBox footer = new HBox(14, status);
+
+        terminalPath = new Label("C:\\STRATUM83>");
+        terminalPath.getStyleClass().add("prompt-label");
+        terminalInput = new TextField();
+        terminalInput.getStyleClass().add("prompt-input");
+        terminalInput.setMinWidth(28);
+        terminalInput.setPrefWidth(28);
+        terminalInput.textProperty().addListener((observable, oldValue, newValue) ->
+                terminalInput.setPrefWidth(Math.max(28,
+                        Math.min(370, 28 + newValue.length() * 9))));
+        terminalInput.setOnAction(event -> runTerminalCommand());
+
+        terminalCursor = new Label("█");
+        terminalCursor.getStyleClass().add("prompt-cursor");
+        HBox promptLine = new HBox(4, terminalPath, terminalInput, terminalCursor);
+        promptLine.getStyleClass().add("prompt-line");
+        promptLine.setAlignment(Pos.CENTER_LEFT);
+
+        VBox footer = new VBox(6, status, promptLine);
         footer.getStyleClass().add("footer");
-        footer.setPadding(new Insets(12, 20, 12, 20));
+        footer.setPadding(new Insets(9, 18, 10, 18));
         root.setBottom(footer);
+
+        cursorBlink = new Timeline(
+                new KeyFrame(Duration.ZERO, event -> terminalCursor.setVisible(true)),
+                new KeyFrame(Duration.millis(500), event -> terminalCursor.setVisible(false)),
+                new KeyFrame(Duration.millis(1000), event -> terminalCursor.setVisible(true)));
+        cursorBlink.setCycleCount(Animation.INDEFINITE);
+        cursorBlink.play();
 
         Scene scene = new Scene(root, 940, 710);
         scene.getStylesheets().add(getClass().getResource("/terminal.css").toExternalForm());
@@ -173,10 +207,11 @@ public final class StratumApp extends Application {
         stage.setScene(scene);
         showGames();
         stage.show();
+        Platform.runLater(terminalInput::requestFocus);
     }
 
     private HBox header() {
-        Label brand = new Label("STRATUM-83  /  CLASSIC AI GAMES");
+        Label brand = new Label("STRATUM-83  /  CLASSIC AI GAMES  [DOS MODE]");
         brand.getStyleClass().add("header-title");
 
         Button games = button("GAMES", this::showGames);
@@ -195,10 +230,10 @@ public final class StratumApp extends Application {
 
     private void showGames() {
         currentView = View.GAMES;
-        Label title = title("SELECT GAME");
-        Label intro = subtitle("HUMAN VS COMPUTER / RETRO GAMES / OFFLINE JAVA 21");
+        Label title = title("C:\\STRATUM83> DIR");
+        Label intro = subtitle("VOLUME IN DRIVE C IS STRATUM83  /  6 PROGRAMS");
 
-        VBox catalog = new VBox(8);
+        VBox catalog = new VBox(4);
         catalog.setMaxWidth(720);
         for (GameCatalog.Entry entry : GameCatalog.entries()) {
             if (!entry.playable()) continue;
@@ -210,9 +245,12 @@ public final class StratumApp extends Application {
             gameButton.setDisable(!entry.playable());
             catalog.getChildren().add(gameButton);
         }
-        VBox page = page(title, intro, catalog);
+        VBox page = page(title, intro, catalog,
+                subtitle("TYPE 1-6 AND PRESS ENTER TO RUN A GAME"));
+        page.getStyleClass().add("terminal-menu");
+        page.setAlignment(Pos.TOP_LEFT);
         showScrollable(page);
-        setStatus("SELECT A GAME / ESC = MAIN MENU");
+        setStatus("6 FILE(S) / TYPE HELP FOR COMMANDS");
     }
 
     private void openGame(int number) {
@@ -1175,6 +1213,50 @@ public final class StratumApp extends Application {
         dialog.showAndWait();
     }
 
+
+    private void runTerminalCommand() {
+        String commandText = terminalInput.getText();
+        terminalInput.clear();
+        TerminalCommands.Command command = TerminalCommands.parse(commandText);
+        switch (command.action()) {
+            case OPEN_GAME -> openGame(command.gameNumber());
+            case GAMES -> showGames();
+            case ALGORITHMS -> showAlgorithms();
+            case HELP -> showTerminalHelp();
+            case SOUND -> {
+                toggleSound();
+                setStatus("SOUND " + (sound.isEnabled() ? "ON" : "OFF"));
+            }
+            case EXIT -> Platform.exit();
+            case INVALID -> setStatus("UNKNOWN COMMAND: " + commandText
+                    + " / TYPE HELP FOR COMMANDS");
+        }
+        terminalInput.requestFocus();
+    }
+
+    private void showTerminalHelp() {
+        currentView = View.HELP;
+        Label commands = new Label(
+                "DIR / GAMES         LIST AVAILABLE GAMES\n"
+                + "1-6                 LAUNCH GAME BY NUMBER\n"
+                + "RUN 1 / PLAY 1      LAUNCH GAME BY COMMAND\n"
+                + "ALG / ALGORITHMS    VIEW ALGORITHM LIBRARY\n"
+                + "HELP / ?            DISPLAY COMMAND HELP\n"
+                + "SOUND               TOGGLE AUDIO\n"
+                + "CLS / MENU          RETURN TO MAIN MENU\n"
+                + "EXIT / QUIT         CLOSE STRATUM-83\n"
+                + "ESC                 MAIN MENU\n"
+                + "F2                  TOGGLE AUDIO");
+        commands.getStyleClass().add("terminal-help-text");
+        VBox content = page(title("C:\\STRATUM83> HELP"),
+                subtitle("AVAILABLE COMMANDS"),
+                commands, button("BACK TO GAMES", this::showGames));
+        content.getStyleClass().add("terminal-menu");
+        content.setAlignment(Pos.TOP_LEFT);
+        showScrollable(content);
+        setStatus("HELP / COMMAND REFERENCE");
+    }
+
     private void toggleSound() {
         sound.setEnabled(!sound.isEnabled());
         soundButton.setText(sound.isEnabled() ? "SOUND ON" : "SOUND OFF");
@@ -1182,6 +1264,20 @@ public final class StratumApp extends Application {
 
     private void setStatus(String value) {
         if (status != null) status.setText(value);
+        if (terminalPath != null && currentView != null) {
+            String folder = switch (currentView) {
+                case GAMES -> "";
+                case GRID_ZERO -> "\\GRIDZERO";
+                case LABYRINTH -> "\\LABYRINTH";
+                case CHECKERS -> "\\CHECKERS";
+                case BLACKJACK -> "\\BLACKJACK";
+                case CHESS -> "\\CHESS";
+                case CRISIS -> "\\CRISIS";
+                case ALGORITHMS -> "\\ALGORITHMS";
+                case HELP -> "\\HELP";
+            };
+            terminalPath.setText("C:\\STRATUM83" + folder + ">");
+        }
     }
 
     private ScrollPane showScrollable(VBox content) {
@@ -1233,6 +1329,7 @@ public final class StratumApp extends Application {
 
     @Override
     public void stop() {
+        if (cursorBlink != null) cursorBlink.stop();
         sound.close();
     }
 }

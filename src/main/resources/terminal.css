@@ -1,97 +1,153 @@
-
 .root {
     -fx-font-family: "Consolas", "Lucida Console", "Courier New", monospace;
-    -fx-font-size: 13px;
-    -fx-background-color: #07140c;
+    -fx-font-size: 14px;
+    -fx-background-color: #000000;
 }
 .app-root {
-    -fx-background-color: linear-gradient(to bottom, #07140c, #0b1e12);
+    -fx-background-color: #000000;
 }
 .label {
-    -fx-text-fill: #b8f1ca;
+    -fx-text-fill: #86ed8c;
 }
 .header {
-    -fx-background-color: #0a2515;
-    -fx-border-color: #315940;
+    -fx-background-color: #000000;
+    -fx-border-color: #286637;
     -fx-border-width: 0 0 1px 0;
 }
 .header-title {
-    -fx-text-fill: #d6ffdf;
-    -fx-font-size: 15px;
+    -fx-text-fill: #b5ffb3;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
 .footer {
-    -fx-background-color: #061109;
-    -fx-border-color: #315940;
+    -fx-background-color: #000000;
+    -fx-border-color: #286637;
     -fx-border-width: 1px 0 0 0;
 }
 .footer-status {
-    -fx-text-fill: #87be9a;
+    -fx-text-fill: #6eb778;
     -fx-font-size: 12px;
 }
 .screen-title {
-    -fx-font-size: 29px;
+    -fx-font-size: 23px;
     -fx-font-weight: bold;
-    -fx-text-fill: #dbffe7;
+    -fx-text-fill: #b9ffb7;
     -fx-text-alignment: center;
 }
 .screen-subtitle {
-    -fx-text-fill: #91cfa4;
+    -fx-text-fill: #6ec979;
     -fx-text-alignment: center;
     -fx-font-size: 13px;
 }
 .game-message {
-    -fx-text-fill: #e0ffe8;
-    -fx-font-size: 17px;
+    -fx-text-fill: #b9ffb7;
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
     -fx-text-alignment: center;
 }
 .action-button {
-    -fx-background-color: #10321d;
-    -fx-text-fill: #c6ffd6;
-    -fx-border-color: #47865b;
+    -fx-background-color: #000000;
+    -fx-text-fill: #89ed90;
+    -fx-border-color: #286637;
     -fx-border-width: 1px;
-    -fx-background-radius: 3px;
-    -fx-border-radius: 3px;
-    -fx-padding: 9px 14px;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-padding: 8px 12px;
     -fx-font-size: 13px;
     -fx-cursor: hand;
 }
 .action-button:hover, .action-button:focused {
-    -fx-background-color: #1a472a;
-    -fx-border-color: #b0eebf;
+    -fx-background-color: #0a1d0b;
+    -fx-border-color: #b5ffb3;
+    -fx-text-fill: #d6ffd2;
 }
-.small-button { -fx-font-size: 12px; }
+.small-button {
+    -fx-font-size: 12px;
+}
 .catalog-game {
     -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-font-size: 13px;
+    -fx-font-size: 14px;
     -fx-alignment: center-left;
-    -fx-padding: 13px;
+    -fx-padding: 11px 14px;
+    -fx-border-color: #1e4d28;
+    -fx-border-width: 0 0 1px 0;
+    -fx-background-color: #000000;
+}
+.catalog-game:hover, .catalog-game:focused {
+    -fx-background-color: #102d13;
+    -fx-text-fill: #d0ffd0;
+    -fx-border-color: #8de795;
 }
 .catalog-game:disabled {
-    -fx-opacity: 0.63;
-    -fx-background-color: #09190e;
-    -fx-text-fill: #8fb09a;
-    -fx-cursor: default;
+    -fx-opacity: 0.5;
+}
+.terminal-menu {
+    -fx-spacing: 15px;
+    -fx-padding: 22px 26px 20px 26px;
+}
+.terminal-menu .screen-title,
+.terminal-menu .screen-subtitle {
+    -fx-text-alignment: left;
+}
+.terminal-menu .screen-title {
+    -fx-font-size: 22px;
+}
+.terminal-help-text {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 14px;
+    -fx-text-fill: #9af29e;
+    -fx-line-spacing: 6px;
+}
+.prompt-line {
+    -fx-background-color: #000000;
+}
+.prompt-label {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 14px;
+    -fx-text-fill: #aaffad;
+    -fx-font-weight: bold;
+}
+.prompt-input {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #aaffad;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-padding: 0 1px 0 1px;
+    -fx-highlight-fill: #aaffad;
+    -fx-highlight-text-fill: #000000;
+}
+.prompt-input:focused {
+    -fx-background-color: transparent;
+}
+.prompt-cursor {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #c0ffc0;
 }
 .board-square {
-    -fx-background-color: #0f2819;
-    -fx-border-color: #4c9362;
+    -fx-background-color: #081a0b;
+    -fx-border-color: #327941;
     -fx-border-width: 2px;
-    -fx-background-radius: 2px;
-    -fx-border-radius: 2px;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
 }
 .board-square:hover, .board-square:focused {
-    -fx-background-color: #1b4628;
-    -fx-border-color: #b2e7bb;
+    -fx-background-color: #123318;
+    -fx-border-color: #aeffb5;
 }
 .board-square:disabled {
     -fx-opacity: 1;
-    -fx-background-color: #0c2115;
-    -fx-border-color: #386d4b;
+    -fx-background-color: #041307;
+    -fx-border-color: #255631;
 }
 .board-mark {
-    -fx-text-fill: #d6ffe1;
+    -fx-text-fill: #caffc6;
     -fx-font-family: "Consolas", "Courier New", monospace;
     -fx-font-size: 58px;
     -fx-font-weight: bold;
@@ -102,14 +158,14 @@
     -fx-background: transparent;
 }
 .algorithm-card {
-    -fx-background-color: #102b1a;
-    -fx-border-color: #376044;
+    -fx-background-color: #020b04;
+    -fx-border-color: #275b34;
     -fx-border-width: 1px;
     -fx-padding: 14px;
-    -fx-background-radius: 3px;
+    -fx-background-radius: 0;
 }
 .algorithm-name {
-    -fx-text-fill: #d3ffde;
+    -fx-text-fill: #caffc6;
     -fx-font-weight: bold;
     -fx-font-size: 15px;
 }
@@ -212,8 +268,8 @@
     -fx-background-color: #0b2b1a;
     -fx-border-color: #41694b;
     -fx-border-width: 1px;
-    -fx-background-radius: 5px;
-    -fx-border-radius: 5px;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
     -fx-padding: 14px;
     -fx-min-width: 500px;
 }
@@ -301,7 +357,7 @@
     -fx-font-size: 26px;
     -fx-font-weight: bold;
     -fx-font-family: "Consolas", "Lucida Console", monospace;
-    -fx-background-radius: 2px;
+    -fx-background-radius: 0;
     -fx-border-width: 1px;
     -fx-border-color: #325d41;
     -fx-cursor: hand;
