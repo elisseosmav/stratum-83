@@ -8,10 +8,11 @@ An offline Java desktop application where you play against the computer and expl
 
 - **Grid Zero** — Play X against a Minimax computer using alpha-beta pruning.
 - **Labyrinth** — Navigate a challenging maze with the arrow keys. Fog of war hides unexplored areas; reach the exit to compare your path with the computer's A* route.
+- **Checkers** — Play American checkers against a Minimax opponent. Captures are mandatory, kings move in both directions, and multiple jumps are supported.
 
 ## Algorithms
 
-The Algorithms view explains Minimax, alpha-beta pruning, maze generation, A* search, breadth-first search, Dijkstra's algorithm, and fog of war.
+The Algorithms view explains Minimax, alpha-beta pruning, heuristic evaluation, maze generation, A* search, breadth-first search, Dijkstra's algorithm, and fog of war.
 
 ## Run
 

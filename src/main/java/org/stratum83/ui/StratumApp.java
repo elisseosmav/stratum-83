@@ -1,6 +1,7 @@
 package org.stratum83.ui;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -18,8 +19,12 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.Alert;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import org.stratum83.game.AlgorithmCatalog;
+import org.stratum83.game.CheckersAI;
+import org.stratum83.game.CheckersGame;
 import org.stratum83.game.GameCatalog;
 import org.stratum83.game.GameResult;
 import org.stratum83.game.GridZeroGame;
@@ -35,12 +40,13 @@ import org.stratum83.labyrinth.Position;
 
 public final class StratumApp extends Application {
 
-    private enum View { GAMES, ALGORITHMS, GRID_ZERO, LABYRINTH }
+    private enum View { GAMES, ALGORITHMS, GRID_ZERO, LABYRINTH, CHECKERS }
 
     private final SoundPlayer sound = new SoundPlayer();
     private final MinimaxPlayer minimax = new MinimaxPlayer();
     private final ChallengeMazeGenerator generator = new ChallengeMazeGenerator();
     private final MazeSolver solver = new MazeSolver();
+    private final CheckersAI checkersAI = new CheckersAI(4);
 
     private View currentView;
     private StackPane screen;
@@ -62,6 +68,15 @@ public final class StratumApp extends Application {
     private Button routeButton;
     private ScrollPane mazeScroll;
     private boolean routeRevealed;
+
+    private CheckersGame checkersGame;
+    private Button[][] checkersSquares;
+    private Circle[][] checkersPieces;
+    private Label[][] checkersKings;
+    private Label checkersMessage;
+    private Label checkersScore;
+    private List<CheckersGame.Square> checkersSelection = List.of();
+    private CheckersGame.Turn checkersLastMove;
 
     @Override
     public void start(Stage stage) {
@@ -141,6 +156,7 @@ public final class StratumApp extends Application {
         VBox catalog = new VBox(8);
         catalog.setMaxWidth(720);
         for (GameCatalog.Entry entry : GameCatalog.entries()) {
+            if (!entry.playable()) continue;
             String label = String.format("%02d  %-16s  %s",
                     entry.number(), entry.title(), entry.algorithm());
             Button gameButton = button(label, () -> openGame(entry.number()));
@@ -151,7 +167,7 @@ public final class StratumApp extends Application {
         }
         VBox page = page(title, intro, catalog);
         showScrollable(page);
-        setStatus("CHOOSE GRID ZERO OR LABYRINTH.  ESC = MAIN MENU");
+        setStatus("SELECT A GAME / ESC = MAIN MENU");
     }
 
     private void openGame(int number) {
@@ -163,6 +179,7 @@ public final class StratumApp extends Application {
         switch (number) {
             case 1 -> startGridZero();
             case 2 -> startMaze();
+            case 3 -> startCheckers();
             default -> throw new IllegalStateException("No game for catalog entry " + number);
         }
     }
@@ -385,6 +402,192 @@ public final class StratumApp extends Application {
                     + "  /  REVEALED CELLS: " + fog.discoveredCells()
                     + "  /  EXIT: UNKNOWN");
         }
+    }
+
+
+    private void startCheckers() {
+        currentView = View.CHECKERS;
+        checkersGame = new CheckersGame();
+        checkersSelection = List.of();
+        checkersLastMove = null;
+        checkersSquares = new Button[CheckersGame.SIZE][CheckersGame.SIZE];
+        checkersPieces = new Circle[CheckersGame.SIZE][CheckersGame.SIZE];
+        checkersKings = new Label[CheckersGame.SIZE][CheckersGame.SIZE];
+
+        GridPane board = new GridPane();
+        board.setHgap(1);
+        board.setVgap(1);
+        board.setAlignment(Pos.CENTER);
+        board.getStyleClass().add("checkers-board");
+
+        for (int row = 0; row < CheckersGame.SIZE; row++) {
+            for (int col = 0; col < CheckersGame.SIZE; col++) {
+                int r = row;
+                int c = col;
+                Button cell = button("", () -> clickCheckers(r, c));
+                cell.setMinSize(48, 48);
+                cell.setPrefSize(48, 48);
+                cell.setMaxSize(48, 48);
+                Circle piece = new Circle(16);
+                piece.setMouseTransparent(true);
+                Label crown = new Label("K");
+                crown.getStyleClass().add("checkers-king");
+                crown.setMouseTransparent(true);
+                StackPane square = new StackPane(cell, piece, crown);
+                board.add(square, col, row);
+                checkersSquares[row][col] = cell;
+                checkersPieces[row][col] = piece;
+                checkersKings[row][col] = crown;
+            }
+        }
+
+        checkersMessage = new Label();
+        checkersMessage.getStyleClass().add("game-message");
+        checkersMessage.setWrapText(true);
+        checkersScore = subtitle("");
+        FlowPane controls = actions(
+                button("NEW GAME", this::startCheckers),
+                button("RULES", this::showCheckersRules),
+                button("GAMES", this::showGames));
+        VBox content = page(title("CHECKERS"),
+                subtitle("YOU: GOLD  /  COMPUTER: DARK  /  MINIMAX + ALPHA-BETA"),
+                checkersScore, checkersMessage, board, controls,
+                subtitle("SELECT A PIECE, THEN A HIGHLIGHTED SQUARE. CAPTURES ARE MANDATORY."));
+        showScrollable(content);
+        refreshCheckers();
+    }
+
+    private void showCheckersRules() {
+        Alert dialog = new Alert(Alert.AlertType.INFORMATION);
+        dialog.setTitle("CHECKERS / RULES");
+        dialog.setHeaderText("American checkers (8 x 8)");
+        dialog.setContentText(
+                "Move diagonally on dark squares. Men move and capture forward; "
+                + "kings move and capture in both directions.\n\n"
+                + "Captures are mandatory. When another jump is available, "
+                + "you must continue with the same piece. Reaching the far row "
+                + "crowns a king and ends that turn.\n\n"
+                + "Select your piece, then choose the highlighted landing squares. "
+                + "You win when the computer has no legal move. "
+                + "The game is drawn after 80 turns without a capture or promotion.");
+        dialog.showAndWait();
+    }
+
+    private void clickCheckers(int row, int col) {
+        if (currentView != View.CHECKERS || checkersGame == null
+                || checkersGame.outcome() != CheckersGame.Outcome.PLAYING
+                || checkersGame.sideToMove() != CheckersGame.Side.HUMAN) return;
+
+        CheckersGame.Square clicked = new CheckersGame.Square(row, col);
+        List<CheckersGame.Turn> legal = checkersGame.legalMoves();
+        if (!checkersSelection.isEmpty()) {
+            int next = checkersSelection.size();
+            for (CheckersGame.Turn turn : legal) {
+                if (turn.path().size() <= next
+                        || !turn.path().subList(0, next).equals(checkersSelection)
+                        || !turn.path().get(next).equals(clicked)) continue;
+
+                List<CheckersGame.Square> selected = new java.util.ArrayList<>(checkersSelection);
+                selected.add(clicked);
+                checkersSelection = List.copyOf(selected);
+                if (turn.path().size() == checkersSelection.size()) {
+                    checkersSelection = List.of();
+                    checkersGame.play(turn);
+                    checkersLastMove = turn;
+                    sound.click();
+                    if (checkersGame.outcome() == CheckersGame.Outcome.PLAYING) {
+                        CheckersGame.Turn response = checkersAI.chooseMove(checkersGame);
+                        if (response != null) {
+                            checkersGame.play(response);
+                            checkersLastMove = response;
+                        }
+                    }
+                }
+                refreshCheckers();
+                return;
+            }
+        }
+
+        boolean selectable = legal.stream().anyMatch(turn -> turn.start().equals(clicked));
+        checkersSelection = selectable ? List.of(clicked) : List.of();
+        refreshCheckers();
+    }
+
+    private void refreshCheckers() {
+        List<CheckersGame.Turn> legal = checkersGame.legalMoves();
+        Set<CheckersGame.Square> origins = new HashSet<>();
+        Set<CheckersGame.Square> targets = new HashSet<>();
+        for (CheckersGame.Turn turn : legal) {
+            origins.add(turn.start());
+            int nextIndex = checkersSelection.size();
+            if (nextIndex > 0 && turn.path().size() > nextIndex
+                    && turn.path().subList(0, nextIndex).equals(checkersSelection)) {
+                targets.add(turn.path().get(nextIndex));
+            }
+        }
+
+        for (int row = 0; row < CheckersGame.SIZE; row++) {
+            for (int col = 0; col < CheckersGame.SIZE; col++) {
+                CheckersGame.Square position = new CheckersGame.Square(row, col);
+                Button cell = checkersSquares[row][col];
+                boolean dark = (row + col) % 2 == 1;
+                cell.getStyleClass().setAll("checkers-square",
+                        dark ? "checkers-dark" : "checkers-light");
+                if (checkersLastMove != null && checkersLastMove.path().contains(position)) {
+                    cell.getStyleClass().add("checkers-last");
+                }
+                if (origins.contains(position) && checkersSelection.isEmpty()
+                        && checkersGame.sideToMove() == CheckersGame.Side.HUMAN) {
+                    cell.getStyleClass().add("checkers-origin");
+                }
+                if (checkersSelection.contains(position)) {
+                    cell.getStyleClass().add("checkers-selected");
+                }
+                if (targets.contains(position)) {
+                    cell.getStyleClass().add("checkers-target");
+                }
+
+                char piece = checkersGame.getCell(row, col);
+                Circle disc = checkersPieces[row][col];
+                disc.setVisible(piece != CheckersGame.EMPTY);
+                if (piece != CheckersGame.EMPTY) {
+                    disc.getStyleClass().setAll("checkers-piece",
+                            piece == 'h' || piece == 'H'
+                                    ? "checkers-human" : "checkers-computer");
+                }
+                Label crown = checkersKings[row][col];
+                crown.setVisible(piece == 'H' || piece == 'C');
+                crown.setStyle(piece == 'H' ? "-fx-text-fill: #573819;"
+                        : "-fx-text-fill: #d5f4df;");
+                cell.setAccessibleText("Row " + (row + 1)
+                        + ", column " + (col + 1) + ": "
+                        + switch (piece) {
+                            case 'h' -> "human piece";
+                            case 'H' -> "human king";
+                            case 'c' -> "computer piece";
+                            case 'C' -> "computer king";
+                            default -> "empty";
+                        });
+            }
+        }
+        checkersScore.setText("YOU: " + checkersGame.countPieces(CheckersGame.Side.HUMAN)
+                + "  /  COMPUTER: "
+                + checkersGame.countPieces(CheckersGame.Side.COMPUTER));
+        switch (checkersGame.outcome()) {
+            case HUMAN_WINS -> checkersMessage.setText("YOU WIN!");
+            case COMPUTER_WINS -> checkersMessage.setText("COMPUTER WINS");
+            case DRAW -> checkersMessage.setText("DRAW");
+            case PLAYING -> {
+                if (!checkersSelection.isEmpty()) {
+                    checkersMessage.setText("SELECT A HIGHLIGHTED LANDING SQUARE");
+                } else if (legal.stream().anyMatch(CheckersGame.Turn::isCapture)) {
+                    checkersMessage.setText("CAPTURE REQUIRED / YOUR TURN");
+                } else {
+                    checkersMessage.setText("YOUR TURN / SELECT A GOLD PIECE");
+                }
+            }
+        }
+        setStatus("CHECKERS / MINIMAX DEPTH 4 / ESC = GAMES");
     }
 
     private void toggleSound() {

@@ -11,7 +11,7 @@ public final class GameCatalog {
     private static final List<Entry> ENTRIES = List.of(
             new Entry(1, "GRID ZERO", "MINIMAX / ALPHA-BETA", true),
             new Entry(2, "LABYRINTH", "A* / FOG OF WAR", true),
-            new Entry(3, "CHECKERS", "MINIMAX / HEURISTICS", false),
+            new Entry(3, "CHECKERS", "MINIMAX / HEURISTICS", true),
             new Entry(4, "BLACKJACK", "PROBABILITY / MONTE CARLO", false),
             new Entry(5, "CHESS", "ALPHA-BETA / SEARCH", false),
             new Entry(6, "CRISIS PROTOCOL", "RULE-BASED AGENTS", false)

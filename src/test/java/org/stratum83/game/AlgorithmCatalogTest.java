@@ -7,7 +7,7 @@ class AlgorithmCatalogTest {
 
     @Test
     void describesImplementedAlgorithmsInShortPlainLanguage() {
-        assertEquals(7, AlgorithmCatalog.entries().size());
+        assertEquals(8, AlgorithmCatalog.entries().size());
         assertTrue(AlgorithmCatalog.entries().stream()
                 .anyMatch(entry -> entry.name().equals("MINIMAX")));
         assertTrue(AlgorithmCatalog.entries().stream()
@@ -15,7 +15,7 @@ class AlgorithmCatalogTest {
         for (AlgorithmCatalog.Entry entry : AlgorithmCatalog.entries()) {
             assertFalse(entry.explanation().isBlank());
             assertFalse(entry.usefulFor().isBlank());
-            assertTrue(entry.game().equals("GRID ZERO") || entry.game().equals("LABYRINTH"));
+            assertTrue(entry.game().contains("GRID ZERO") || entry.game().contains("LABYRINTH") || entry.game().contains("CHECKERS"));
         }
         assertThrows(UnsupportedOperationException.class,
                 () -> AlgorithmCatalog.entries().clear());

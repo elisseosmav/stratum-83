@@ -7,12 +7,15 @@ public final class AlgorithmCatalog {
     }
 
     private static final List<Entry> ENTRIES = List.of(
-            new Entry("MINIMAX", "GRID ZERO",
+            new Entry("MINIMAX", "GRID ZERO / CHECKERS",
                     "Looks ahead at possible moves and assumes the opponent responds well.",
                     "Choosing actions in small competitive, turn-based problems."),
-            new Entry("ALPHA-BETA PRUNING", "GRID ZERO",
+            new Entry("ALPHA-BETA PRUNING", "GRID ZERO / CHECKERS",
                     "Skips future moves that cannot improve a Minimax decision.",
                     "Reducing search work without changing the chosen move."),
+            new Entry("HEURISTIC EVALUATION", "CHECKERS",
+                    "Scores pieces, kings, mobility, and board position to compare moves before the game is over.",
+                    "Ranking moves in games too complex to search to the end."),
             new Entry("RANDOMIZED DEPTH-FIRST SEARCH", "LABYRINTH",
                     "Carves connected passages by exploring one corridor deeply, then backtracking.",
                     "Generating maze layouts and traversing connected structures."),

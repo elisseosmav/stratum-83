@@ -150,3 +150,59 @@
     -fx-background-color: #2a7f62;
     -fx-text-fill: #ffffff;
 }
+
+
+.checkers-board {
+    -fx-padding: 4px;
+    -fx-background-color: #0a2417;
+    -fx-border-color: #5d936c;
+    -fx-border-width: 2px;
+}
+.checkers-square {
+    -fx-padding: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 1px;
+    -fx-border-color: #315c43;
+    -fx-cursor: hand;
+}
+.checkers-light {
+    -fx-background-color: #a5bda5;
+    -fx-border-color: #91a991;
+}
+.checkers-dark {
+    -fx-background-color: #1d4833;
+}
+.checkers-last {
+    -fx-border-color: #7fa787;
+    -fx-border-width: 2px;
+}
+.checkers-origin {
+    -fx-border-color: #91d9a5;
+    -fx-border-width: 2px;
+}
+.checkers-selected {
+    -fx-background-color: #3f7851;
+    -fx-border-color: #fff0ae;
+    -fx-border-width: 3px;
+}
+.checkers-target {
+    -fx-background-color: #39715d;
+    -fx-border-color: #e9ff98;
+    -fx-border-width: 3px;
+}
+.checkers-piece {
+    -fx-stroke-width: 2.5px;
+}
+.checkers-human {
+    -fx-fill: #e8c889;
+    -fx-stroke: #fff0c7;
+}
+.checkers-computer {
+    -fx-fill: #27332e;
+    -fx-stroke: #8cb6a0;
+}
+.checkers-king {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
