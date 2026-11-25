@@ -10,10 +10,10 @@ The main **GAMES** screen lists current and future titles. Only the first two ar
 | --- | --- | --- |
 | **Grid Zero** | X against Minimax O | Playable |
 | **Labyrinth** | Arrow-key explorer against optimal A* reference route | Playable in development candidate |
-| Crisis Protocol | Rule-based agents | Planned |
 | Checkers | Minimax and heuristics | Proposed |
 | Blackjack | Probability-based computer strategy | Proposed |
 | Chess | Search and evaluation | Proposed |
+| Crisis Protocol | Rule-based agents | Planned |
 
 ## Labyrinth: fog of war
 
