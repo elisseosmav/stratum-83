@@ -181,7 +181,7 @@ public final class StratumApp extends Application {
             cards.getChildren().add(card);
         }
         VBox content = page(title("ALGORITHMS"),
-                subtitle("SHORT EXPLANATIONS OF THE METHODS USED IN OUR GAMES"),
+                subtitle("SHORT EXPLANATIONS OF THE METHODS USED IN THE GAMES"),
                 cards, button("BACK TO GAMES", this::showGames));
         showScrollable(content);
         setStatus("ALGORITHM LIBRARY / SHORT EXPLANATIONS / ESC = GAMES");

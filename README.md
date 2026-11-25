@@ -2,15 +2,16 @@
 
 **Classic Games. Real Algorithms.**
 
-An offline Java game collection using classical search algorithms.
+An offline Java desktop application where you play against the computer and explore the algorithms behind each challenge.
 
 ## Games
 
-- **Grid Zero** — Human X versus a Minimax computer O.
-- **Labyrinth** — Explore a fog-covered maze with the arrow keys. Once you find the exit, compare your route with the computer's A* shortest route.
-- **Checkers, Blackjack, Chess, Crisis Protocol** — Listed but not yet playable.
+- **Grid Zero** — Play X against a Minimax computer using alpha-beta pruning.
+- **Labyrinth** — Navigate a challenging maze with the arrow keys. Fog of war hides unexplored areas; reach the exit to compare your path with the computer's A* route.
 
-The separate **Algorithms** view briefly explains the methods used by the games.
+## Algorithms
+
+The Algorithms view explains Minimax, alpha-beta pruning, maze generation, A* search, breadth-first search, Dijkstra's algorithm, and fog of war.
 
 ## Run
 
@@ -21,6 +22,6 @@ mvn clean test
 mvn javafx:run
 ```
 
-On Windows, `run-windows.cmd` and `test-windows.cmd` are also available.
+On Windows, you can also use `run-windows.cmd` and `test-windows.cmd`.
 
-[Wiki](https://github.com/elisseosmav/stratum-83/wiki)
+For additional information, see the [Wiki](https://github.com/elisseosmav/stratum-83/wiki).
