@@ -12,14 +12,6 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 $expectedBranch = 'feature/labyrinth-learning-lab'
 
-function Run-Git {
-    param([string[]]$Arguments)
-    & git -C $root @Arguments
-    if ($LASTEXITCODE -ne 0) {
-        throw ('Git command failed: git ' + ($Arguments -join ' '))
-    }
-}
-
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     throw 'Git is required to verify the tested commit.'
 }
@@ -144,7 +136,7 @@ $lines += @(
     'Do not tag or publish a new release until the maintainer reviews every failure.',
     ''
 )
-[System.IO.File]::WriteAllLines($report, $lines, (New-Object System.Text.UTF8Encoding($false)))
+[System.IO.File]::WriteAllLines($report, $lines, ([System.Text.UTF8Encoding]::new($false)))
 
 Write-Host ''
 Write-Host ('Report saved: ' + $report)
