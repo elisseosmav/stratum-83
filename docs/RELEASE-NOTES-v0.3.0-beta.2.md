@@ -1,9 +1,17 @@
 # STRATUM-83 v0.3.0 Beta 2 — Release Candidate
 
-> **Not yet published.** These notes describe the proposed `v0.3.0-beta.2` release, sourced from [feature/grid-zero-game-history-lessons](https://github.com/elisseosmav/stratum-83/tree/feature/grid-zero-game-history-lessons).  
+> **Not yet published.** These notes describe the proposed `v0.3.0-beta.2` release, sourced from [feature/retro-ai-game-catalog](https://github.com/elisseosmav/stratum-83/tree/feature/retro-ai-game-catalog).  
 > Do not rewrite or move the published `v0.3.0-beta.1` tag.
 
 STRATUM-83 is an offline, non-commercial Java research terminal with original retro styling, playable games and educational classical-AI experiments.
+
+## New main menu: Retro AI Game Catalog
+
+The default view is now **SELECT GAME**, with six classic or strategic game concepts and their associated fundamental AI algorithms. **Grid Zero** and **Labyrinth** are playable. **Crisis Protocol** is planned; **Checkers**, **Blackjack** and **Chess** are proposed and not scheduled. Unfinished titles are visibly disabled.
+
+Research Lab and the existing experimental/educational source remain available by terminal commands, but do not occupy a game entry. Numeric commands match the catalog: 1–2 launch working games, while 3–6 explain that those games are not ready.
+
+This is a user-interface change on an **unpublished candidate**. It does not imply that future games have been implemented or that Beta 2 has been released.
 
 ## New: explain real game moves
 
@@ -60,7 +68,7 @@ Both modes are deterministic with identical inputs and code. All algorithms use 
 ## Build and run (source distribution)
 
 ```powershell
-git clone --branch feature/grid-zero-game-history-lessons https://github.com/elisseosmav/stratum-83.git stratum-83-research
+git clone --branch feature/retro-ai-game-catalog https://github.com/elisseosmav/stratum-83.git stratum-83-research
 cd stratum-83-research
 mvn clean test
 mvn javafx:run
@@ -81,11 +89,11 @@ The project includes a repeatable manual acceptance runner, [verify-beta2-window
 
 ## Documentation and feedback
 
-- [README and setup](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-game-history-lessons/README.md)
-- [Technical design](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-game-history-lessons/docs/DESIGN.md)
-- [Windows acceptance checks](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-game-history-lessons/docs/TESTING.md)
-- [Development Roadmap](https://github.com/elisseosmav/stratum-83/blob/feature/grid-zero-game-history-lessons/docs/DEVELOPMENT-ROADMAP.md)
-- [Wiki-ready educational pages](https://github.com/elisseosmav/stratum-83/tree/feature/grid-zero-game-history-lessons/docs/wiki)
+- [README and setup](https://github.com/elisseosmav/stratum-83/blob/feature/retro-ai-game-catalog/README.md)
+- [Technical design](https://github.com/elisseosmav/stratum-83/blob/feature/retro-ai-game-catalog/docs/DESIGN.md)
+- [Windows acceptance checks](https://github.com/elisseosmav/stratum-83/blob/feature/retro-ai-game-catalog/docs/TESTING.md)
+- [Development Roadmap](https://github.com/elisseosmav/stratum-83/blob/feature/retro-ai-game-catalog/docs/DEVELOPMENT-ROADMAP.md)
+- [Wiki-ready educational pages](https://github.com/elisseosmav/stratum-83/tree/feature/retro-ai-game-catalog/docs/wiki)
 - [GitHub Discussions](https://github.com/elisseosmav/stratum-83/discussions)
 
 When Windows tests pass, the maintainer may create a **new prerelease** with tag `v0.3.0-beta.2` targeting the reviewed commit. Do **not** overwrite `v0.3.0-beta.1`.
