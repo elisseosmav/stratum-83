@@ -19,7 +19,7 @@ The runner checks your branch, executes tests, launches JavaFX and asks ten **PA
 
 ## Manual checks
 
-1. **Games screen:** six entries, first two enabled, later four disabled and visibly marked Planned/Proposed. The header contains GAMES and ALGORITHMS; no terminal command prompt, Research Lab or forced lessons.
+1. **Games screen:** six entries, first two enabled, later four disabled without displaying Planned/Proposed labels. Order: Grid Zero, Labyrinth, Checkers, Blackjack, Chess, Crisis Protocol. The header contains GAMES and ALGORITHMS; no terminal command prompt, Research Lab or forced lessons.
 2. **Grid Zero:** human always plays X. After a valid X move, Minimax automatically responds O. X/O are visible. Wins, losses, draws and NEW GAME work.
 3. **Algorithms screen:** short, readable descriptions of Minimax, alpha-beta, randomized DFS, BFS, Dijkstra, A*, and line-of-sight fog. No complicated interactive teaching controls.
 4. **Labyrinth start:** 23×31 maze; most cells are black. Player P is visible, exit G must remain hidden. Header indicates arrow-key navigation.
