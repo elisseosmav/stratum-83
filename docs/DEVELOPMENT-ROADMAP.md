@@ -21,10 +21,10 @@ The earlier command console, local two-player mode, mandatory lessons and Resear
 | --- | --- | --- | --- |
 | **Grid Zero** | Minimax / alpha-beta pruning | Human X versus computer O | Playable |
 | **Labyrinth** | A* shortest route / line-of-sight fog | Human explores a large hidden maze with arrows | Playable in development candidate |
-| Crisis Protocol | Rule-based agents | Fictional strategic simulation | Planned |
 | Checkers | Minimax / evaluation heuristics | Human versus computer | Proposed; not scheduled |
 | Blackjack | Probability / simulated decisions | Human versus computer/house | Proposed; not scheduled |
 | Chess | Search and evaluation | Human versus computer | Proposed; not scheduled |
+| Crisis Protocol | Rule-based agents | Fictional strategic simulation | Planned |
 
 The updated Labyrinth generator creates **23×31** connected mazes with loops and faraway exits. Player vision only reveals nearby cells not blocked by walls; discovered regions stay dimly visible. The A* reference route is revealed **after** reaching the goal.
 
