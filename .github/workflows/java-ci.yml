@@ -10,11 +10,13 @@ on:
       - 'pom.xml'
       - 'src/**'
       - '.github/workflows/**'
+      - 'scripts/**'
   pull_request:
     paths:
       - 'pom.xml'
       - 'src/**'
       - '.github/workflows/**'
+      - 'scripts/**'
 
 jobs:
   test:
@@ -35,3 +37,16 @@ jobs:
           cache: maven
       - name: Compile and run JUnit tests
         run: mvn --batch-mode --no-transfer-progress clean test
+      - name: Validate beta 2 PowerShell syntax
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $errors = $null
+          $tokens = $null
+          [System.Management.Automation.Language.Parser]::ParseFile('scripts/verify-beta2-windows.ps1', [ref]$tokens, [ref]$errors) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Error $_.Message }
+            exit 1
+          }
+          Write-Host 'PowerShell helper syntax is valid.'
+
