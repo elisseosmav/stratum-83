@@ -1,44 +1,32 @@
 # STRATUM-83 — Classic Games. Real Algorithms. Practical Engineering.
 
-Welcome to **STRATUM-83**, an independent, non-commercial, offline Java research terminal.
+Welcome to STRATUM-83, an original, offline Java retro game collection.
 
-**Play → Trace → Explain → Apply.** The application separates interactive games from reproducible research so that you can learn what happens behind every decision.
+## Games
 
-## Game catalog
+The main **GAMES** screen lists current and future titles. Only the first two are playable:
 
-The main menu contains **six game concepts** connected to fundamental AI algorithms:
-
-| Game | Algorithm | Availability |
+| Game | Human vs computer | Status |
 | --- | --- | --- |
-| Grid Zero | Minimax / alpha-beta | Playable |
-| Labyrinth | BFS / Dijkstra / A* | Playable |
+| **Grid Zero** | X against Minimax O | Playable |
+| **Labyrinth** | Arrow-key explorer against optimal A* reference route | Playable in development candidate |
 | Crisis Protocol | Rule-based agents | Planned |
-| Checkers | Minimax / heuristic evaluation | Proposed |
-| Blackjack | Probability / Monte Carlo | Proposed |
-| Chess | Alpha-beta / search heuristics | Proposed |
+| Checkers | Minimax and heuristics | Proposed |
+| Blackjack | Probability-based computer strategy | Proposed |
+| Chess | Search and evaluation | Proposed |
 
-Only playable titles can be selected. Planned and proposed titles are shown as future roadmap ideas, not released games. For experiments, enter `RESEARCH` at the terminal.
+## Labyrinth: fog of war
 
-## Play
+Navigate a larger **23×31** maze using arrow keys. Only nearby corridors in line of sight become visible; walls block sight. The rest of the map is black. Explored areas remain dim when you move away. You must discover the exit yourself.
 
-- **Grid Zero** — play classic tic-tac-toe, choose a move from your actual game history, discover how Minimax chose its reply, and explore real-world worst-case decisions. Two players can use `DUEL`.
-- **Labyrinth** — play a seeded maze, visualize actual BFS/Dijkstra/A* graph search, understand their differences and solve a weighted software-routing exercise.
+The computer computes a shortest A* route, hidden during your exploration. After reaching the goal, compare your move count and reveal the computer route if you want.
 
-## Research Lab
+## Algorithms
 
-- **Minimax vs Random:** choose a seed and game count; compare wins, draws and losses.
-- **Pathfinding Benchmark:** choose a seed and maze count; compare BFS, Dijkstra and A* using equal inputs and report average shortest-path steps and explored cells.
+The separate **ALGORITHMS** screen provides short explanations of Minimax, alpha-beta pruning, randomized DFS, BFS, Dijkstra, A* and fog-of-war visibility. You do not need to read them before playing.
 
-[Read the Research Lab explanation](Research-Lab)
+## Development status
 
-## Educational chapters
+The clean two-view application is an **unpublished Beta 2 candidate**. [Source branch](https://github.com/elisseosmav/stratum-83/tree/feature/clean-games-algorithm-library) · [README](https://github.com/elisseosmav/stratum-83/blob/feature/clean-games-algorithm-library/README.md) · [Development Roadmap](2.-Development-Roadmap).
 
-- [Grid Zero — Understanding the AI Experiment](Grid-Zero-AI-Experiment)
-- [Labyrinth — Game and Algorithms](Labyrinth)
-- [Development Roadmap](Development-Roadmap)
-
-## Get the source
-
-[STRATUM-83 GitHub repository](https://github.com/elisseosmav/stratum-83) · [Installation instructions](https://github.com/elisseosmav/stratum-83/blob/feature/retro-ai-game-catalog/README.md) · [Community discussions](https://github.com/elisseosmav/stratum-83/discussions)
-
-*Note: the revised Play / Research interface is a **development candidate** until a new release is tested and published. The current beta 1 release is an earlier snapshot.*
+The separately published GitHub Beta 1 release is an older snapshot. The Wiki is updated independently of the source branch.
