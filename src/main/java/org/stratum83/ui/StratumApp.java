@@ -23,6 +23,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.stratum83.game.GameResult;
 import org.stratum83.game.GridZeroGame;
+import org.stratum83.game.GameCatalog;
 import org.stratum83.game.MinimaxPlayer;
 import org.stratum83.game.MinimaxAnalysis;
 import org.stratum83.game.GridZeroHistory;
@@ -144,7 +145,7 @@ public class StratumApp extends Application {
     }
 
     private VBox buildConsole() {
-        Label instructions = new Label("COMMANDS: PLAY | HISTORY | EXPLAIN | APPLY | DUEL | MAZE | RESEARCH | HELP | EXIT     F1 HELP / F2 SOUND / ESC MENU");
+        Label instructions = new Label("COMMANDS: 1 GRID ZERO | 2 LABYRINTH | RESEARCH | HELP | MENU | EXIT     F1 HELP / F2 SOUND / ESC MENU");
         instructions.getStyleClass().add("hint");
         instructions.setWrapText(true);
 
@@ -177,22 +178,59 @@ public class StratumApp extends Application {
         maze = null;
         researchMenuOpen = false;
 
-        Label heading = makeTitle("SELECT PROGRAM");
+        Label heading = makeTitle("SELECT GAME");
         Label introduction = makeDescription(
-                "LOCAL GAMES / ALGORITHM EXPERIMENTS / NO NETWORK REQUIRED");
-        VBox menu = new VBox(11,
-                menuButton("01  GRID ZERO       HUMAN VS COMPUTER", () -> startGame(true)),
-                menuButton("02  LABYRINTH       GRAPH SEARCH LAB", this::showMaze),
-                menuButton("03  RESEARCH LAB    ALGORITHMS AND RESULTS", this::showResearchMenu));
-        menu.setMaxWidth(570);
+                "CLASSIC GAMES / FUNDAMENTAL AI ALGORITHMS / NO NETWORK REQUIRED");
+        Label legend = makeDescription(
+                "PLAYABLE = READY NOW    PLANNED / PROPOSED = FUTURE GAME");
+
+        VBox menu = new VBox(7);
+        menu.setMaxWidth(700);
+        for (GameCatalog.Entry entry : GameCatalog.entries()) {
+            Button button = menuButton(String.format(Locale.ROOT,
+                    "%02d  %-16s  %-27s  %s",
+                    entry.number(), entry.title(), entry.algorithm(), entry.status()),
+                    () -> selectGame(entry.number()));
+            button.getStyleClass().add("catalog-game");
+            button.setWrapText(true);
+            button.setDisable(!entry.playable());
+            menu.getChildren().add(button);
+        }
 
         Label note = makeDescription(
-                "TYPE DUEL FOR TWO PLAYERS  /  F1 HELP  /  EXIT TO CLOSE");
-        VBox content = new VBox(24, heading, introduction, menu, note);
-        content.setAlignment(Pos.CENTER_LEFT);
-        content.setMaxWidth(600);
-        screen.getChildren().setAll(content);
-        consoleMessage.setText("READY. SELECT A PROGRAM OR TYPE A COMMAND.");
+                "ONLY THE FIRST TWO GAMES ARE PLAYABLE. "
+                + "TYPE RESEARCH FOR EXISTING ALGORITHM EXPERIMENTS.");
+        VBox content = new VBox(14, heading, introduction, legend, menu, note);
+        content.setAlignment(Pos.TOP_CENTER);
+        content.setMaxWidth(750);
+
+        VBox wrapper = new VBox(content);
+        wrapper.setAlignment(Pos.TOP_CENTER);
+        wrapper.setPadding(new Insets(18, 8, 18, 8));
+        ScrollPane scroll = new ScrollPane(wrapper);
+        scroll.setFitToWidth(true);
+        scroll.getStyleClass().add("maze-scroll");
+        screen.getChildren().setAll(scroll);
+        consoleMessage.setText("SELECT A PLAYABLE GAME. FUTURE TITLES ARE SHOWN AS PROPOSED.");
+    }
+
+    private void selectGame(int number) {
+        var selected = GameCatalog.find(number);
+        if (selected.isEmpty()) {
+            consoleMessage.setText("UNKNOWN GAME NUMBER: " + number);
+            return;
+        }
+        GameCatalog.Entry entry = selected.get();
+        if (!entry.playable()) {
+            consoleMessage.setText(entry.title() + " IS " + entry.status()
+                    + " AND NOT PLAYABLE YET.");
+            return;
+        }
+        switch (number) {
+            case 1 -> startGame(true);
+            case 2 -> showMaze();
+            default -> throw new IllegalStateException("Playable game has no launcher: " + number);
+        }
     }
 
     private void showResearchMenu() {
@@ -521,7 +559,8 @@ public class StratumApp extends Application {
         }
 
         switch (command) {
-            case "PLAY", "1", "SOLO" -> startGame(true);
+            case "PLAY", "SOLO" -> startGame(true);
+            case "1", "2", "3", "4", "5", "6" -> selectGame(Integer.parseInt(command));
             case "DUEL" -> startGame(false);
             case "TRACE" -> {
                 if (maze != null) showMazeTrace();
@@ -544,8 +583,8 @@ public class StratumApp extends Application {
             case "BFS" -> selectMazeAlgorithm(MazeSolver.Algorithm.BFS);
             case "DIJKSTRA" -> selectMazeAlgorithm(MazeSolver.Algorithm.DIJKSTRA);
             case "ASTAR", "A*" -> selectMazeAlgorithm(MazeSolver.Algorithm.A_STAR);
-            case "MAZE", "LABYRINTH", "2" -> showMaze();
-            case "RESEARCH", "LAB", "3" -> showResearchMenu();
+            case "MAZE", "LABYRINTH" -> showMaze();
+            case "RESEARCH", "LAB" -> showResearchMenu();
             case "EXPERIMENT" -> showExperiment();
             case "BENCHMARK", "PATHFINDING" -> showMazeBenchmark();
             case "HELP" -> showHelp();
