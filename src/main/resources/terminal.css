@@ -113,6 +113,8 @@
     -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-text-fill: #aaffad;
+    -fx-prompt-text-fill: #447c4c;
+    -fx-display-caret: true;
     -fx-background-color: transparent;
     -fx-background-insets: 0;
     -fx-background-radius: 0;

@@ -149,11 +149,14 @@ public final class StratumApp extends Application {
         terminalPath.getStyleClass().add("prompt-label");
         terminalInput = new TextField();
         terminalInput.getStyleClass().add("prompt-input");
-        terminalInput.setMinWidth(28);
-        terminalInput.setPrefWidth(28);
+        terminalInput.setMinWidth(100);
+        terminalInput.setPrefWidth(100);
+        terminalInput.setMaxWidth(460);
+        terminalInput.setFocusTraversable(true);
+        terminalInput.setPromptText("TYPE COMMAND HERE");
         terminalInput.textProperty().addListener((observable, oldValue, newValue) ->
-                terminalInput.setPrefWidth(Math.max(28,
-                        Math.min(370, 28 + newValue.length() * 9))));
+                terminalInput.setPrefWidth(Math.max(100,
+                        Math.min(460, 30 + newValue.length() * 10))));
         terminalInput.setOnAction(event -> runTerminalCommand());
 
         terminalCursor = new Label("█");
@@ -161,6 +164,7 @@ public final class StratumApp extends Application {
         HBox promptLine = new HBox(4, terminalPath, terminalInput, terminalCursor);
         promptLine.getStyleClass().add("prompt-line");
         promptLine.setAlignment(Pos.CENTER_LEFT);
+        promptLine.setOnMouseClicked(event -> terminalInput.requestFocus());
 
         VBox footer = new VBox(6, status, promptLine);
         footer.getStyleClass().add("footer");
@@ -199,6 +203,24 @@ public final class StratumApp extends Application {
             }
             movePlayer(dr, dc);
             event.consume();
+        });
+
+        scene.addEventFilter(javafx.scene.input.KeyEvent.KEY_TYPED, event -> {
+            if (terminalInput.isFocused() || event.isConsumed()
+                    || event.isControlDown() || event.isAltDown() || event.isMetaDown()) return;
+            String typed = event.getCharacter();
+            if (typed == null || typed.isEmpty()
+                    || typed.charAt(0) < ' ' || typed.charAt(0) == 127) return;
+            terminalInput.appendText(typed);
+            terminalInput.requestFocus();
+            event.consume();
+        });
+        scene.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ENTER && !terminalInput.isFocused()
+                    && !terminalInput.getText().isBlank()) {
+                runTerminalCommand();
+                event.consume();
+            }
         });
 
         stage.setTitle("STRATUM-83 | Classic AI Games");
