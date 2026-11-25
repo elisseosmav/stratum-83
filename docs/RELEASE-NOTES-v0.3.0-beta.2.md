@@ -60,6 +60,10 @@ mvn javafx:run
 
 If Maven is not on PATH, use your `mvn.cmd` installation path. An Internet connection may be required for the first Maven build; the application itself runs offline.
 
+### Windows release acceptance
+
+The project includes a repeatable manual acceptance runner, [verify-beta2-windows.ps1](../scripts/verify-beta2-windows.ps1). It executes local Maven tests, opens the JavaFX app and records the maintainer's checks for Play/Trace/Explain/Apply, reproducibility and resizing. **The helper's existence is not evidence that a Windows graphical test has passed.**
+
 ## Verification status
 
 - **Checked locally:** New benchmark core compiled using OpenJDK 21; repeated seeded shortest-path comparisons were consistent.
