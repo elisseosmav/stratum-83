@@ -1,14 +1,16 @@
-# Wiki-ready STRATUM-83 articles
+# STRATUM-83 Wiki drafts (not the live Wiki)
 
-These Markdown files are **draft sources** for the separate GitHub Wiki. Updating files here does not update the live Wiki automatically.
+These are **GitHub repository Markdown sources**. They do not automatically publish to the separate [live Wiki](https://github.com/elisseosmav/stratum-83/wiki).
 
-The current product is a clean **GAMES + ALGORITHMS** desktop application. Older Game History, Research Lab and guided algorithm teaching flows are no longer in the visible application.
+Current candidate: **GAMES + ALGORITHMS** on [feature/clean-games-algorithm-library](https://github.com/elisseosmav/stratum-83/tree/feature/clean-games-algorithm-library). Grid Zero is human X vs Minimax O; Labyrinth uses arrow-key movement, fog of war and a hidden A* reference route. The interface no longer includes terminal commands, two-player mode, Research Lab, history lessons or search traces.
 
-Pages to review and synchronize:
+| Draft | Purpose |
+| --- | --- |
+| [Home.md](Home.md) | Overall product, games, algorithms and release state |
+| [2.-Development-Roadmap.md](2.-Development-Roadmap.md) | **Exact filename matching the known live Wiki roadmap page** |
+| [Development-Roadmap.md](Development-Roadmap.md) | Alternative older Wiki source, kept consistent |
+| [Labyrinth.md](Labyrinth.md) | Fog-of-war human versus A* navigation |
+| [Grid-Zero-AI-Experiment.md](Grid-Zero-AI-Experiment.md) | Current simple Grid Zero and Minimax overview |
+| [Research-Lab.md](Research-Lab.md) | Historical note about the retired UI |
 
-- **Home.md** — Games, Algorithms and development status
-- **Labyrinth.md** — arrow-key fog-of-war maze and computer A* reference route
-- **Grid-Zero-AI-Experiment.md** — historical educational work; revise before publishing because the elaborate experiment is no longer part of the visible interface
-- **Development-Roadmap.md** — new game-first product direction
-
-The live Wiki needs a separate maintainer-authorized commit/publish operation.
+**To publish:** a maintainer must review and push these files to the separate `stratum-83.wiki.git` repository, preserving existing page-specific edits. The current GitHub connector cannot write there.
