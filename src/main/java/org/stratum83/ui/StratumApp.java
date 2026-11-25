@@ -145,16 +145,15 @@ public final class StratumApp extends Application {
         VBox catalog = new VBox(8);
         catalog.setMaxWidth(720);
         for (GameCatalog.Entry entry : GameCatalog.entries()) {
-            String label = String.format("%02d  %-16s  %s  [%s]",
-                    entry.number(), entry.title(), entry.algorithm(), entry.status());
+            String label = String.format("%02d  %-16s  %s",
+                    entry.number(), entry.title(), entry.algorithm());
             Button gameButton = button(label, () -> openGame(entry.number()));
             gameButton.getStyleClass().add("catalog-game");
             gameButton.setMaxWidth(Double.MAX_VALUE);
             gameButton.setDisable(!entry.playable());
             catalog.getChildren().add(gameButton);
         }
-        VBox page = page(title, intro, catalog,
-                subtitle("THE FIRST TWO GAMES ARE READY; OTHER TITLES ARE FUTURE IDEAS."));
+        VBox page = page(title, intro, catalog);
         showScrollable(page);
         setStatus("CHOOSE GRID ZERO OR LABYRINTH.  ESC = MAIN MENU");
     }
