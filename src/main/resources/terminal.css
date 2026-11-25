@@ -246,3 +246,45 @@
     -fx-opacity: 0.46;
     -fx-cursor: default;
 }
+
+
+.chess-board {
+    -fx-background-color: #10291b;
+    -fx-border-color: #589269;
+    -fx-border-width: 2px;
+    -fx-padding: 4px;
+}
+.chess-square {
+    -fx-padding: 0;
+    -fx-font-family: "Segoe UI Symbol", "DejaVu Sans", "Arial Unicode MS";
+    -fx-font-size: 37px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 1px;
+    -fx-cursor: hand;
+}
+.chess-light {
+    -fx-background-color: #afc6ae;
+    -fx-border-color: #7b9a82;
+}
+.chess-dark {
+    -fx-background-color: #305c46;
+    -fx-border-color: #18402c;
+}
+.chess-white-piece { -fx-text-fill: #fff4d5; }
+.chess-black-piece { -fx-text-fill: #142b21; }
+.chess-selected {
+    -fx-background-color: #4d8760;
+    -fx-border-color: #fff09d;
+    -fx-border-width: 3px;
+}
+.chess-target {
+    -fx-background-color: #65a17c;
+    -fx-border-color: #e6ff90;
+    -fx-border-width: 3px;
+}
+.chess-square:hover {
+    -fx-border-color: #f0f7ba;
+    -fx-border-width: 2px;
+}

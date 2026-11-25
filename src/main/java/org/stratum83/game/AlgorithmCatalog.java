@@ -7,15 +7,18 @@ public final class AlgorithmCatalog {
     }
 
     private static final List<Entry> ENTRIES = List.of(
-            new Entry("MINIMAX", "GRID ZERO / CHECKERS",
+            new Entry("MINIMAX", "GRID ZERO / CHECKERS / CHESS",
                     "Looks ahead at possible moves and assumes the opponent responds well.",
                     "Choosing actions in small competitive, turn-based problems."),
-            new Entry("ALPHA-BETA PRUNING", "GRID ZERO / CHECKERS",
+            new Entry("ALPHA-BETA PRUNING", "GRID ZERO / CHECKERS / CHESS",
                     "Skips future moves that cannot improve a Minimax decision.",
                     "Reducing search work without changing the chosen move."),
-            new Entry("HEURISTIC EVALUATION", "CHECKERS",
+            new Entry("HEURISTIC EVALUATION", "CHECKERS / CHESS",
                     "Scores pieces, kings, mobility, and board position to compare moves before the game is over.",
                     "Ranking moves in games too complex to search to the end."),
+            new Entry("LEGAL MOVE SEARCH", "CHESS",
+                    "Generates possible moves and rejects those leaving the king in check.",
+                    "Applying constraints while searching a game tree."),
             new Entry("CARD PROBABILITY", "BLACKJACK",
                     "Counts possible unseen cards after removing cards visible to the player.",
                     "Understanding how available card values affect the next draw."),

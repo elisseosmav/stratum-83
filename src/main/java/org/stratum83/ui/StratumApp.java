@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import javafx.application.Platform;
 import java.util.Set;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -22,6 +23,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import org.stratum83.game.AlgorithmCatalog;
@@ -29,6 +31,8 @@ import org.stratum83.game.CheckersAI;
 import org.stratum83.game.CheckersGame;
 import org.stratum83.game.BlackjackGame;
 import org.stratum83.game.BlackjackOdds;
+import org.stratum83.chess.ChessAI;
+import org.stratum83.chess.ChessGame;
 import org.stratum83.game.GameCatalog;
 import org.stratum83.game.GameResult;
 import org.stratum83.game.GridZeroGame;
@@ -44,7 +48,7 @@ import org.stratum83.labyrinth.Position;
 
 public final class StratumApp extends Application {
 
-    private enum View { GAMES, ALGORITHMS, GRID_ZERO, LABYRINTH, CHECKERS, BLACKJACK }
+    private enum View { GAMES, ALGORITHMS, GRID_ZERO, LABYRINTH, CHECKERS, BLACKJACK, CHESS }
 
     private final SoundPlayer sound = new SoundPlayer();
     private final MinimaxPlayer minimax = new MinimaxPlayer();
@@ -98,6 +102,16 @@ public final class StratumApp extends Application {
     private int blackjackLosses;
     private int blackjackPushes;
     private boolean blackjackCounted;
+
+    private final ChessAI chessAI = new ChessAI(2);
+    private ChessGame chessGame;
+    private Button[][] chessSquares;
+    private Label chessMessage;
+    private Label chessDetails;
+    private Label chessLastMove;
+    private int chessSelectedRow = -1;
+    private int chessSelectedCol = -1;
+    private boolean chessThinking;
 
     @Override
     public void start(Stage stage) {
@@ -202,6 +216,7 @@ public final class StratumApp extends Application {
             case 2 -> startMaze();
             case 3 -> startCheckers();
             case 4 -> startBlackjack();
+            case 5 -> startChess();
             default -> throw new IllegalStateException("No game for catalog entry " + number);
         }
     }
@@ -765,6 +780,229 @@ public final class StratumApp extends Application {
                 + "both sides have one. Equal totals are a push.\n\n"
                 + "No bets or payouts. The displayed Monte Carlo estimates "
                 + "sample possible unseen cards and are not guaranteed results.");
+        dialog.showAndWait();
+    }
+
+
+    private void startChess() {
+        currentView = View.CHESS;
+        chessGame = new ChessGame();
+        chessSelectedRow = -1;
+        chessSelectedCol = -1;
+        chessThinking = false;
+        chessMessage = new Label();
+        chessMessage.getStyleClass().add("game-message");
+        chessMessage.setWrapText(true);
+        chessDetails = subtitle("");
+        chessLastMove = subtitle("SELECT A WHITE PIECE TO START");
+        chessSquares = new Button[8][8];
+
+        GridPane board = new GridPane();
+        board.setHgap(1);
+        board.setVgap(1);
+        board.setAlignment(Pos.CENTER);
+        board.getStyleClass().add("chess-board");
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                final int selectedRow = row;
+                final int selectedCol = col;
+                Button square = button("", () -> clickChess(selectedRow, selectedCol));
+                square.setPrefSize(53, 53);
+                square.setMinSize(53, 53);
+                square.setMaxSize(53, 53);
+                chessSquares[row][col] = square;
+                board.add(square, col, row);
+            }
+        }
+
+        FlowPane controls = actions(
+                button("NEW GAME", this::startChess),
+                button("RULES", this::showChessRules),
+                button("GAMES", this::showGames));
+        VBox content = page(title("CHESS"),
+                subtitle("YOU: WHITE / COMPUTER: BLACK / MINIMAX + ALPHA-BETA"),
+                chessDetails, chessMessage, board, chessLastMove, controls,
+                subtitle("SELECT A PIECE, THEN A HIGHLIGHTED SQUARE. PROMOTION OFFERS FOUR PIECES."));
+        showScrollable(content);
+        refreshChess();
+    }
+
+    private void clickChess(int row, int col) {
+        if (currentView != View.CHESS || chessGame == null || chessThinking
+                || chessGame.result() != ChessGame.Result.PLAYING
+                || chessGame.turn() != ChessGame.Side.WHITE) return;
+
+        char piece = chessGame.piece(row, col);
+        if (chessSelectedRow >= 0) {
+            List<ChessGame.Move> choices = chessGame.legalMoves().stream()
+                    .filter(move -> move.fromRow() == chessSelectedRow
+                            && move.fromCol() == chessSelectedCol
+                            && move.toRow() == row && move.toCol() == col)
+                    .toList();
+            if (!choices.isEmpty()) {
+                ChessGame.Move selected = choices.getFirst();
+                if (choices.size() > 1) {
+                    ChoiceDialog<String> dialog = new ChoiceDialog<>(
+                            "QUEEN", "QUEEN", "ROOK", "BISHOP", "KNIGHT");
+                    dialog.setTitle("CHESS / PROMOTION");
+                    dialog.setHeaderText("PROMOTE YOUR PAWN");
+                    dialog.setContentText("Choose a piece:");
+                    String chosen = dialog.showAndWait().orElse(null);
+                    if (chosen == null) return;
+                    char promotion = switch (chosen) {
+                        case "ROOK" -> 'R';
+                        case "BISHOP" -> 'B';
+                        case "KNIGHT" -> 'N';
+                        default -> 'Q';
+                    };
+                    selected = choices.stream()
+                            .filter(move -> move.promotion() == promotion)
+                            .findFirst().orElse(selected);
+                }
+                if (chessGame.play(selected)) {
+                    chessLastMove.setText("YOU: " + chessNotation(selected));
+                    chessSelectedRow = -1;
+                    chessSelectedCol = -1;
+                    sound.click();
+                    refreshChess();
+                    if (chessGame.result() == ChessGame.Result.PLAYING) {
+                        startChessComputerTurn();
+                    }
+                }
+                return;
+            }
+        }
+
+        if (piece != '.' && Character.isUpperCase(piece)) {
+            chessSelectedRow = row;
+            chessSelectedCol = col;
+        } else {
+            chessSelectedRow = -1;
+            chessSelectedCol = -1;
+        }
+        refreshChess();
+    }
+
+    private void startChessComputerTurn() {
+        final ChessGame active = chessGame;
+        chessThinking = true;
+        refreshChess();
+        ChessGame snapshot = active.copy();
+        Thread.ofVirtual().start(() -> {
+            try {
+                ChessGame.Move reply = chessAI.chooseMove(snapshot);
+                Platform.runLater(() -> {
+                    if (currentView != View.CHESS || chessGame != active) return;
+                    chessThinking = false;
+                    if (reply != null && active.play(reply)) {
+                        chessLastMove.setText("COMPUTER: " + chessNotation(reply));
+                        sound.click();
+                    }
+                    refreshChess();
+                });
+            } catch (RuntimeException exception) {
+                Platform.runLater(() -> {
+                    if (currentView != View.CHESS || chessGame != active) return;
+                    chessThinking = false;
+                    chessMessage.setText("COMPUTER MOVE FAILED / " + exception.getMessage());
+                    setStatus("CHESS / COMPUTER ERROR");
+                });
+            }
+        });
+    }
+
+    private static String chessNotation(ChessGame.Move move) {
+        return "" + (char) ('a' + move.fromCol()) + (8 - move.fromRow())
+                + " - " + (char) ('a' + move.toCol()) + (8 - move.toRow())
+                + (move.promotes() ? " = " + move.promotion() : "");
+    }
+
+    private void refreshChess() {
+        Set<String> targets = new HashSet<>();
+        if (chessSelectedRow >= 0 && !chessThinking) {
+            for (ChessGame.Move move : chessGame.legalMoves()) {
+                if (move.fromRow() == chessSelectedRow && move.fromCol() == chessSelectedCol) {
+                    targets.add(move.toRow() + "," + move.toCol());
+                }
+            }
+        }
+        for (int row = 0; row < 8; row++) for (int col = 0; col < 8; col++) {
+            Button square = chessSquares[row][col];
+            char piece = chessGame.piece(row, col);
+            square.getStyleClass().setAll("chess-square",
+                    (row + col) % 2 == 0 ? "chess-light" : "chess-dark");
+            if (chessSelectedRow == row && chessSelectedCol == col) {
+                square.getStyleClass().add("chess-selected");
+            }
+            if (targets.contains(row + "," + col)) {
+                square.getStyleClass().add("chess-target");
+            }
+            if (piece != '.') {
+                square.getStyleClass().add(Character.isUpperCase(piece)
+                        ? "chess-white-piece" : "chess-black-piece");
+            }
+            square.setText(chessSymbol(piece));
+            square.setAccessibleText("" + (char) ('a' + col) + (8 - row) + ": "
+                    + (piece == '.' ? "empty" : (Character.isUpperCase(piece) ? "white " : "black ")
+                            + chessPieceName(piece)));
+        }
+        boolean checked = chessGame.result() == ChessGame.Result.PLAYING
+                && chessGame.inCheck(chessGame.turn());
+        chessDetails.setText("TURN: " + (chessGame.turn() == ChessGame.Side.WHITE ? "YOU" : "COMPUTER")
+                + (checked ? " / CHECK" : ""));
+        chessMessage.setText(switch (chessGame.result()) {
+            case WHITE_WINS -> "CHECKMATE / YOU WIN";
+            case BLACK_WINS -> "CHECKMATE / COMPUTER WINS";
+            case DRAW -> "DRAW / STALEMATE OR DRAW RULE";
+            case PLAYING -> chessThinking ? "COMPUTER THINKING..."
+                    : checked ? "YOUR KING IS IN CHECK"
+                    : "YOUR TURN / SELECT A WHITE PIECE";
+        });
+        setStatus("CHESS / DEPTH 2 COMPUTER / ESC = GAMES");
+    }
+
+    private static String chessPieceName(char piece) {
+        return switch (Character.toLowerCase(piece)) {
+            case 'k' -> "king";
+            case 'q' -> "queen";
+            case 'r' -> "rook";
+            case 'b' -> "bishop";
+            case 'n' -> "knight";
+            case 'p' -> "pawn";
+            default -> "piece";
+        };
+    }
+
+    private static String chessSymbol(char piece) {
+        return switch (piece) {
+            case 'K' -> "♔";
+            case 'Q' -> "♕";
+            case 'R' -> "♖";
+            case 'B' -> "♗";
+            case 'N' -> "♘";
+            case 'P' -> "♙";
+            case 'k' -> "♚";
+            case 'q' -> "♛";
+            case 'r' -> "♜";
+            case 'b' -> "♝";
+            case 'n' -> "♞";
+            case 'p' -> "♟";
+            default -> "";
+        };
+    }
+
+    private void showChessRules() {
+        Alert dialog = new Alert(Alert.AlertType.INFORMATION);
+        dialog.setTitle("CHESS / RULES");
+        dialog.setHeaderText("Chess / You play White");
+        dialog.setContentText(
+                "Select a white piece and click a highlighted legal destination. "
+                + "The computer plays Black using a limited-depth Minimax search.\n\n"
+                + "Rules include check, checkmate, stalemate, castling, en passant, "
+                + "and promotion to queen, rook, bishop, or knight.\n\n"
+                + "Threefold repetition, the 50-move rule, and basic insufficient "
+                + "material positions result in a draw. This is a casual opponent, "
+                + "not a full tournament-strength chess engine.");
         dialog.showAndWait();
     }
 
