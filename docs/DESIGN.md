@@ -1,88 +1,38 @@
-# STRATUM-83 — Architecture and UI Design
+# STRATUM-83 — Clean Game Architecture
 
-**Current educational design candidate: v0.3.0-beta.2 / Play → Trace → Explain → Apply** (not yet an official release)
+**Development branch:** `feature/clean-games-algorithm-library` / Java 21 / JavaFX / offline.
 
-## Purpose
+## Product
 
-A small, offline Java 21/JavaFX educational application demonstrating classical search and reproducible experimentation. Core algorithms remain independent of JavaFX.
+Two top-level views: **Games** (default) and **Algorithms** (brief, optional explanations). The user plays against the computer in every currently playable game. There is no mandatory TRACE, EXPLAIN, APPLY, Research Lab or DUEL navigation.
 
-## Two experiences
+**GameCatalog** lists two playable games and four disabled future entries. **AlgorithmCatalog** owns readable descriptions without affecting gameplay. **StratumApp** is the small JavaFX shell that switches between views, displays boards and forwards input to the engine classes.
 
-1. **Play:** Grid Zero (against Minimax) and Labyrinth human-versus-algorithm challenge (navigate, then compare your route with BFS).
-2. **Research Lab:** Minimax vs Random and Pathfinding Benchmark, both displaying configurable inputs and results rather than duplicated game screens.
+## Grid Zero
 
-The main menu has just three buttons: Grid Zero, Labyrinth, Research Lab. Two-player Grid Zero is available through `DUEL`. `HELP` and `EXIT` are terminal commands / keyboard shortcuts, not menu buttons.
+- **GridZeroGame** owns board rules and valid turns.
+- Human clicks X; **MinimaxPlayer** chooses O using Minimax with alpha-beta pruning.
+- The UI draws X/O through overlaid labels to prevent button-skin rendering bugs.
+- There is no two-player interface or history lesson in the rebuilt application.
 
-## Runtime architecture
+## Labyrinth — partial visibility against an optimal computer
 
-```text
-StratumApp (JavaFX views, keyboard and terminal commands)
-  |
-  +-- Play: GridZeroGame -- MinimaxPlayer
-  |
-  +-- Play: Maze / MazeGenerator -- MazeChallenge -- MazeSolver (BFS)
-  |
-  +-- Research Lab: ExperimentRunner -- GridZeroGame / MinimaxPlayer
-  |
-  +-- Research Lab: MazeBenchmarkRunner
-                          |
-                          +-- MazeGenerator / MazeSolver (BFS, Dijkstra, A*)
-```
+- **ChallengeMazeGenerator** creates a deterministic, connected **23×31** maze by randomized DFS carving plus occasional extra passages for loops. It places the exit at a farthest reachable cell.
+- **MazeFogOfWar** reveals nearby cells using a circular radius of 3 cells and Bresenham line-of-sight tests. Walls are visible but block the squares behind them. Discovered areas are remembered, drawn dimly when no longer in sight.
+- **MazeChallenge** validates four-direction human arrow steps, keeps the exact movement history and prevents movement after goal.
+- **MazeSolver** computes the computer's optimal A* route with a Manhattan-distance heuristic. **The shortest route, number of computer steps and overlay are hidden until the human finishes.** A* is optimal on the current uniform-cost four-direction grid.
+- The UI tracks moves, discovered cells, seed and completion. On completion it shows the human step count versus the computer step count and allows revealing the optimal path.
+- **RETRY** regenerates the same seed. **NEW MAZE** increments it. The map has no mouse-movement controls.
 
-The JavaFX screen handles input and draws output. It never computes paths or AI decisions itself. Game state is updated through the game-engine API. The latest Grid Zero layout uses **independent text labels above its buttons** so occupied marks remain visible after moves.
+The player's visual knowledge and the computer's perfect-map knowledge are intentionally different. This is a **human-versus-algorithm benchmark**, not a simultaneous moving computer adversary. A human cannot use fewer steps than a shortest route, only match it.
 
-## Human-versus-algorithm Labyrinth challenge
+## Performance and honesty
 
-The pure-Java `MazeChallenge` class owns the player's visited route and validates every movement. It computes the BFS optimum once per attempt using the existing `MazeSolver`. It does **not** reveal the reference route during play.
+- Maze generation, fog calculations and pathfinding live in plain Java and are covered by JUnit tests.
+- Older Research Lab/teaching classes remain in source temporarily but have **no entries in the current UI**. Their presence does not imply those tools are part of the new product.
+- JavaFX interactive acceptance on Windows remains necessary. Passing Maven tests alone is not sufficient to publish Beta 2.
+- Do not conflate algorithms such as BFS, DFS and A* with trained machine learning: these are classical search algorithms.
 
-After the player reaches the goal, JavaFX displays **moves, optimal BFS moves, extra moves and efficiency** (`100 × optimal / actual`). Backtracking counts as real movement. Both the player's visited-cell set and the BFS route can then be highlighted separately; visited-cell coloring does not attempt to show revisit order. `RETRY SAME MAZE` starts again from the same seed and clears all score and overlay state, while `NEW MAZE` increments the seed.
+## Navigation
 
-A score of 100% means shortest route, not faster computation or a learning AI. The Research Lab keeps its pathfinding benchmark separate and uses the same solver classes.
-
-## Grid Zero game-history-first learning
-
-The primary teaching experience is now **Play → Game History → Explain Move**. During a real match, the controller records each accepted X and O move in `GridZeroHistory`. A computer O turn also stores the `MinimaxAnalysis` that actually produced it. The history can reconstruct a fresh copy of the board after any saved turn.
-
-The `GridZeroMoveLesson` class accepts a selected historical **human turn** (for instance move 3) and retrieves the **actual following O decision** (move 4). For each candidate move considered at that moment, it uses the existing `MinimaxPlayer` to calculate a hypothetical optimal continuation, one turn at a time. These futures are kept separate from actual saved turns and must always be labeled as such.
-
-`GridZeroHistoryScreens` teaches one real decision through the actual board, hypothetical candidate moves, their future consequences, and finally the real computer choice. Raw search-tree events are retained as an optional **ADVANCED** view. The teaching layer never mutates the live game or invents recorded match data.
-
-## Grid Zero educational trace architecture
-
-`MinimaxPlayer.chooseMove()` and `MinimaxPlayer.analyzeMove()` call the **same minimax/alpha-beta search routine**. An immutable `MinimaxAnalysis` returns candidate scores, bounded search events, exact visited-state and cutoff counts, and the chosen move. When a player places X, the JavaFX controller invokes `analyzeMove()` and executes that decision's move; no duplicate AI rules exist.
-
-`GridZeroLearningScreens` renders the saved decision as step-by-step text boards and event explanations. It also provides the Explain view and a toy engineering Apply exercise. `WorstCasePolicy` is a separate ordinary Java class that minimizes a modeled maximum cost; input costs are illustrative and have no claim to real service measurement.
-
-The `TRACE` viewer records only **159 initial events and the final choice**, rather than every node, while still reporting full search counts. Different root moves are individually searched with full alpha/beta windows so candidate scores are exact and comparable. Ties are resolved in row-major board order.
-
-## Labyrinth educational trace architecture
-
-`MazeSolver.solve(maze, algorithm)` and `MazeSolver.trace(maze, algorithm)` call the **same algorithm implementations** for BFS, Dijkstra and A*. The optional trace recorder captures one immutable snapshot per expanded node, including the current position, discovered frontier, explored cells and the values `g` (accumulated path cost), `h` (admissible Manhattan heuristic for A*) and `f=g+h`. Recorded steps match `PathResult.exploredNodes()`. Normal gameplay and benchmarks do not allocate trace snapshots.
-
-`MazeLearningScreens` draws the actual search state on a JavaFX grid and provides algorithm switching, Previous/Next/Final Result controls, clear definitions and the practical Apply exercise. The controller keeps the original maze scroll view, so viewing the trace does **not** reset the human player. Global arrow keys move the player only when the playable maze itself is visible.
-
-`ServiceRouteExample` is an independent pure-Java illustration using **BFS for fewest hops** and **Dijkstra for minimum nonnegative weighted cost**. The fictional graph has API → DATABASE cost 8 and API → GATEWAY → DATABASE cost 2 + 2. These values are examples, not latency benchmarks.
-
-The generated maze remains a perfect maze with unit-cost edges, so BFS/Dijkstra/A* all find the same optimal distance. This is clearly explained to learners, who practice weighted routing in APPLY rather than drawing false conclusions from the maze alone.
-
-## Experiment semantics
-
-**Minimax vs Random:** `ExperimentRunner` uses `java.util.Random(seed)` to select uniformly among legal random-player moves. Minimax alternates between X and O across games. Scores are always wins, draws and losses for Minimax, and results should be repeatable for the same seed and game count.
-
-**Pathfinding:** `MazeBenchmarkRunner` generates one 11×15 maze per seed, running BFS, Dijkstra and A* against that **same maze**. Sample count may be 1–100. It checks that all three methods return equal optimal lengths and reports the arithmetic mean of steps and explored nodes. It deliberately does not claim timing or real-world performance conclusions.
-
-## Windows user experience
-
-- JDK 21, JavaFX 21, Maven to build from source; packaged Windows installer not yet provided.
-- Full keyboard/terminal commands remain available: `PLAY`, `DUEL`, `MAZE`, `RESEARCH`, `EXPERIMENT`, `BENCHMARK`, `HELP`, `MENU`, `EXIT`.
-- Research input fields validate integer seeds and bounded sample counts.
-- JavaFX `Text` renders multiline experiment reports without `Label` ellipsis truncation.
-- Sound starts OFF, can be toggled through the header or F2.
-
-## Style and scope
-
-Prefer plain Java methods and simple classes over speculative abstractions. This project is original, non-commercial research. There are no cloud requests, user accounts, external AI models or telemetry. No third-party film art, dialogue or audio assets are used.
-
-## Unverified items
-
-A full `mvn clean test` with the real JUnit runner and Windows JavaFX screenshots are still required for this candidate. The research core has been compiled separately with OpenJDK 21 and checked on reproducible seeded mazes, but that is not GUI acceptance testing.
+`GAMES`, `ALGORITHMS`, `ESC` for Games and `F2` for sound. Maze navigation is through arrow keys only. The retro UI has no terminal command prompt in this rebuild.
