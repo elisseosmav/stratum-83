@@ -3,29 +3,18 @@ package org.stratum83.game;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * The retro terminal's game catalog.
- * Showing a proposed game never implies it is implemented or released.
- */
 public final class GameCatalog {
 
-    public enum Status {
-        PLAYABLE, PLANNED, PROPOSED
-    }
-
-    public record Entry(int number, String title, String algorithm, Status status) {
-        public boolean playable() {
-            return status == Status.PLAYABLE;
-        }
+    public record Entry(int number, String title, String algorithm, boolean playable) {
     }
 
     private static final List<Entry> ENTRIES = List.of(
-            new Entry(1, "GRID ZERO", "MINIMAX / ALPHA-BETA", Status.PLAYABLE),
-            new Entry(2, "LABYRINTH", "A* / FOG OF WAR", Status.PLAYABLE),
-            new Entry(3, "CHECKERS", "MINIMAX / HEURISTICS", Status.PROPOSED),
-            new Entry(4, "BLACKJACK", "PROBABILITY / MONTE CARLO", Status.PROPOSED),
-            new Entry(5, "CHESS", "ALPHA-BETA / SEARCH", Status.PROPOSED),
-            new Entry(6, "CRISIS PROTOCOL", "RULE-BASED AGENTS", Status.PLANNED)
+            new Entry(1, "GRID ZERO", "MINIMAX / ALPHA-BETA", true),
+            new Entry(2, "LABYRINTH", "A* / FOG OF WAR", true),
+            new Entry(3, "CHECKERS", "MINIMAX / HEURISTICS", false),
+            new Entry(4, "BLACKJACK", "PROBABILITY / MONTE CARLO", false),
+            new Entry(5, "CHESS", "ALPHA-BETA / SEARCH", false),
+            new Entry(6, "CRISIS PROTOCOL", "RULE-BASED AGENTS", false)
     );
 
     private GameCatalog() {

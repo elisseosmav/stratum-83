@@ -1,31 +1,26 @@
 # STRATUM-83
 
-**Classic Games. Real Algorithms. Practical Engineering.**
+**Classic Games. Real Algorithms.**
 
-A personal, offline Java 21 / JavaFX project. I develop it and make the decisions; there is no project team or formal reporting process.
-
-**Latest unreleased application:** [Games + Algorithms development branch](https://github.com/elisseosmav/stratum-83/tree/feature/clean-games-algorithm-library). The published [Beta 1](https://github.com/elisseosmav/stratum-83/releases/tag/v0.3.0-beta.1) is an older snapshot. Beta 2 has **not** been released.
+An offline Java game collection using classical search algorithms.
 
 ## Games
 
-**Grid Zero:** Human X versus Minimax O. **Labyrinth:** Navigate a fog-covered maze using arrow keys, then compare your route with the computer's optimal A* path.
+- **Grid Zero** — Human X versus a Minimax computer O.
+- **Labyrinth** — Explore a fog-covered maze with the arrow keys. Once you find the exit, compare your route with the computer's A* shortest route.
+- **Checkers, Blackjack, Chess, Crisis Protocol** — Listed but not yet playable.
 
-The menu also lists Checkers, Blackjack, Chess and Crisis Protocol (last). These four are disabled until built. The **Algorithms** view offers short explanations; it is optional.
+The separate **Algorithms** view briefly explains the methods used by the games.
 
-## Run the latest version on Windows
+## Run
 
-Install Java 21 and Maven, then:
+Requires Java 21 and Maven.
 
-```powershell
-cd C:\Users\eliss\Projects\STRATUM-83
-git clone --branch feature/clean-games-algorithm-library https://github.com/elisseosmav/stratum-83.git stratum-83-clean
-cd .\stratum-83-clean
-..\apache-maven\bin\mvn.cmd clean test
-..\apache-maven\bin\mvn.cmd javafx:run
-```
+\`\`\`powershell
+mvn clean test
+mvn javafx:run
+\`\`\`
 
-For an existing checkout of this branch, use `git pull --ff-only` instead of cloning again.
+On Windows, \`run-windows.cmd\` and \`test-windows.cmd\` are also available.
 
-**Reference material:** [Project Wiki](https://github.com/elisseosmav/stratum-83/wiki). **My remaining tasks:** [GitHub Issues](https://github.com/elisseosmav/stratum-83/issues).
-
-This branch contains the redesigned application. The Windows JavaFX experience still needs a final hands-on check before release.
+[Wiki](https://github.com/elisseosmav/stratum-83/wiki)
