@@ -534,7 +534,9 @@ public class StratumApp extends Application {
                 + "SOUND OFF    Disable sounds (default).\n"
                 + "EXIT         Close the terminal.\n\n"
                 + "F1 Help   F2 Toggle sound   ESC Main menu\n\n"
-                + "Main menu has 3 numbered entries. Research Lab has 2.\n"
+                + "Main menu lists 6 AI game concepts: 2 playable, 1 planned, 3 proposed.\n"
+                + "Only Grid Zero and Labyrinth are currently playable.\n"
+                + "Type RESEARCH to open the separate experiment menu.\n"
                 + "All games and experiments run locally on your computer.");
         help.getStyleClass().add("help-text");
         help.setWrapText(true);
