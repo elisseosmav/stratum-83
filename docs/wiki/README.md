@@ -1,29 +1,14 @@
-# Publishing the prepared STRATUM-83 Wiki pages
+# Wiki-ready STRATUM-83 articles
 
-The public GitHub Wiki is stored in a **separate Git repository** from STRATUM-83 source code. This folder contains Markdown prepared for the Wiki; changes here do **not** automatically update the public Wiki.
+These Markdown files are **draft sources** for the separate GitHub Wiki. Updating files here does not update the live Wiki automatically.
 
-The revised **Labyrinth** article now follows the full Play → Trace → Explain → Apply curriculum, including BFS, Dijkstra and A*, real solver snapshots, limitations of the current simple maze and a weighted routing exercise. See [the full source chapter](../LABYRINTH.md).
+The current product is a clean **GAMES + ALGORITHMS** desktop application. Older Game History, Research Lab and guided algorithm teaching flows are no longer in the visible application.
 
-Pages to publish or revise:
+Pages to review and synchronize:
 
-The revised **Grid Zero** page includes the approved Play → Trace → Explain → Apply learning workflow and a link to [the full chapter](../GRID-ZERO-LEARNING.md). The approved [educational principles](../EDUCATIONAL-VISION.md) should be reflected in every future game page.
+- **Home.md** — Games, Algorithms and development status
+- **Labyrinth.md** — arrow-key fog-of-war maze and computer A* reference route
+- **Grid-Zero-AI-Experiment.md** — historical educational work; revise before publishing because the elaborate experiment is no longer part of the visible interface
+- **Development-Roadmap.md** — new game-first product direction
 
-| Prepared Markdown | Wiki page title |
-| --- | --- |
-| `Home.md` | Home (replace the default welcome message) |
-| `Grid-Zero-AI-Experiment.md` | Grid Zero — Understanding the AI Experiment (update the existing page) |
-| `Labyrinth.md` | Labyrinth |
-| `Research-Lab.md` | Research Lab |
-| `Development-Roadmap.md` | Development Roadmap |
-
-## Manual publication
-
-1. Open the [STRATUM-83 Wiki](https://github.com/elisseosmav/stratum-83/wiki).
-2. Edit the existing Home and Grid Zero articles; use New Page for other chapters.
-3. Copy the matching Markdown file from this directory into each Wiki page.
-4. Review the links after saving. Existing GitHub Wiki page slugs may differ from filenames; use the actual published URLs in Home.
-5. Keep copies here synchronized with code changes in future releases.
-
-Only the repository owner should publish changes. No CLI automation or write token is required for manual Wiki editing.
-
-**Release status:** The redesigned UI is a development candidate, not a new published GitHub Release.
+The live Wiki needs a separate maintainer-authorized commit/publish operation.
