@@ -58,3 +58,17 @@ No stable release or official Wiki publish occurred.
 The `feature/grid-zero-game-history-lessons` candidate adds a replayable `GridZeroHistory`, a `GridZeroMoveLesson` with genuinely hypothetical best-play continuations, and a guided JavaFX history/lesson interface. The third human move can be selected to explain the fourth actual computer move, with no hardcoded example positions. JUnit tests verify move integrity, replay isolation and legal alternative futures. The earlier raw search-event UI remains available only as optional advanced material.
 
 The Windows graphical acceptance runner is configured for the new branch. A passing Java 21 Maven/CI run verifies compilation and tests, **not** the visual usability of the interactive teaching screens. The live Wiki, `main` game code and published Beta 1 remain unchanged.
+
+## Clean Games + Algorithms rebuild — 25 November 2026
+
+The new `feature/clean-games-algorithm-library` branch replaces the JavaFX research terminal with two user-facing views: **GAMES** and **ALGORITHMS**. Grid Zero is human X versus Minimax O. Labyrinth is a human arrow-key exploration challenge against an A* shortest-path baseline.
+
+**Maze generation:** 23×31 seeded connected layouts, occasional extra openings to create cycles, farthest-cell exit.
+
+**Fog:** radius-3 line of sight blocked by walls; unexplored cells black, remembered explored cells dim, currently visible cells bright. A* route and its step count remain hidden until reaching the exit.
+
+**Automated verification:** [GitHub Actions run 45682962099](https://github.com/elisseosmav/stratum-83/actions/runs/45682962099) passed the Java 21 Maven/JUnit jobs on Windows and Ubuntu for the latest application code. This includes the new maze generator, fog and algorithm catalog tests. The subsequent documentation-only commits do not change the compiled Java code.
+
+**Outstanding:** actual Windows JavaFX GUI acceptance, 680×600 layout, fog visibility, arrow movement and endgame comparison. Neither `main` nor the published Beta 1 release has been changed to include the rebuilt application.
+
+Historical Research Lab and learning modules remain in source temporarily for safe retirement; they have no entry point in the rebuilt UI.
