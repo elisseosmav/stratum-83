@@ -52,3 +52,9 @@ The `feature/labyrinth-learning-lab` branch adds shared BFS/Dijkstra/A* trace in
 **Verified:** [Java 21 Maven/JUnit GitHub Actions run 45473229283](https://github.com/elisseosmav/stratum-83/actions/runs/45473389881) completed successfully on Ubuntu and Windows, including compilation of the new JavaFX source. **Pending:** direct Windows GUI/manual acceptance of interaction, rendering and resizing.
 
 No stable release or official Wiki publish occurred.
+
+## Grid Zero recorded-move lessons — 25 November 2026
+
+The `feature/grid-zero-game-history-lessons` candidate adds a replayable `GridZeroHistory`, a `GridZeroMoveLesson` with genuinely hypothetical best-play continuations, and a guided JavaFX history/lesson interface. The third human move can be selected to explain the fourth actual computer move, with no hardcoded example positions. JUnit tests verify move integrity, replay isolation and legal alternative futures. The earlier raw search-event UI remains available only as optional advanced material.
+
+The Windows graphical acceptance runner is configured for the new branch. A passing Java 21 Maven/CI run verifies compilation and tests, **not** the visual usability of the interactive teaching screens. The live Wiki, `main` game code and published Beta 1 remain unchanged.
