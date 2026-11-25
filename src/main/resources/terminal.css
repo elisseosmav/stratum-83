@@ -320,3 +320,17 @@
     -fx-border-width: 2px;
     -fx-text-fill: #ffffff;
 }
+
+/* Retro AI game catalog: future titles are visible but clearly unavailable. */
+.catalog-game {
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 13px;
+    -fx-padding: 10px 14px;
+}
+.catalog-game:disabled {
+    -fx-opacity: 0.72;
+    -fx-background-color: #0b1e12;
+    -fx-border-color: #294934;
+    -fx-text-fill: #779b83;
+    -fx-cursor: default;
+}
